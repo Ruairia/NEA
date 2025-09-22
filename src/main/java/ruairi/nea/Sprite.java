@@ -1,6 +1,5 @@
 package ruairi.nea;
 
-import javafx.scene.image.ImageView;
 
 import java.util.ArrayList;
 
@@ -36,10 +35,6 @@ public abstract class Sprite {
         hitbox.setPosition(posX, posY);
     }
     public void render(double secondsElapsed, Direction oldDirection){
-        imageView.setImage(frameController.getCurrentFrame(secondsElapsed));
-        if (currentDirection != oldDirection){
-            imageView.setScaleX(-1);
-        }
     }
 
     public void setCurrentState(State currentState, Direction direction) {

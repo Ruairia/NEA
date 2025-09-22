@@ -3,7 +3,7 @@ package ruairi.nea;
 
 import java.util.ArrayList;
 
-import static com.ruairi.nea2026.State.*;
+import static ruairi.nea.State.*;
 
 public class Hero extends Sprite{
     //Define Constants

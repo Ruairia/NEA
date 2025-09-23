@@ -1,27 +1,30 @@
 package ruairi.nea;
 
-import com.badlogic.gdx.ApplicationAdapter;
+
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Gdx;
 
-public class Main extends ApplicationAdapter {
-    SpriteBatch batch;
+import java.util.ArrayList;
+
+public class Main extends Game {
+    public SpriteBatch batch;
+    public BitmapFont font;
 
     @Override
-    public void create () {
+    public void create() {
         batch = new SpriteBatch();
+        font = new BitmapFont();
+        setScreen(new MainMenuScreen(this));
     }
 
     @Override
-    public void render () {
-        float deltaTime = Gdx.graphics.getDeltaTime();
-    }
-
-    @Override
-    public void dispose () {
+    public void dispose() {
         batch.dispose();
+        font.dispose();
     }
 }

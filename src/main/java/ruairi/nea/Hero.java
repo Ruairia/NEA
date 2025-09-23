@@ -7,7 +7,7 @@ import static ruairi.nea.State.*;
 
 public class Hero extends Sprite{
     //Define Constants
-    public static final float JUMPSTRENGTH = -10;
+    public static final float JUMPSTRENGTH = 10;
     public static final float MAXCOYOTETIME = 0.2f;
 
 
@@ -18,7 +18,7 @@ public class Hero extends Sprite{
     Weapon currentWeapon;
 
     public Hero(float posX, float posY, float velocityX, float velocityY, float width, float height) {
-        super(posX, posY, velocityX, velocityY, width, height);
+        super(posX, posY, width, height);
         health=100;
     }
 

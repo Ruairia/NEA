@@ -1,8 +1,8 @@
     package ruairi.nea;
 
-    public abstract class Enemy extends Sprite implements EnemyControls{
+    public abstract class Enemy extends Sprite {
         public Enemy(float posX, float posY, float velocityX, float velocityY, float width, float height) {
-            super(posX, posY, velocityX, velocityY, width, height);
+            super(posX, posY, width, height);
         }
 
 

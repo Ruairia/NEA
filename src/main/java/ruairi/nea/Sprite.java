@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 public abstract class Sprite {
     public Hitbox hitbox;
-    public FrameController frameController;
     public State CurrentState;
     public Direction currentDirection;
 
@@ -14,16 +13,10 @@ public abstract class Sprite {
     float velocityX, velocityY;
     boolean visibility;
 
-    public Sprite(float posX, float posY, float velocityX, float velocityY, float width, float height){
+    public Sprite(float posX, float posY, float width, float height){
         this.posX=posX;
         this.posY=posY;
-        this.velocityX=velocityX;
-        this.velocityY=velocityY;
         hitbox = new Hitbox(posX, posY, width, height);
-    }
-
-    public Sprite(float posX, float posY, float width, float height){
-        this(posX, posY, 0, 0, width, height);
     }
 
     public void update(double deltaSeconds){
@@ -31,7 +24,7 @@ public abstract class Sprite {
         float oldY = posY;
         posX += (float) (velocityX * deltaSeconds);
         posY += (float) (velocityY * deltaSeconds);
-//        handleCollisions();
+//        handleCollisions(oldX, oldY, posX, posY);
         hitbox.setPosition(posX, posY);
     }
     public void render(double secondsElapsed, Direction oldDirection){

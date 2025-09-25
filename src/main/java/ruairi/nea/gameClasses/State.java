@@ -1,4 +1,4 @@
-package ruairi.nea;
+package ruairi.nea.gameClasses;
 
 public enum State {
     State1,

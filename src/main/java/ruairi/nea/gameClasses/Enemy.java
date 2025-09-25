@@ -1,4 +1,4 @@
-    package ruairi.nea;
+    package ruairi.nea.gameClasses;
 
     public abstract class Enemy extends Sprite {
         public Enemy(float posX, float posY, float velocityX, float velocityY, float width, float height) {

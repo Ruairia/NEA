@@ -27,4 +27,8 @@ public class Main extends Game {
         batch.dispose();
         font.dispose();
     }
+
+    public void update(float deltaSeconds){
+
+    }
 }

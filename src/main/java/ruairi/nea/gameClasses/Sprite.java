@@ -1,4 +1,4 @@
-package ruairi.nea;
+package ruairi.nea.gameClasses;
 
 
 import java.util.ArrayList;

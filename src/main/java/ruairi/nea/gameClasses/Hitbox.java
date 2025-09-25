@@ -1,4 +1,4 @@
-package ruairi.nea;
+package ruairi.nea.gameClasses;
 
 public class Hitbox {
     float topLeftX, topLeftY, width, height;

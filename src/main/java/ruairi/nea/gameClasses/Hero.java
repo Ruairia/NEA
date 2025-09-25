@@ -1,9 +1,9 @@
-package ruairi.nea;
+package ruairi.nea.gameClasses;
 
 
 import java.util.ArrayList;
 
-import static ruairi.nea.State.*;
+import static ruairi.nea.gameClasses.State.*;
 
 public class Hero extends Sprite{
     //Define Constants
@@ -17,7 +17,7 @@ public class Hero extends Sprite{
     boolean onGround;
     Weapon currentWeapon;
 
-    public Hero(float posX, float posY, float velocityX, float velocityY, float width, float height) {
+    public Hero(float posX, float posY, float width, float height) {
         super(posX, posY, width, height);
         health=100;
     }

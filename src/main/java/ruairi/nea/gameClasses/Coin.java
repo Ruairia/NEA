@@ -1,4 +1,4 @@
-package ruairi.nea;
+package ruairi.nea.gameClasses;
 
 public class Coin extends Sprite {
     static float COINWIDTH = 10;

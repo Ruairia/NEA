@@ -22,7 +22,7 @@ public class SettingsScreen implements Screen {
         game.batch.begin();
         game.font.draw(game.batch, "SETTINGS", SCREENWIDTH / 2 - 40, SCREENHEIGHT / 2 + 100);
         game.font.draw(game.batch, "Controls:", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2 + 50);
-        game.font.draw(game.batch, "WASD or Arrow Keys - Move", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2);
+        game.font.draw(game.batch, "WASD - Move", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2);
         game.font.draw(game.batch, "SHIFT - Sprint", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2 - 25);
         game.font.draw(game.batch, "SPACE - Attack", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2 - 50);
         game.font.draw(game.batch, "Press ESC to go back", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2 - 100);

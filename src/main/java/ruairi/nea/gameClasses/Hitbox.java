@@ -1,7 +1,7 @@
 package ruairi.nea.gameClasses;
 
 public class Hitbox {
-    float topLeftX, topLeftY, width, height;
+    public float topLeftX, topLeftY, width, height;
     public Hitbox(float topLeftX, float topLeftY, float width, float height){
         this.topLeftX = topLeftX;
         this.topLeftY = topLeftY;

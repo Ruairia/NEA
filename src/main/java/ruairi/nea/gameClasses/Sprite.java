@@ -10,12 +10,14 @@ public abstract class Sprite {
     public Direction currentDirection;
 
     float posX, posY;
-    float velocityX, velocityY;
+    float velocityX = 0;
+    float velocityY = 0;
     boolean visibility;
 
     public Sprite(float posX, float posY, float width, float height){
         this.posX=posX;
         this.posY=posY;
+        this.visibility=true;
         hitbox = new Hitbox(posX, posY, width, height);
     }
 

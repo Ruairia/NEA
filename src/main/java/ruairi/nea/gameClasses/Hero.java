@@ -41,19 +41,25 @@ public class Hero extends Sprite{
     }
 
     public void move(ArrayList<String> input){
-        velocityX=0;
-        if (input.contains("A")){
-            velocityX-=1;
+
+        if (input.contains("A") && !input.contains("D")){
+            velocityX= - 100;
         }
-        if (input.contains("D")){
-            velocityX+=1;
+        else if (input.contains("D") && !input.contains("A")){
+            velocityX= 100;
         }
+        else         velocityX=0;
         if (input.contains("W")){
             jump();
         }
         else if (input.contains("S")){
             crouch();
         }
+    }
+
+
+    public void update(float deltaSeconds){
+        super.update(deltaSeconds);
     }
 
 

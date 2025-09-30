@@ -27,7 +27,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        hero = new Hero(100,100, 100, 100);
+        hero = new Hero(100,100, 200, 200);
         hero.setVisibility(true);
         hero.setTexture(new Texture("assets/fireWizard.png"));
 

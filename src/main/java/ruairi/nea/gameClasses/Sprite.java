@@ -7,18 +7,25 @@ import java.util.ArrayList;
 
 
 public abstract class Sprite {
+    //Define Constant-like variables
+    public static final float MAXFALLSPEED = -200f; // Pixels per second
+    public static final float GRAVITY = 150f; //Pixels per second squared
+
+
     private Hitbox hitbox;
     private State CurrentState;
     private Direction currentDirection;
+    private Texture texture;
+
 
     float lastOnGround=0;
 
-    private Texture texture;
 
     float posX, posY;
     float velocityX = 0;
     float velocityY = 0;
     boolean visibility;
+
 
     public Sprite(float posX, float posY, float width, float height){
         this.posX=posX;
@@ -31,10 +38,15 @@ public abstract class Sprite {
         float oldX = posX;
         float oldY = posY;
 
-        velocityY -= (float) (100*delta);
+        velocityY -= (float) (GRAVITY*delta);
 
         posX += (float) (velocityX * delta);
         posY += (float) (velocityY * delta);
+
+        if (velocityY < MAXFALLSPEED){
+            velocityY = MAXFALLSPEED;
+        }
+
 //        handleCollisions(oldX, oldY, posX, posY);
 
 
@@ -48,7 +60,9 @@ public abstract class Sprite {
 
 
     public void resolveCollision(Hitbox other, float oldX, float oldY){
-        if (oldY + hitbox.height <= other.topLeftY && posY + hitbox.height >= other.topLeftY){}
+        if (oldY + hitbox.height <= other.topLeftY && posY + hitbox.height >= other.topLeftY){
+            //Handle some logic here
+        }
     }
 
     public void handleCollisions(ArrayList<Sprite> objectsToBeChecked, int oldX, int oldY) {
@@ -90,6 +104,7 @@ public abstract class Sprite {
 
     public void setPosX(float posX) {
         this.posX = posX;
+        hitbox.setPosition(posX, posY);
     }
 
     public float getPosY() {
@@ -98,6 +113,7 @@ public abstract class Sprite {
 
     public void setPosY(float posY) {
         this.posY = posY;
+        hitbox.setPosition(posX, posY);
     }
 
     public float getVelocityX() {
@@ -140,9 +156,6 @@ public abstract class Sprite {
         this.texture = texture;
     }
 
-    public void setHitbox(Hitbox hitbox) {
-        this.hitbox = hitbox;
-    }
 
     public Direction getCurrentDirection() {
         return currentDirection;

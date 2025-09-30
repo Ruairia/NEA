@@ -5,14 +5,12 @@ import java.util.ArrayList;
 
 import static ruairi.nea.gameClasses.State.*;
 
-public class Hero extends Sprite{
-    //Define Constants
-    public static final float JUMPSTRENGTH = 200;
-    public static final float MAXCOYOTETIME = 0.2f;
+public class Hero extends Sprite {
+    //Define Constant-like variables
+    public static final float JUMPSTRENGTH = 150;
+    public static final float JUMPTIME = 0.3f;
 
 
-
-    double coyoteTime=0;
     int health;
 
     Weapon currentWeapon;
@@ -27,8 +25,6 @@ public class Hero extends Sprite{
     public void update(ArrayList<String> inputs, float delta){
         super.update(delta);
 
-        if (coyoteTime<0) coyoteTime-=delta;
-
         move(inputs);
     }
 
@@ -36,12 +32,8 @@ public class Hero extends Sprite{
 
     public void jump(){
         //Handle logic for jumping
-        if (lastOnGround<1){
-            velocityY = JUMPSTRENGTH;
-            coyoteTime=MAXCOYOTETIME;
-        }
-        else if (coyoteTime>0){
-            velocityY = JUMPSTRENGTH;
+        if (lastOnGround<JUMPTIME){
+            velocityY= JUMPSTRENGTH;
         }
     }
 

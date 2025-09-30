@@ -1,13 +1,19 @@
 package ruairi.nea.gameClasses;
 
 
+import com.badlogic.gdx.graphics.Texture;
+
 import java.util.ArrayList;
 
 
 public abstract class Sprite {
-    public Hitbox hitbox;
-    public State CurrentState;
-    public Direction currentDirection;
+    private Hitbox hitbox;
+    private State CurrentState;
+    private Direction currentDirection;
+
+    float lastOnGround=0;
+
+    private Texture texture;
 
     float posX, posY;
     float velocityX = 0;
@@ -21,25 +27,25 @@ public abstract class Sprite {
         hitbox = new Hitbox(posX, posY, width, height);
     }
 
-    public void update(double deltaSeconds){
+    public void update(double delta){
         float oldX = posX;
         float oldY = posY;
-        posX += (float) (velocityX * deltaSeconds);
-        posY += (float) (velocityY * deltaSeconds);
+
+        velocityY -= (float) (100*delta);
+
+        posX += (float) (velocityX * delta);
+        posY += (float) (velocityY * delta);
 //        handleCollisions(oldX, oldY, posX, posY);
+
+
+        lastOnGround+= (float) delta;
+
+        handleBasicCollision(this);
+
         hitbox.setPosition(posX, posY);
     }
-    public void render(double secondsElapsed, Direction oldDirection){
-    }
 
-    public void setCurrentState(State currentState, Direction direction) {
-        CurrentState = currentState;
-        currentDirection = direction;
-    }
 
-    public void setCurrentState(State currentState){
-        CurrentState = currentState;
-    }
 
     public void resolveCollision(Hitbox other, float oldX, float oldY){
         if (oldY + hitbox.height <= other.topLeftY && posY + hitbox.height >= other.topLeftY){}
@@ -53,12 +59,30 @@ public abstract class Sprite {
         }
     }
 
+    public static void handleBasicCollision(Sprite sprite) {
+        if (sprite.posY < 0) {
+            sprite.velocityY = Math.max(sprite.velocityY, 0);
+            sprite.posY = 0;
+            sprite.lastOnGround = 0;
+        }
+    }
 
 
 
 
+    public void setCurrentState(State currentState, Direction direction) {
+        CurrentState = currentState;
+        currentDirection = direction;
+    }
 
 
+    public String toString(){
+        return "posX: " + posX + " posY: " + posY + " velocityX: " + velocityX + " velocityY: " + velocityY + " visibility: " + visibility;
+    }
+
+    public void setCurrentState(State currentState){
+        CurrentState = currentState;
+    }
 
     public float getPosX() {
         return posX;
@@ -108,5 +132,23 @@ public abstract class Sprite {
         this.visibility = visibility;
     }
 
+    public Texture getTexture() {
+        return texture;
+    }
 
+    public void setTexture(Texture texture) {
+        this.texture = texture;
+    }
+
+    public void setHitbox(Hitbox hitbox) {
+        this.hitbox = hitbox;
+    }
+
+    public Direction getCurrentDirection() {
+        return currentDirection;
+    }
+
+    public void setCurrentDirection(Direction currentDirection) {
+        this.currentDirection = currentDirection;
+    }
 }

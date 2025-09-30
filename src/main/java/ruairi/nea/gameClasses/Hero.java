@@ -7,15 +7,16 @@ import static ruairi.nea.gameClasses.State.*;
 
 public class Hero extends Sprite{
     //Define Constants
-    public static final float JUMPSTRENGTH = 10;
+    public static final float JUMPSTRENGTH = 200;
     public static final float MAXCOYOTETIME = 0.2f;
 
 
 
     double coyoteTime=0;
     int health;
-    boolean onGround;
+
     Weapon currentWeapon;
+
 
     public Hero(float posX, float posY, float width, float height) {
         super(posX, posY, width, height);
@@ -23,11 +24,19 @@ public class Hero extends Sprite{
     }
 
 
+    public void update(ArrayList<String> inputs, float delta){
+        super.update(delta);
+
+        if (coyoteTime<0) coyoteTime-=delta;
+
+        move(inputs);
+    }
+
 
 
     public void jump(){
         //Handle logic for jumping
-        if (onGround){
+        if (lastOnGround<1){
             velocityY = JUMPSTRENGTH;
             coyoteTime=MAXCOYOTETIME;
         }
@@ -55,11 +64,6 @@ public class Hero extends Sprite{
         else if (input.contains("S")){
             crouch();
         }
-    }
-
-
-    public void update(float deltaSeconds){
-        super.update(deltaSeconds);
     }
 
 

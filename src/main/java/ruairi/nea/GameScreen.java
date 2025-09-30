@@ -7,14 +7,19 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
 import ruairi.nea.gameClasses.Hero;
+import ruairi.nea.gameClasses.Sprite;
 
 import java.util.ArrayList;
 
 public class GameScreen implements Screen {
     private Main game;
+
+    public ArrayList<Sprite> visibleSprites = new ArrayList<>();
+
     public Hero hero;
+
+
     private OrthographicCamera camera;
-    private Texture heroTexture;
 
     public GameScreen(Main game, int level) {
         this.game=game;
@@ -24,51 +29,62 @@ public class GameScreen implements Screen {
     public void show() {
         hero = new Hero(100,100, 100, 100);
         hero.setVisibility(true);
+        hero.setTexture(new Texture("assets/fireWizard.png"));
+
+        visibleSprites.add(hero);
+
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 600);
 
-        heroTexture = new Texture("assets/fireWizard.png");
+
     }
 
     @Override
-    public void render(float delta) {
-        ScreenUtils.clear(0.3f, 0.5f, 0.8f,1);
+    public void render(float delta) {//Game Loop
+        ScreenUtils.clear(0.3f, 0.5f, 0.8f,1); //Draw background
 
-        handleInput();
+        System.out.println(hero);
 
+        update(delta); //Move hero and sprites
+
+
+        //Rendering
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
 
-        game.update(delta);
-        hero.update(delta);
-
         game.batch.begin();
 
-        if (hero.isVisible()) {
-            game.batch.draw(heroTexture,hero.getPosX(),hero.getPosY(),hero.getHitbox().width,hero.getHitbox().height);
-        }
+       for (Sprite visibleSprite : visibleSprites){
+           game.batch.draw(visibleSprite.getTexture(), visibleSprite.getPosX(), visibleSprite.getPosY());
+       }
 
         game.batch.end();
     }
 
 
-    private void handleInput() {
-        ArrayList<String> input = new ArrayList<>();
+    private void update(float delta) {
+        hero.update(getInputs(), delta);
+        for (Sprite visibleSprite : visibleSprites){
+            visibleSprite.update(delta);
+        }
+    }
+
+    private ArrayList<String> getInputs() {
+        ArrayList<String> inputs = new ArrayList<>();
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            input.add("W");
+            inputs.add("W");
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            input.add("A");
+            inputs.add("A");
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            input.add("S");
+            inputs.add("S");
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            input.add("D");
+            inputs.add("D");
         }
-
-        hero.move(input);
+        return inputs;
     }
 
 
@@ -95,8 +111,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        if (heroTexture != null) {
-            heroTexture.dispose();
+        if (hero.getTexture() != null) {
+            hero.getTexture().dispose();
         }
     }
 }

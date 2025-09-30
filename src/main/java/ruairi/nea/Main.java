@@ -28,7 +28,4 @@ public class Main extends Game {
         font.dispose();
     }
 
-    public void update(float deltaSeconds){
-
-    }
 }

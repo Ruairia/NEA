@@ -28,6 +28,14 @@ application {
     mainClass.set("ruairi.nea.DesktopLauncher")
 }
 
+tasks.named<JavaExec>("run") {
+    jvmArgs = listOf(
+        "--enable-native-access=ALL-UNNAMED",
+        "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+        "--add-opens", "java.base/sun.misc=ALL-UNNAMED"
+    )
+}
+
 tasks.test {
     useJUnitPlatform()
 }

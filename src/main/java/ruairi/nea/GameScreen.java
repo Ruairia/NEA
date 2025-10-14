@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
 import ruairi.nea.gameClasses.Hero;
 import ruairi.nea.gameClasses.Platform;
+import ruairi.nea.gameClasses.PlatformType;
 import ruairi.nea.gameClasses.Sprite;
 
 import java.util.ArrayList;
@@ -32,7 +33,12 @@ public class GameScreen implements Screen {
         hero.setVisibility(true);
         hero.setTexture(new Texture("assets/fireWizard.png"));
 
+
+        Platform platform  = new Platform(200, 20, PlatformType.GRASS);
+
+
         visibleSprites.add(hero);
+        visibleSprites.add(platform);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 600);

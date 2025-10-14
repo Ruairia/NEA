@@ -26,7 +26,7 @@ public abstract class Sprite {
     float width =0;
     float height =0;
     boolean visibility;
-
+    boolean fixed;
 
 
     public Sprite(float posX, float posY, float width, float height){
@@ -43,7 +43,7 @@ public abstract class Sprite {
         float oldX = posX;
         float oldY = posY;
 
-        velocityY -= (float) (GRAVITY*delta);
+        if  (!fixed) velocityY -= (float) (GRAVITY*delta);
 
         posX += (float) (velocityX * delta);
         posY += (float) (velocityY * delta);

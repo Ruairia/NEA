@@ -12,7 +12,6 @@ public abstract class Sprite {
     public static final float GRAVITY = 150f; //Pixels per second squared
 
 
-    private Hitbox hitbox;
     private State CurrentState;
     private Direction currentDirection;
     private Texture texture;
@@ -24,14 +23,20 @@ public abstract class Sprite {
     float posX, posY;
     float velocityX = 0;
     float velocityY = 0;
+    float width =0;
+    float height =0;
     boolean visibility;
+
 
 
     public Sprite(float posX, float posY, float width, float height){
         this.posX=posX;
         this.posY=posY;
+        this.width=width;
+        this.height=height;
+
+
         this.visibility=true;
-        hitbox = new Hitbox(posX, posY, width, height);
     }
 
     public void update(double delta){
@@ -54,24 +59,32 @@ public abstract class Sprite {
 
         handleBasicCollision(this);
 
-        hitbox.setPosition(posX, posY);
-    }
 
-
-
-    public void resolveCollision(Hitbox other, float oldX, float oldY){
-        if (oldY + hitbox.height <= other.topLeftY && posY + hitbox.height >= other.topLeftY){
-            //Handle some logic here
+        if (velocityX<0){
+            currentDirection = Direction.LEFT;
         }
+        else if (velocityX>0){
+            currentDirection = Direction.RIGHT;
+        }
+
     }
 
-    public void handleCollisions(ArrayList<Sprite> objectsToBeChecked, int oldX, int oldY) {
-        for (Sprite other : objectsToBeChecked) {
-            if (Hitbox.intersect(other.hitbox, this.hitbox)) {
-                resolveCollision(other.hitbox, oldX, oldY);
-            }
-        }
+
+    public static boolean intersect(Sprite first, Sprite second){
+        return
+                first.posX < second.posX + second.width
+                        &&
+                        first.posX + first.width > second.posX
+                        &&
+                        first.posY < second.posY + second.height
+                        &&
+                        first.posY + first.height > second.posY;
     }
+
+
+
+
+
 
     public static void handleBasicCollision(Sprite sprite) {
         if (sprite.posY < 0) {
@@ -104,7 +117,6 @@ public abstract class Sprite {
 
     public void setPosX(float posX) {
         this.posX = posX;
-        hitbox.setPosition(posX, posY);
     }
 
     public float getPosY() {
@@ -113,7 +125,6 @@ public abstract class Sprite {
 
     public void setPosY(float posY) {
         this.posY = posY;
-        hitbox.setPosition(posX, posY);
     }
 
     public float getVelocityX() {
@@ -134,10 +145,6 @@ public abstract class Sprite {
 
     public State getCurrentState() {
         return CurrentState;
-    }
-
-    public Hitbox getHitbox(){
-        return hitbox;
     }
 
     public boolean isVisible() {
@@ -163,5 +170,21 @@ public abstract class Sprite {
 
     public void setCurrentDirection(Direction currentDirection) {
         this.currentDirection = currentDirection;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
     }
 }

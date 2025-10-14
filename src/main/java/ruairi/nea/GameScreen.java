@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
 import ruairi.nea.gameClasses.Hero;
+import ruairi.nea.gameClasses.Platform;
 import ruairi.nea.gameClasses.Sprite;
 
 import java.util.ArrayList;
@@ -22,12 +23,12 @@ public class GameScreen implements Screen {
     private OrthographicCamera camera;
 
     public GameScreen(Main game, int level) {
-        this.game=game;
+        this.game = game;
     }
 
     @Override
-    public void show() {
-        hero = new Hero(100,100, 200, 200);
+    public void show() { //Run Once when screen is shown
+        hero = new Hero(100, 100, 150, 150);
         hero.setVisibility(true);
         hero.setTexture(new Texture("assets/fireWizard.png"));
 
@@ -40,10 +41,8 @@ public class GameScreen implements Screen {
     }
 
     @Override
-    public void render(float delta) {//Game Loop
-        ScreenUtils.clear(0.3f, 0.5f, 0.8f,1); //Draw background
-
-        System.out.println(hero);
+    public void render(float delta) {//Game Loop, runs once a frame
+        ScreenUtils.clear(0.3f, 0.5f, 0.8f, 1); //Draw background
 
         update(delta); //Move hero and sprites
 
@@ -54,9 +53,9 @@ public class GameScreen implements Screen {
 
         game.batch.begin();
 
-       for (Sprite visibleSprite : visibleSprites){
-           game.batch.draw(visibleSprite.getTexture(), visibleSprite.getPosX(), visibleSprite.getPosY());
-       }
+        for (Sprite visibleSprite : visibleSprites) {
+            game.batch.draw(visibleSprite.getTexture(), visibleSprite.getPosX(), visibleSprite.getPosY(),visibleSprite.getWidth(), visibleSprite.getHeight());
+        }
 
         game.batch.end();
     }
@@ -64,12 +63,12 @@ public class GameScreen implements Screen {
 
     private void update(float delta) {
         hero.update(getInputs(), delta);
-        for (Sprite visibleSprite : visibleSprites){
+        for (Sprite visibleSprite : visibleSprites) {
             visibleSprite.update(delta);
         }
     }
 
-    private ArrayList<String> getInputs() {
+    private ArrayList<String> getInputs() { //Hardcoded to only include the inputs that we care about
         ArrayList<String> inputs = new ArrayList<>();
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
@@ -87,32 +86,45 @@ public class GameScreen implements Screen {
         return inputs;
     }
 
+    public static void handleCollisions(ArrayList<Sprite> spritesToBeChecked, ArrayList<Platform> platformsToBeChecked, int oldX, int oldY) {
+        for (Sprite other : spritesToBeChecked) {
+
+        }
+    }
+
+    public void resolveCollision(Platform platform, float oldX, float oldY){
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
-    public void resize(int width, int height) {
-
-    }
+    public void resize(int width, int height) {}
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
     public void dispose() {
-        if (hero.getTexture() != null) {
-            hero.getTexture().dispose();
+        for (Sprite visibleSprite : visibleSprites) {
+            visibleSprite.getTexture().dispose();
         }
     }
 }

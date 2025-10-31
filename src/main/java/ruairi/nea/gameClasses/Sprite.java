@@ -10,8 +10,8 @@ public abstract class Sprite {
     public static final float GRAVITY = 700f; //Pixels per second squared
 
 
-    private State CurrentState;
-    private Direction currentDirection;
+    private State CurrentState = State.Idle;
+    private Direction currentDirection = Direction.RIGHT;
     private Texture texture;
 
 
@@ -55,7 +55,6 @@ public abstract class Sprite {
         if (!isOnGround) {
             lastOnGround += (float) delta;
         }
-        handleBoundsCollision(this);
 
 
         if (velocityX<0){
@@ -83,14 +82,6 @@ public abstract class Sprite {
 
 
 
-
-    public static void handleBoundsCollision(Sprite sprite) {
-        if (sprite.posY < 0) {
-            sprite.velocityY = Math.max(sprite.velocityY, 0);
-            sprite.posY = 0;
-            sprite.lastOnGround = 0;
-        }
-    }
 
 
 

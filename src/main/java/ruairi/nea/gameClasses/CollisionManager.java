@@ -38,7 +38,7 @@ public class CollisionManager {
             sprite.setVelocityY(0);
         }
 
-        if ((oldX + sprite.getWidth() <= platform.getPosX()) &&
+        else if ((oldX + sprite.getWidth() <= platform.getPosX()) &&
                 (sprite.getPosX() + sprite.getWidth() > platform.getPosX())) {
             // Came from the left
             sprite.setPosX(platform.getPosX() - sprite.getWidth());

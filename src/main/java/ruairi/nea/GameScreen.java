@@ -3,8 +3,10 @@ package ruairi.nea;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import ruairi.nea.gameClasses.*;
 
@@ -28,15 +30,17 @@ public class GameScreen implements Screen {
     @Override
     public void show() { //Run Once when screen is shown
         hero = new Hero(100, 100, 160, 160);
-        hero.setVisibility(true);
-        hero.setTexture(new Texture("assets/WizardIdle.png"));
 
 
-        Platform platform = new Platform(200, 20, PlatformType.GRASS);
+        visibleSprites.add(new Platform(0, 0, PlatformType.GRASS));
+        visibleSprites.add(new Platform(256, 0, PlatformType.GRASS));
+        visibleSprites.add(new Platform(512, 0, PlatformType.GRASS));
+        visibleSprites.add(new Platform(768, 0, PlatformType.GRASS));
+        visibleSprites.add(new Platform(512, 128, PlatformType.GRASS));
+
 
 
         visibleSprites.add(hero);
-        visibleSprites.add(platform);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 600);
@@ -44,10 +48,7 @@ public class GameScreen implements Screen {
 
     }
 
-    @Override
-    public void render(float delta) {//Game Loop, runs once a frame
-        ScreenUtils.clear(0.05f, 0.1f, 0.07f, 1); //Draw background
-
+    public void perFrameLogic(float delta){
         updatePositions(delta); //Move hero and sprites
 
         ArrayList<Sprite> spritesToBeChecked = new ArrayList<>();
@@ -58,16 +59,28 @@ public class GameScreen implements Screen {
         }
 
         CollisionManager.handleCollisions(spritesToBeChecked, platformsToBeChecked);
+    }
+
+
+    @Override
+    public void render(float delta) {//Game Loop, runs once a frame
+        ScreenUtils.clear(0.05f, 0.1f, 0.07f, 1); //Draw background
+
+        perFrameLogic(delta);
 
 
         //Rendering
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
 
+
         game.batch.begin();
 
         for (Sprite visibleSprite : visibleSprites) {
+            if (visibleSprite.getCurrentDirection()==Direction.RIGHT)
             game.batch.draw(visibleSprite.getTexture(), visibleSprite.getPosX(), visibleSprite.getPosY(), visibleSprite.getWidth(), visibleSprite.getHeight());
+            else
+                game.batch.draw(visibleSprite.getTexture(), visibleSprite.getPosX()+visibleSprite.getWidth(), visibleSprite.getPosY(), -visibleSprite.getWidth(), visibleSprite.getHeight());
         }
 
         game.batch.end();

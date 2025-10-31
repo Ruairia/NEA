@@ -8,13 +8,13 @@ public class Platform extends Sprite{
         fixed = true;
         switch (type){
             case GRASS -> {
-                width = 300;
-                height = 50;
+                width = 256;
+                height = 64;
                 setTexture(new Texture("assets/GrassPlatform.png"));
             }
             case WIDEGRASS -> {
-                width = 500;
-                height = 500;
+                width = 512;
+                height = 64;
                 setTexture(new Texture("assets/WideGrassPlatform.png"));
             }
 

@@ -3,13 +3,11 @@ package ruairi.nea.gameClasses;
 
 import com.badlogic.gdx.graphics.Texture;
 
-import java.util.ArrayList;
-
 
 public abstract class Sprite {
     //Define Constant-like variables
-    public static final float MAXFALLSPEED = -200f; // Pixels per second
-    public static final float GRAVITY = 150f; //Pixels per second squared
+    public static final float MAXFALLSPEED = -700f; // Pixels per second
+    public static final float GRAVITY = 700f; //Pixels per second squared
 
 
     private State CurrentState;
@@ -18,9 +16,11 @@ public abstract class Sprite {
 
 
     float lastOnGround=0;
+    boolean isOnGround;
 
 
     float posX, posY;
+    float oldX, oldY;
     float velocityX = 0;
     float velocityY = 0;
     float width =0;
@@ -40,8 +40,8 @@ public abstract class Sprite {
     }
 
     public void update(double delta){
-        float oldX = posX;
-        float oldY = posY;
+        oldX = posX;
+        oldY = posY;
 
         if  (!fixed) velocityY -= (float) (GRAVITY*delta);
 
@@ -52,12 +52,10 @@ public abstract class Sprite {
             velocityY = MAXFALLSPEED;
         }
 
-//        handleCollisions(oldX, oldY, posX, posY);
-
-
-        lastOnGround+= (float) delta;
-
-        handleBasicCollision(this);
+        if (!isOnGround) {
+            lastOnGround += (float) delta;
+        }
+        handleBoundsCollision(this);
 
 
         if (velocityX<0){
@@ -86,7 +84,7 @@ public abstract class Sprite {
 
 
 
-    public static void handleBasicCollision(Sprite sprite) {
+    public static void handleBoundsCollision(Sprite sprite) {
         if (sprite.posY < 0) {
             sprite.velocityY = Math.max(sprite.velocityY, 0);
             sprite.posY = 0;
@@ -105,6 +103,30 @@ public abstract class Sprite {
 
     public String toString(){
         return "posX: " + posX + " posY: " + posY + " velocityX: " + velocityX + " velocityY: " + velocityY + " visibility: " + visibility;
+    }
+
+    public boolean isOnGround() {
+        return isOnGround;
+    }
+
+    public void setOnGround(boolean onGround) {
+        isOnGround = onGround;
+    }
+
+    public float getLastOnGround() {
+        return lastOnGround;
+    }
+
+    public void setLastOnGround(float lastOnGround) {
+        this.lastOnGround = lastOnGround;
+    }
+
+    public float getOldX() {
+        return oldX;
+    }
+
+    public float getOldY() {
+        return oldY;
     }
 
     public void setCurrentState(State currentState){

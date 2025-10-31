@@ -6,10 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
-import ruairi.nea.gameClasses.Hero;
-import ruairi.nea.gameClasses.Platform;
-import ruairi.nea.gameClasses.PlatformType;
-import ruairi.nea.gameClasses.Sprite;
+import ruairi.nea.gameClasses.*;
 
 import java.util.ArrayList;
 
@@ -17,6 +14,7 @@ public class GameScreen implements Screen {
     private Main game;
 
     public ArrayList<Sprite> visibleSprites = new ArrayList<>();
+
 
     public Hero hero;
 
@@ -29,12 +27,12 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() { //Run Once when screen is shown
-        hero = new Hero(100, 100, 150, 150);
+        hero = new Hero(100, 100, 160, 160);
         hero.setVisibility(true);
-        hero.setTexture(new Texture("assets/fireWizard.png"));
+        hero.setTexture(new Texture("assets/WizardIdle.png"));
 
 
-        Platform platform  = new Platform(200, 20, PlatformType.GRASS);
+        Platform platform = new Platform(200, 20, PlatformType.GRASS);
 
 
         visibleSprites.add(hero);
@@ -48,9 +46,18 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {//Game Loop, runs once a frame
-        ScreenUtils.clear(0.3f, 0.5f, 0.8f, 1); //Draw background
+        ScreenUtils.clear(0.05f, 0.1f, 0.07f, 1); //Draw background
 
-        update(delta); //Move hero and sprites
+        updatePositions(delta); //Move hero and sprites
+
+        ArrayList<Sprite> spritesToBeChecked = new ArrayList<>();
+        ArrayList<Platform> platformsToBeChecked = new ArrayList<>();
+        for (Sprite sprite : visibleSprites){
+            if (sprite instanceof Platform) platformsToBeChecked.add((Platform) sprite);
+            else spritesToBeChecked.add(sprite);
+        }
+
+        CollisionManager.handleCollisions(spritesToBeChecked, platformsToBeChecked);
 
 
         //Rendering
@@ -60,46 +67,21 @@ public class GameScreen implements Screen {
         game.batch.begin();
 
         for (Sprite visibleSprite : visibleSprites) {
-            game.batch.draw(visibleSprite.getTexture(), visibleSprite.getPosX(), visibleSprite.getPosY(),visibleSprite.getWidth(), visibleSprite.getHeight());
+            game.batch.draw(visibleSprite.getTexture(), visibleSprite.getPosX(), visibleSprite.getPosY(), visibleSprite.getWidth(), visibleSprite.getHeight());
         }
 
         game.batch.end();
     }
 
 
-    private void update(float delta) {
-        hero.update(getInputs(), delta);
+    private void updatePositions(float delta) {
+        hero.update(delta);
         for (Sprite visibleSprite : visibleSprites) {
-            visibleSprite.update(delta);
+            if (!(visibleSprite instanceof Hero)) visibleSprite.update(delta);
         }
     }
 
-    private ArrayList<String> getInputs() { //Hardcoded to only include the inputs that we care about
-        ArrayList<String> inputs = new ArrayList<>();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            inputs.add("W");
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            inputs.add("A");
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            inputs.add("S");
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            inputs.add("D");
-        }
-        return inputs;
-    }
-
-    public static void handleCollisions(ArrayList<Sprite> spritesToBeChecked, ArrayList<Platform> platformsToBeChecked, int oldX, int oldY) {
-        for (Sprite other : spritesToBeChecked) {
-
-        }
-    }
-
-    public void resolveCollision(Platform platform, float oldX, float oldY){
-    }
 
 
 

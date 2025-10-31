@@ -1,13 +1,16 @@
 package ruairi.nea.gameClasses;
 
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+
 import java.util.ArrayList;
 
 import static ruairi.nea.gameClasses.State.*;
 
 public class Hero extends Sprite {
     //Define Constant-like variables
-    public static final float JUMPSTRENGTH = 150;
+    public static final float JUMPSTRENGTH = 250;
     public static final float JUMPTIME = 0.3f;
 
 
@@ -22,8 +25,14 @@ public class Hero extends Sprite {
     }
 
 
-    public void update(ArrayList<String> inputs, float delta){
+    public void update(float delta){
         super.update(delta);
+        ArrayList<String> inputs = new ArrayList<>();
+
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) inputs.add("W");
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) inputs.add("A");
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) inputs.add("S");
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) inputs.add("D");
 
         move(inputs);
     }
@@ -34,6 +43,7 @@ public class Hero extends Sprite {
         //Handle logic for jumping
         if (lastOnGround<JUMPTIME){
             velocityY= JUMPSTRENGTH;
+            isOnGround=false;
         }
     }
 

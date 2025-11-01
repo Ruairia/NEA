@@ -21,8 +21,6 @@ public class Hero extends Sprite {
     Texture inAir = new Texture("assets/WizardInAir.png");
     Texture attack = new Texture("assets/WizardAttack.png");
 
-    private float walkFrameDuration = 0.2f; // change frame every 0.2 seconds
-
     int health;
 
     Weapon currentWeapon;
@@ -39,7 +37,6 @@ public class Hero extends Sprite {
     public void update(float delta){
         super.update(delta);
         ArrayList<String> inputs = new ArrayList<>();
-        System.out.println(getCurrentState()+ " " + getCurrentDirection());
         if (Gdx.input.isKeyPressed(Input.Keys.W)) inputs.add("W");
         if (Gdx.input.isKeyPressed(Input.Keys.A)) inputs.add("A");
         if (Gdx.input.isKeyPressed(Input.Keys.D)) inputs.add("D");
@@ -59,7 +56,9 @@ public class Hero extends Sprite {
     }
 
     public Texture walkFrameSwitcher(){
-        if (System.nanoTime() % (walkFrameDuration*2000)> walkFrameDuration*1000) return walking;
+        // Seconds
+        float walkFrameDuration = 0.2f;
+        if (((double) System.currentTimeMillis() /1000) % (walkFrameDuration*2)> walkFrameDuration) return walking;
         else return idle;
     }
 

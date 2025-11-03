@@ -1,9 +1,10 @@
-package ruairi.nea;
+package ruairi.nea.applicationClasses;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.ScreenUtils;
+import ruairi.nea.gameClasses.GameScreen;
 
 public class LevelSelectScreen implements Screen {
     private Main game;

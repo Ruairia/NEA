@@ -69,7 +69,7 @@ public abstract class Sprite {
 
     public static boolean intersect(Sprite first, Sprite second){
         return
-                first.posX < second.posX + second.width
+                        first.posX < second.posX + second.width
                         &&
                         first.posX + first.width > second.posX
                         &&

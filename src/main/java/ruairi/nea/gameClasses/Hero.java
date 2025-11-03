@@ -56,8 +56,7 @@ public class Hero extends Sprite {
     }
 
     public Texture walkFrameSwitcher(){
-        // Seconds
-        float walkFrameDuration = 0.2f;
+        float walkFrameDuration = 0.2f; // Seconds
         if (((double) System.currentTimeMillis() /1000) % (walkFrameDuration*2)> walkFrameDuration) return walking;
         else return idle;
     }
@@ -87,9 +86,9 @@ public class Hero extends Sprite {
         }
         if (input.contains("W")){
             jump();
-            setCurrentState(InAir);
         }
         if (input.contains("SHIFT")) setCurrentState(Attacking);
+        if (!isOnGround) setCurrentState(InAir);
     }
 
 

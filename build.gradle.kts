@@ -25,7 +25,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("ruairi.nea.DesktopLauncher")
+    mainClass.set("ruairi.nea.applicationClasses.DesktopLauncher")
 }
 
 tasks.named<JavaExec>("run") {

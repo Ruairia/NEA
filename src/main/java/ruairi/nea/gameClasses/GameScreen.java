@@ -1,14 +1,10 @@
-package ruairi.nea;
+package ruairi.nea.gameClasses;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
-import ruairi.nea.gameClasses.*;
+import ruairi.nea.applicationClasses.Main;
 
 import java.util.ArrayList;
 
@@ -28,24 +24,25 @@ public class GameScreen implements Screen {
     }
 
     @Override
-    public void show() { //Run Once when screen is shown
-        hero = new Hero(100, 100, 160, 160);
+    public void show() { //Run Once when the screen is shown
+        hero = new Hero(100, 100, 80, 80);
 
-
-        visibleSprites.add(new Platform(0, 0, PlatformType.GRASS));
-        visibleSprites.add(new Platform(256, 0, PlatformType.GRASS));
-        visibleSprites.add(new Platform(512, 0, PlatformType.GRASS));
-        visibleSprites.add(new Platform(768, 0, PlatformType.GRASS));
-        visibleSprites.add(new Platform(512, 128, PlatformType.GRASS));
+        for (int i = 0; i < 5; i++) {
+            createPlatform(256*i,0, PlatformType.GRASS);
+        }
 
 
 
         visibleSprites.add(hero);
 
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 600);
+        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 
+    }
+
+    private void createPlatform(float x, float y, PlatformType type) {
+        visibleSprites.add(new Platform(x, y, type));
     }
 
     public void perFrameLogic(float delta){
@@ -70,6 +67,21 @@ public class GameScreen implements Screen {
 
 
         //Rendering
+
+        float deadzoneX = 300;
+        float leftBound = camera.position.x - camera.viewportWidth / 2 + deadzoneX;
+        float rightBound = camera.position.x + camera.viewportWidth / 2 - deadzoneX;
+        float targetX = camera.position.x;
+
+        if (hero.getPosX() < leftBound) {
+            targetX += hero.getPosX() - leftBound; // move camera left
+        } else if (hero.getPosX() > rightBound) {
+            targetX += hero.getPosX() - rightBound; // move camera right
+        }
+
+        float lerp = 0.1f;
+        camera.position.x += (targetX - camera.position.x) * lerp;
+
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
 

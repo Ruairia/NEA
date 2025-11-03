@@ -1,4 +1,4 @@
-package ruairi.nea;
+package ruairi.nea.applicationClasses;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

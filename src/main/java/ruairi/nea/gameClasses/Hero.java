@@ -1,8 +1,6 @@
 package ruairi.nea.gameClasses;
 
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 
 import java.util.ArrayList;
@@ -11,10 +9,12 @@ import static ruairi.nea.gameClasses.Direction.*;
 import static ruairi.nea.gameClasses.State.*;
 
 public class Hero extends Sprite {
+    private InputHandler inputHandler = new InputHandler();
 
     //Define Constant-like variables
     public static final float JUMPSTRENGTH = 400;
     public static final float JUMPTIME = 0.3f;
+    public static final float MAXSPEED = 200;
 
 
     Texture idle = new Texture("assets/WizardIdle.png");
@@ -38,9 +38,8 @@ public class Hero extends Sprite {
     public void update(float delta){
         super.update(delta);
 
-        ArrayList<String> inputs = handleInputs();
+        move();
 
-        move(inputs);
         setTexture(
                 switch (getCurrentState()){
             case Idle -> idle;
@@ -53,16 +52,7 @@ public class Hero extends Sprite {
 
     }
 
-    private static ArrayList<String> handleInputs() {
 
-
-        ArrayList<String> inputs = new ArrayList<>();
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) inputs.add("UP");
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) inputs.add("LEFT");
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) inputs.add("RIGHT");
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) inputs.add("ATTACK");
-        return inputs;
-    }
 
     public Texture walkFrameSwitcher(){
         float walkFrameDuration = 0.2f; // Seconds
@@ -78,14 +68,16 @@ public class Hero extends Sprite {
         }
     }
 
-    public void move(ArrayList<String> input){
+    public void move(){
 
-        if (input.contains("A") && !input.contains("D")){
-            velocityX= - 100;
+        ArrayList<String> input = inputHandler.getInputs();
+
+        if (input.contains("LEFT") && !input.contains("RIGHT")){
+            velocityX= - MAXSPEED*inputHandler.horizontalAxisStrength;
             if (isOnGround) setCurrentState(Walking, LEFT);
         }
-        else if (input.contains("D") && !input.contains("A")){
-            velocityX= 100;
+        else if (input.contains("RIGHT") && !input.contains("LEFT")){
+            velocityX= MAXSPEED*inputHandler.horizontalAxisStrength;
             if (isOnGround) setCurrentState(Walking, RIGHT);
         }
         else {
@@ -93,10 +85,10 @@ public class Hero extends Sprite {
             else setCurrentState(InAir);
             velocityX=0;
         }
-        if (input.contains("W")){
+        if (input.contains("JUMP")){
             jump();
         }
-        if (input.contains("SHIFT")) setCurrentState(Attacking);
+        if (input.contains("ATTACK")) setCurrentState(Attacking);
         if (!isOnGround) setCurrentState(InAir);
     }
 

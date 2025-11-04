@@ -59,6 +59,9 @@ public class GameScreen implements Screen {
         }
 
         CollisionManager.handleCollisions(spritesToBeChecked, platformsToBeChecked);
+        if (hero.getPosY()+hero.getHeight()<-30){
+            hero.setPosX(100); hero.setPosY(100);
+        }
     }
 
 
@@ -75,15 +78,15 @@ public class GameScreen implements Screen {
 
         //Rendering
 
-        float deadzoneX = 300;
-        float leftBound = camera.position.x - camera.viewportWidth / 2 + deadzoneX;
-        float rightBound = camera.position.x + camera.viewportWidth / 2 - deadzoneX;
+        float bufferZone = 200;
+        float leftBound = camera.position.x - (camera.viewportWidth / 2) + bufferZone;
+        float rightBound = camera.position.x + (camera.viewportWidth / 2) - bufferZone;
         float targetX = camera.position.x;
 
         if (hero.getPosX() < leftBound) {
             targetX += hero.getPosX() - leftBound; // move camera left
-        } else if (hero.getPosX() > rightBound) {
-            targetX += hero.getPosX() - rightBound; // move camera right
+        } else if (hero.getPosX() + hero.getWidth() > rightBound) {
+            targetX += hero.getPosX() + hero.getWidth() - rightBound; // move camera right
         }
 
         float lerp = 0.1f;

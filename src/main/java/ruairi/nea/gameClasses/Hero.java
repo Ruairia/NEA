@@ -11,6 +11,7 @@ import static ruairi.nea.gameClasses.Direction.*;
 import static ruairi.nea.gameClasses.State.*;
 
 public class Hero extends Sprite {
+
     //Define Constant-like variables
     public static final float JUMPSTRENGTH = 400;
     public static final float JUMPTIME = 0.3f;
@@ -36,11 +37,8 @@ public class Hero extends Sprite {
 
     public void update(float delta){
         super.update(delta);
-        ArrayList<String> inputs = new ArrayList<>();
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) inputs.add("W");
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) inputs.add("A");
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) inputs.add("D");
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) inputs.add("SHIFT");
+
+        ArrayList<String> inputs = handleInputs();
 
         move(inputs);
         setTexture(
@@ -53,6 +51,17 @@ public class Hero extends Sprite {
                 }
         );
 
+    }
+
+    private static ArrayList<String> handleInputs() {
+
+
+        ArrayList<String> inputs = new ArrayList<>();
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) inputs.add("UP");
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) inputs.add("LEFT");
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) inputs.add("RIGHT");
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) inputs.add("ATTACK");
+        return inputs;
     }
 
     public Texture walkFrameSwitcher(){

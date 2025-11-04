@@ -1,11 +1,14 @@
 package ruairi.nea.gameClasses;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
+import ruairi.nea.applicationClasses.LevelSelectScreen;
 import ruairi.nea.applicationClasses.Main;
 
+import java.security.Key;
 import java.util.ArrayList;
 
 public class GameScreen implements Screen {
@@ -61,6 +64,10 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {//Game Loop, runs once a frame
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            camera.position.set(camera.viewportWidth/2,camera.viewportHeight/2,0);
+            game.setScreen(new LevelSelectScreen(game));
+        }
         ScreenUtils.clear(0.05f, 0.1f, 0.07f, 1); //Draw background
 
         perFrameLogic(delta);

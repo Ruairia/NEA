@@ -4,7 +4,7 @@ plugins {
     id("application")
 }
 
-group = "org.example"
+group = "ruairi.nea"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -12,12 +12,16 @@ repositories {
 }
 
 val gdxVersion = "1.13.5"
-
+val gdxControllersVersion = "2.2.4"
 
 dependencies {
     implementation("com.badlogicgames.gdx:gdx:$gdxVersion")
     implementation("com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion")
     runtimeOnly("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
+
+
+    implementation("com.badlogicgames.gdx-controllers:gdx-controllers-desktop:${gdxControllersVersion}")
+
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

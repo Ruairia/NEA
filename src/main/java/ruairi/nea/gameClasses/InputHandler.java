@@ -33,7 +33,7 @@ public class InputHandler {
         if (checkMoveRight()) inputs.add("RIGHT");
         if (isAttackPressed()) inputs.add("ATTACK");
 
-
+        if (horizontalAxisStrength==null) horizontalAxisStrength=1f;
 
         return inputs;
     }
@@ -48,7 +48,7 @@ public class InputHandler {
         if (Gdx.input.isKeyPressed(Input.Keys.A)) return true;
 
         if (gamepad != null) {
-            float leftStickX = gamepad.getAxis(1);
+            float leftStickX = gamepad.getAxis(0);
             if (leftStickX < -DEADZONE) {
                 horizontalAxisStrength = abs(leftStickX);
                 return true;
@@ -61,7 +61,7 @@ public class InputHandler {
     private boolean checkMoveRight() {
         if (Gdx.input.isKeyPressed(Input.Keys.D)) return true;
         if (gamepad != null) {
-            float leftStickX = gamepad.getAxis(1);
+            float leftStickX = gamepad.getAxis(0);
             if (leftStickX > DEADZONE) {
                 horizontalAxisStrength = abs(leftStickX);
                 return true;

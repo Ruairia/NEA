@@ -3,12 +3,12 @@ package ruairi.nea.gameClasses;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 import ruairi.nea.applicationClasses.LevelSelectScreen;
 import ruairi.nea.applicationClasses.Main;
 
-import java.security.Key;
 import java.util.ArrayList;
 
 public class GameScreen implements Screen {
@@ -30,11 +30,9 @@ public class GameScreen implements Screen {
     public void show() { //Run Once when the screen is shown
         hero = new Hero(100, 100, 80, 80);
 
-        for (int i = 0; i < 5; i++) {
-            createPlatform(256*i,0, PlatformType.GRASS);
-        }
-
-
+        LevelLoader levelLoader = new LevelLoader(this);
+        levelLoader.loadLevel(1);
+        levelLoader=null;
 
         visibleSprites.add(hero);
 
@@ -44,11 +42,11 @@ public class GameScreen implements Screen {
 
     }
 
-    private void createPlatform(float x, float y, PlatformType type) {
+    public void createPlatform(float x, float y, PlatformType type) {
         visibleSprites.add(new Platform(x, y, type));
     }
 
-    public void perFrameLogic(float delta){
+    private void perFrameLogic(float delta){
         updatePositions(delta); //Move hero and sprites
 
         ArrayList<Sprite> spritesToBeChecked = new ArrayList<>();
@@ -71,7 +69,7 @@ public class GameScreen implements Screen {
             camera.position.set(camera.viewportWidth/2,camera.viewportHeight/2,0);
             game.setScreen(new LevelSelectScreen(game));
         }
-        ScreenUtils.clear(0.05f, 0.1f, 0.07f, 1); //Draw background
+        ScreenUtils.clear(Color.OLIVE); //Draw background
 
         perFrameLogic(delta);
 

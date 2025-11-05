@@ -3,6 +3,7 @@ package ruairi.nea.applicationClasses;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.ScreenUtils;
 import ruairi.nea.gameClasses.GameScreen;
 
@@ -15,7 +16,7 @@ public class LevelSelectScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(0.2f, 0.1f, 0.1f, 1);
+        ScreenUtils.clear(Color.CHARTREUSE);
 
         float SCREENHEIGHT = Gdx.graphics.getHeight();
         float SCREENWIDTH = Gdx.graphics.getWidth();

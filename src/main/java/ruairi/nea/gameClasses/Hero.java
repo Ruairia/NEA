@@ -90,6 +90,7 @@ public class Hero extends Sprite {
         }
         if (input.contains("ATTACK")) setCurrentState(Attacking);
         if (!isOnGround) setCurrentState(InAir);
+        if (getCurrentState()==Attacking) velocityX/=5;
     }
 
 

@@ -3,6 +3,7 @@ package ruairi.nea.applicationClasses;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MainMenuScreen implements Screen{
@@ -14,7 +15,7 @@ public class MainMenuScreen implements Screen{
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(0.1f, 0.1f, 0.2f, 1);
+        ScreenUtils.clear(Color.FIREBRICK);
         float SCREENHEIGHT = Gdx.graphics.getHeight();
         float SCREENWIDTH = Gdx.graphics.getWidth();
         game.batch.begin();

@@ -3,6 +3,7 @@ package ruairi.nea.applicationClasses;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class SettingsScreen implements Screen {
@@ -14,7 +15,7 @@ public class SettingsScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(0.1f, 0.4f, 0.4f, 1);
+        ScreenUtils.clear(Color.CORAL);
 
         float SCREENHEIGHT = Gdx.graphics.getHeight();
         float SCREENWIDTH = Gdx.graphics.getWidth();
@@ -23,8 +24,7 @@ public class SettingsScreen implements Screen {
         game.font.draw(game.batch, "SETTINGS", SCREENWIDTH / 2 - 40, SCREENHEIGHT / 2 + 100);
         game.font.draw(game.batch, "Controls:", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2 + 50);
         game.font.draw(game.batch, "WASD - Move", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2);
-        game.font.draw(game.batch, "SHIFT - Sprint", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2 - 25);
-        game.font.draw(game.batch, "SPACE - Attack", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2 - 50);
+        game.font.draw(game.batch, "SHIFT - Attack", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2 - 25);
         game.font.draw(game.batch, "Press ESC to go back", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2 - 100);
         game.batch.end();
 

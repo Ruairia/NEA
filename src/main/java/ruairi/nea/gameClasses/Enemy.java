@@ -13,7 +13,7 @@
             velocityX = moveSpeed*deltaX/deltaDist;
             velocityY = moveSpeed*deltaY/deltaDist;
         }
-        public void goToPoint(float moveSpeed, float pointX){
+        public void goToPointX(float moveSpeed, float pointX){
             goToPoint(moveSpeed, pointX, posY);
         }
 

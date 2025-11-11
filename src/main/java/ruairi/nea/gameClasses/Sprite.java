@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.Texture;
 
 public abstract class Sprite {
     //Define Constant-like variables
-    public static final float MAXFALLSPEED = -700f; // Pixels per second
-    public static final float GRAVITY = 700f; //Pixels per second squared
+    public static final float MAXFALLSPEED = -900f; // Pixels per second
+    public static final float GRAVITY = 1200f; //Pixels per second squared
 
 
     private State CurrentState = State.Idle;

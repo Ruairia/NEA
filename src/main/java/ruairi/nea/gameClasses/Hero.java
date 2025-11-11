@@ -12,10 +12,10 @@ public class Hero extends Sprite {
     private InputHandler inputHandler = new InputHandler();
 
     //Define Constant-like variables
-    public static final float JUMPSTRENGTH = 400;
-    public static final float JUMPTIME = 0.3f;
-    public static final float MAXSPEED = 200;
-
+    public static final float JUMPSTRENGTH = 500;
+    public static final float JUMPTIME = 0.25f;
+    public static final float MAXSPEED = 250;
+    public static final int MAXHEALTH = 100;
 
     Texture idle = new Texture("assets/WizardIdle.png");
     Texture walking = new Texture("assets/WizardWalk.png");
@@ -29,7 +29,7 @@ public class Hero extends Sprite {
 
     public Hero(float posX, float posY, float width, float height) {
         super(posX, posY, width, height);
-        health=100;
+        health=MAXHEALTH;
         setTexture(idle);
         setVisibility(true);
     }

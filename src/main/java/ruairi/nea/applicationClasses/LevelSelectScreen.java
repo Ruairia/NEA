@@ -11,16 +11,22 @@ public class LevelSelectScreen implements Screen {
     private Main game;
 
     public LevelSelectScreen(Main game) {
+
         this.game = game;
     }
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(Color.CHARTREUSE);
-
         float SCREENHEIGHT = Gdx.graphics.getHeight();
         float SCREENWIDTH = Gdx.graphics.getWidth();
-        
+
+        game.batch.getProjectionMatrix().idt();
+        game.batch.getProjectionMatrix().setToOrtho2D(0, 0, SCREENWIDTH, SCREENHEIGHT);
+
+        ScreenUtils.clear(Color.CHARTREUSE);
+
+
+
         game.batch.begin();
         game.font.draw(game.batch, "LEVEL SELECT", SCREENWIDTH / 2 - 60, SCREENHEIGHT / 2 + 100);
         game.font.draw(game.batch, "Press 1-4 for Levels 1-4", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2 + 50);

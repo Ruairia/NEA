@@ -43,7 +43,7 @@ public class LevelLoader {
                     case "WIDEGRASS" -> PlatformType.WIDEGRASS;
                     default -> throw new IllegalArgumentException(typeName+" is not a valid type of platform");
                 };
-                gameScreen.createPlatform(posX, posY,type);
+                levelObjects.add(new Platform(posX, posY,type));
             }
 
 

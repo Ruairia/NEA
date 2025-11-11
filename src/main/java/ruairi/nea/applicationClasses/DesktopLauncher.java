@@ -10,6 +10,8 @@ public class DesktopLauncher {
         config.setForegroundFPS(60);
         config.setWindowedMode(800, 450);
         config.setTitle("2D Platformer");
+        config.setWindowIcon("assets/icon.png");
+        config.setResizable(false);
 
         new Lwjgl3Application(new Main(), config);
     }

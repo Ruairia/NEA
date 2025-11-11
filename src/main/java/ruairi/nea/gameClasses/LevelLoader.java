@@ -8,6 +8,10 @@ import java.util.ArrayList;
 public class LevelLoader {
 
     GameScreen gameScreen;
+    private float spawnPointX;
+    private float spawnPointY;
+
+
 
     public LevelLoader(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
@@ -18,23 +22,25 @@ public class LevelLoader {
 
         try{
 
-            String levelFile = switch (level) {
-                case 1 -> "assets/level1.csv";
-                case 2 -> "assets/level2.csv";
-                case 3 -> "assets/level3.csv";
-                case 4 -> "assets/level4.csv";
-                case 5 -> "assets/level5.csv";
+            String levelPlatformsFile = switch (level) {
+                case 1 -> "assets/level1Platforms.csv";
+                case 2 -> "assets/level2Platforms.csv";
+                case 3 -> "assets/level3Platforms.csv";
+                case 4 -> "assets/level4Platforms.csv";
+                case 5 -> "assets/level5Platforms.csv";
 
                 default -> throw new IllegalStateException("Unexpected value: " + level);
             };
 
-            BufferedReader reader = new BufferedReader(new FileReader(levelFile));
+            BufferedReader reader = new BufferedReader(new FileReader(levelPlatformsFile));
 
-            reader.readLine();
             String line;
-
+            line = reader.readLine();
+            String[] elements = line.split(",");
+            spawnPointX = Float.parseFloat(elements[0]);
+            spawnPointY = Float.parseFloat(elements[1]);
             while ((line = reader.readLine())!=null){
-                String[] elements = line.split(",");
+                elements = line.split(",");
                 float posX = Float.parseFloat(elements[0]);
                 float posY = Float.parseFloat(elements[1]);
                 String typeName = elements[2].strip().toUpperCase();
@@ -52,5 +58,13 @@ public class LevelLoader {
         }
 
         return levelObjects;
+    }
+
+    public float getSpawnPointX() {
+        return spawnPointX;
+    }
+
+    public float getSpawnPointY() {
+        return spawnPointY;
     }
 }

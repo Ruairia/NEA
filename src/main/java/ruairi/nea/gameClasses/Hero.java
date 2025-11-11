@@ -27,11 +27,21 @@ public class Hero extends Sprite {
     Weapon currentWeapon;
 
 
-    public Hero(float posX, float posY, float width, float height) {
-        super(posX, posY, width, height);
+
+    float spawnPointX = 100;
+    float spawnPointY = 100;
+
+    public Hero() {
+        super(0,0, 80, 80);
         health=MAXHEALTH;
         setTexture(idle);
         setVisibility(true);
+    }
+
+    public Hero spawn() {
+        setPosX(spawnPointX);
+        setPosY(spawnPointY);
+        return this;
     }
 
 
@@ -109,5 +119,15 @@ public class Hero extends Sprite {
 
     public void setCurrentWeapon(Weapon currentWeapon) {
         this.currentWeapon = currentWeapon;
+    }
+
+    public float[] getSpawnPoint() {
+        return new float[]{spawnPointX,spawnPointY};
+    }
+
+    public Hero setSpawnPoint(float posX, float posY) {
+        this.spawnPointX=posX;
+        this.spawnPointY=posY;
+        return this;
     }
 }

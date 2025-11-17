@@ -45,7 +45,7 @@ public class Hero extends Sprite {
     }
 
 
-    public void update(float delta){
+    public void update(double delta){
         super.update(delta);
 
         move();

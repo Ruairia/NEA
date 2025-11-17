@@ -47,8 +47,8 @@ public class GameScreen implements Screen {
         allSprites = levelLoader.loadLevel(level);
 
         hero = new Hero().setSpawnPoint(levelLoader.getSpawnPointX(), levelLoader.getSpawnPointY()).spawn();
-
         allSprites.add(hero);
+        allSprites.add(new Fireball(200,600));
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -68,7 +68,9 @@ public class GameScreen implements Screen {
         ArrayList<Platform> platformsToBeChecked = new ArrayList<>();
         for (Sprite sprite : allSprites){
             if (sprite instanceof Platform) platformsToBeChecked.add((Platform) sprite);
-            else spritesToBeChecked.add(sprite);
+            else {
+                spritesToBeChecked.add(sprite);
+            }
         }
 
         CollisionManager.handleCollisions(spritesToBeChecked, platformsToBeChecked);
@@ -87,7 +89,7 @@ public class GameScreen implements Screen {
             returnToMenu();
         }
 
-        ScreenUtils.clear(Color.OLIVE); //Draw background
+        ScreenUtils.clear(Color.DARK_GRAY); //Draw background
 
         perFrameLogic(delta);
 
@@ -113,11 +115,11 @@ public class GameScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
-        for (Sprite visibleSprite : allSprites) {
-            if (visibleSprite.getCurrentDirection() == Direction.RIGHT)
-                game.batch.draw(visibleSprite.getTexture(), visibleSprite.getPosX(), visibleSprite.getPosY(), visibleSprite.getWidth(), visibleSprite.getHeight());
+        for (Sprite sprite : allSprites) {
+            if (sprite.getCurrentDirection() == Direction.RIGHT)
+                game.batch.draw(sprite.getTexture(), sprite.getPosX(), sprite.getPosY(), sprite.getWidth(), sprite.getHeight());
             else
-                game.batch.draw(visibleSprite.getTexture(), visibleSprite.getPosX() + visibleSprite.getWidth(), visibleSprite.getPosY(), -visibleSprite.getWidth(), visibleSprite.getHeight());
+                game.batch.draw(sprite.getTexture(), sprite.getPosX() + sprite.getWidth(), sprite.getPosY(), -sprite.getWidth(), sprite.getHeight());
         }
         game.batch.end();
     }
@@ -162,9 +164,8 @@ public class GameScreen implements Screen {
     }
 
     private void updatePositions(float delta) {
-        hero.update(delta);
-        for (Sprite visibleSprite : allSprites) {
-            if (!(visibleSprite instanceof Hero)) visibleSprite.update(delta);
+        for (Sprite sprite : allSprites) {
+            sprite.update(delta);
         }
     }
 

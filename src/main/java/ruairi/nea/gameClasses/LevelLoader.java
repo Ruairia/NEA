@@ -17,8 +17,8 @@ public class LevelLoader {
         this.gameScreen = gameScreen;
     };
 
-    public ArrayList<Sprite> loadLevel(int level){
-        ArrayList<Sprite> levelObjects = new ArrayList<>();
+    public ArrayList<Entity> loadLevel(int level){
+        ArrayList<Entity> levelObjects = new ArrayList<>();
 
         try{
 

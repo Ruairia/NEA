@@ -14,21 +14,33 @@ import java.util.ArrayList;
 
 public class GameScreen implements Screen {
     private Main game;
+    private int level;
 
-    public ArrayList<Sprite> allSprites;
-    public ArrayList<Platform> platforms;
 
+    final float LERP_X = 0.2f;
+    final float LERP_Y = 0.1f;
+    final float CAMERA_BUFFER_X = 3f / 8f;
+    final float CAMERA_UPPER_BUFFER_Y = 1f / 6f;
+    final float CAMERA_LOWER_BUFFER_Y = 1f / 3f;
+    final int OUT_OF_WORLD_THRESHOLD = -30;
+    final float INVINCIBILITY_DURATION = 0.4f;
+
+    public ArrayList<Entity> allEntities;
+    public ArrayList<Platform> platforms = new ArrayList<>();;
+    ArrayList<Enemy> damagingEntities = new ArrayList<>();
+    ArrayList<Entity> mobileEntity = new ArrayList<>();
 
     public Hero hero;
+
+    //UI
     public HealthBar healthBar;
 
-
+    //Rendering
     private OrthographicCamera camera;
     private OrthographicCamera uiCamera;
     private ShapeRenderer shapeRenderer;
 
 
-    int level;
 
     public GameScreen(Main game, int level) {
         this.game = game;
@@ -44,11 +56,20 @@ public class GameScreen implements Screen {
         healthBar = new HealthBar(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 
         LevelLoader levelLoader = new LevelLoader(this);
-        allSprites = levelLoader.loadLevel(level);
+        allEntities = levelLoader.loadLevel(level);
 
         hero = new Hero().setSpawnPoint(levelLoader.getSpawnPointX(), levelLoader.getSpawnPointY()).spawn();
-        allSprites.add(hero);
-        allSprites.add(new Fireball(200,600));
+        allEntities.add(hero);
+        allEntities.add(new Fireball(200,600));
+
+        for (Entity entity : allEntities){
+            if (entity instanceof Platform) platforms.add((Platform) entity);
+            else {
+
+                if (entity instanceof Enemy) damagingEntities.add((Enemy) entity);
+                mobileEntity.add(entity);
+            }
+        }
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -62,23 +83,23 @@ public class GameScreen implements Screen {
 
 
     private void perFrameLogic(float delta){
-        updatePositions(delta); //Move hero and sprites
+        updatePositions(delta); //Move hero and entities
 
-        ArrayList<Sprite> spritesToBeChecked = new ArrayList<>();
-        ArrayList<Platform> platformsToBeChecked = new ArrayList<>();
-        for (Sprite sprite : allSprites){
-            if (sprite instanceof Platform) platformsToBeChecked.add((Platform) sprite);
-            else {
-                spritesToBeChecked.add(sprite);
-            }
-        }
 
-        CollisionManager.handleCollisions(spritesToBeChecked, platformsToBeChecked);
-        if (hero.getPosY()+hero.getHeight()<-30){
+
+
+
+        CollisionManager.handleCollisions(mobileEntity, platforms);
+
+        if (hero.getPosY()+hero.getHeight()< OUT_OF_WORLD_THRESHOLD){
             hero.spawn();
             hero.health-=10;
-            if (hero.getHealth()<=0) returnToMenu();
         }
+        for (Enemy enemy : damagingEntities){
+            if (hero.invincibilityPeriodLeft==0 && Entity.intersect(enemy,hero)) {
+                    hero.health-=10; hero.setInvincibilityPeriodLeft(INVINCIBILITY_DURATION);}
+        }
+        if (hero.getHealth()<=0) {hero.setHealth(100); hero.spawn();}
     }
 
 
@@ -95,10 +116,9 @@ public class GameScreen implements Screen {
 
 
         //Rendering
-        final float LINEARINTERPOLATIONX = 0.2f;
-        final float LINEARINTERPOLATIONY = 0.1f;
-        camera.position.x += (getTargetX() - camera.position.x) * LINEARINTERPOLATIONX;
-        camera.position.y += (getTargetY() - camera.position.y) * LINEARINTERPOLATIONY;
+
+        camera.position.x += (getTargetX() - camera.position.x) * LERP_X;
+        camera.position.y += (getTargetY() - camera.position.y) * LERP_Y;
         camera.update();
 
         drawLevel();
@@ -115,11 +135,11 @@ public class GameScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
-        for (Sprite sprite : allSprites) {
-            if (sprite.getCurrentDirection() == Direction.RIGHT)
-                game.batch.draw(sprite.getTexture(), sprite.getPosX(), sprite.getPosY(), sprite.getWidth(), sprite.getHeight());
+        for (Entity entity : allEntities) {
+            if (entity.getCurrentDirection() == Direction.RIGHT)
+                game.batch.draw(entity.getTexture(), entity.getPosX(), entity.getPosY(), entity.getWidth(), entity.getHeight());
             else
-                game.batch.draw(sprite.getTexture(), sprite.getPosX() + sprite.getWidth(), sprite.getPosY(), -sprite.getWidth(), sprite.getHeight());
+                game.batch.draw(entity.getTexture(), entity.getPosX() + entity.getWidth(), entity.getPosY(), -entity.getWidth(), entity.getHeight());
         }
         game.batch.end();
     }
@@ -134,7 +154,8 @@ public class GameScreen implements Screen {
     }
 
     private float getTargetX() {
-        float bufferZone = camera.viewportWidth*(3f/8f);
+
+        float bufferZone = camera.viewportWidth* CAMERA_BUFFER_X;
         float leftBound = camera.position.x - (camera.viewportWidth / 2) + bufferZone;
         float rightBound = camera.position.x + (camera.viewportWidth / 2) - bufferZone;
         float targetX = camera.position.x;
@@ -148,8 +169,9 @@ public class GameScreen implements Screen {
     }
 
     private float getTargetY(){
-        float upperBufferZone = camera.viewportHeight/6;
-        float lowerBufferZone = camera.viewportHeight/3;
+
+        float upperBufferZone = camera.viewportHeight* CAMERA_UPPER_BUFFER_Y;
+        float lowerBufferZone = camera.viewportHeight* CAMERA_LOWER_BUFFER_Y;
         float lowerBound = camera.position.y - (camera.viewportHeight / 2) + lowerBufferZone;
         float upperBound = camera.position.y + (camera.viewportHeight / 2) - upperBufferZone;
         float targetY = camera.position.y;
@@ -163,9 +185,10 @@ public class GameScreen implements Screen {
         return targetY;
     }
 
+
     private void updatePositions(float delta) {
-        for (Sprite sprite : allSprites) {
-            sprite.update(delta);
+        for (Entity entity : allEntities) {
+            entity.update(delta);
         }
     }
 
@@ -199,8 +222,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        for (Sprite visibleSprite : allSprites) {
-            visibleSprite.getTexture().dispose();
+        for (Entity visibleEntity : allEntities) {
+            visibleEntity.getTexture().dispose();
         }
     }
 }

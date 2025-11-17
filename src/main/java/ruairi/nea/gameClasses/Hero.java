@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import static ruairi.nea.gameClasses.Direction.*;
 import static ruairi.nea.gameClasses.State.*;
 
-public class Hero extends Sprite {
+public class Hero extends Entity {
     private InputHandler inputHandler = new InputHandler();
 
     //Define Constant-like variables
@@ -23,6 +23,10 @@ public class Hero extends Sprite {
     Texture attack = new Texture("assets/WizardAttack.png");
 
     int health;
+
+    float invincibilityPeriodLeft = 0;
+
+
 
     Weapon currentWeapon;
 
@@ -47,6 +51,9 @@ public class Hero extends Sprite {
 
     public void update(double delta){
         super.update(delta);
+
+        if (invincibilityPeriodLeft>0) invincibilityPeriodLeft-=delta;
+        else invincibilityPeriodLeft=0;
 
         move();
 
@@ -129,5 +136,13 @@ public class Hero extends Sprite {
         this.spawnPointX=posX;
         this.spawnPointY=posY;
         return this;
+    }
+
+    public float getInvincibilityPeriodLeft() {
+        return invincibilityPeriodLeft;
+    }
+
+    public void setInvincibilityPeriodLeft(float invincibilityPeriodLeft) {
+        this.invincibilityPeriodLeft = invincibilityPeriodLeft;
     }
 }

@@ -1,6 +1,6 @@
 package ruairi.nea.gameClasses;
 
-public class Coin extends Sprite {
+public class Coin extends Entity {
     static float COINWIDTH = 10;
     static float COINHEIGHT = 10;
 

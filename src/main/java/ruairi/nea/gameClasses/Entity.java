@@ -4,7 +4,7 @@ package ruairi.nea.gameClasses;
 import com.badlogic.gdx.graphics.Texture;
 
 
-public abstract class Sprite {
+public abstract class Entity {
     //Define Constant-like variables
     public static final float MAXFALLSPEED = -900f; // Pixels per second
     public static final float GRAVITY = 1200f; //Pixels per second squared
@@ -29,7 +29,7 @@ public abstract class Sprite {
     boolean fixed;
 
 
-    public Sprite(float posX, float posY, float width, float height){
+    public Entity(float posX, float posY, float width, float height){
         this.posX=posX;
         this.posY=posY;
         this.width=width;
@@ -67,7 +67,7 @@ public abstract class Sprite {
     }
 
 
-    public static boolean intersect(Sprite first, Sprite second){
+    public static boolean intersect(Entity first, Entity second){
         return
                         first.posX < second.posX + second.width
                         &&

@@ -2,7 +2,7 @@ package ruairi.nea.gameClasses;
 
 import com.badlogic.gdx.graphics.Texture;
 
-public class Platform extends Sprite{
+public class Platform extends Entity {
     public Platform(float posX, float posY, PlatformType type){
         super(posX, posY, 0,0);
         fixed = true;

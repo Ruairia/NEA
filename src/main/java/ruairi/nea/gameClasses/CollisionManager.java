@@ -7,7 +7,7 @@ public class CollisionManager {
         for (Entity entity : spritesToBeChecked) {
             boolean hasCollided = false;
             for (Platform platform : platformsToBeChecked) {
-                if (Entity.intersect(entity,platform)){
+                if (entity.intersect(platform)){
                     resolveCollision(entity, platform, entity.getOldX(), entity.getOldY());
                     hasCollided=true;
                 }

@@ -5,9 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 
 import java.util.ArrayList;
 
-import static ruairi.nea.gameClasses.Direction.*;
-import static ruairi.nea.gameClasses.State.*;
-
 public class Hero extends Entity {
     private InputHandler inputHandler = new InputHandler();
 
@@ -16,6 +13,15 @@ public class Hero extends Entity {
     public static final float JUMPTIME = 0.25f;
     public static final float MAXSPEED = 250;
     public static final int MAXHEALTH = 100;
+
+    public enum State {
+        IDLE,
+        WALKING,
+        IN_AIR,
+        ATTACKING
+    }
+
+    private State currentState = State.IDLE;
 
     Texture idle = new Texture("assets/WizardIdle.png");
     Texture walking = new Texture("assets/WizardWalk.png");
@@ -58,11 +64,11 @@ public class Hero extends Entity {
         move();
 
         setTexture(
-                switch (getCurrentState()){
-            case Idle -> idle;
-            case InAir -> inAir;
-            case Attacking -> attack;
-            case Walking -> walkFrameSwitcher();
+                switch (currentState){
+            case IDLE -> idle;
+            case IN_AIR -> inAir;
+            case ATTACKING -> attack;
+            case WALKING -> walkFrameSwitcher();
 
                 }
         );
@@ -91,26 +97,37 @@ public class Hero extends Entity {
 
         if (input.contains("LEFT") && !input.contains("RIGHT")){
             velocityX= - MAXSPEED*inputHandler.horizontalAxisStrength;
-            if (isOnGround) setCurrentState(Walking, LEFT);
+            if (isOnGround) setCurrentState(State.WALKING, Direction.LEFT);
         }
         else if (input.contains("RIGHT") && !input.contains("LEFT")){
             velocityX= MAXSPEED*inputHandler.horizontalAxisStrength;
-            if (isOnGround) setCurrentState(Walking, RIGHT);
+            if (isOnGround) setCurrentState(State.WALKING, Direction.RIGHT);
         }
         else {
-            if (isOnGround) setCurrentState(Idle);
-            else setCurrentState(InAir);
+            if (isOnGround) setCurrentState(State.IDLE);
+            else setCurrentState(State.IN_AIR);
             velocityX=0;
         }
         if (input.contains("JUMP")){
             jump();
         }
-        if (input.contains("ATTACK")) setCurrentState(Attacking);
-        if (!isOnGround) setCurrentState(InAir);
-        if (getCurrentState()==Attacking) velocityX/=5;
+        if (input.contains("ATTACK")) setCurrentState(State.ATTACKING);
+        if (!isOnGround) setCurrentState(State.IN_AIR);
+        if (getCurrentState()==State.ATTACKING) velocityX/=5;
     }
 
+    public void setCurrentState(State currentState, Direction direction) {
+        this.currentState = currentState;
+        setCurrentDirection(direction);
+    }
 
+    public State getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(State currentState){
+        this.currentState = currentState;
+    }
 
     public int getHealth() {
         return health;

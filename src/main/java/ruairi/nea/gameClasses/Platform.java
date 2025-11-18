@@ -3,9 +3,16 @@ package ruairi.nea.gameClasses;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Platform extends Entity {
+
+    public enum PlatformType {
+        GRASS,
+        WIDEGRASS
+    }
+
+
     public Platform(float posX, float posY, PlatformType type){
         super(posX, posY, 0,0);
-        fixed = true;
+        isAffectedByGravity = false;
         switch (type){
             case GRASS -> {
                 width = 256;

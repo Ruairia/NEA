@@ -44,9 +44,9 @@ public class LevelLoader {
                 float posX = Float.parseFloat(elements[0]);
                 float posY = Float.parseFloat(elements[1]);
                 String typeName = elements[2].strip().toUpperCase();
-                PlatformType type = switch (typeName){
-                    case "GRASS" -> PlatformType.GRASS;
-                    case "WIDEGRASS" -> PlatformType.WIDEGRASS;
+                Platform.PlatformType type = switch (typeName){
+                    case "GRASS" -> Platform.PlatformType.GRASS;
+                    case "WIDEGRASS" -> Platform.PlatformType.WIDEGRASS;
                     default -> throw new IllegalArgumentException(typeName+" is not a valid type of platform");
                 };
                 levelObjects.add(new Platform(posX, posY,type));

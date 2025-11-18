@@ -23,7 +23,8 @@ public class GameScreen implements Screen {
     final float CAMERA_UPPER_BUFFER_Y = 1f / 6f;
     final float CAMERA_LOWER_BUFFER_Y = 1f / 3f;
     final int OUT_OF_WORLD_THRESHOLD = -30;
-    final float INVINCIBILITY_DURATION = 0.4f;
+    final int OUT_OF_WORLD_THRESHOLD_DAMAGE = 10;
+    final float INVINCIBILITY_DURATION = 0.6f;
 
     public ArrayList<Entity> allEntities;
     public ArrayList<Platform> platforms = new ArrayList<>();;
@@ -60,7 +61,7 @@ public class GameScreen implements Screen {
 
         hero = new Hero().setSpawnPoint(levelLoader.getSpawnPointX(), levelLoader.getSpawnPointY()).spawn();
         allEntities.add(hero);
-        allEntities.add(new Fireball(200,600));
+        allEntities.add(new Fireball(200,100, 0,300));
 
         for (Entity entity : allEntities){
             if (entity instanceof Platform) platforms.add((Platform) entity);
@@ -85,19 +86,15 @@ public class GameScreen implements Screen {
     private void perFrameLogic(float delta){
         updatePositions(delta); //Move hero and entities
 
-
-
-
-
         CollisionManager.handleCollisions(mobileEntity, platforms);
 
         if (hero.getPosY()+hero.getHeight()< OUT_OF_WORLD_THRESHOLD){
             hero.spawn();
-            hero.health-=10;
+            hero.health-=OUT_OF_WORLD_THRESHOLD_DAMAGE;
         }
         for (Enemy enemy : damagingEntities){
-            if (hero.invincibilityPeriodLeft==0 && Entity.intersect(enemy,hero)) {
-                    hero.health-=10; hero.setInvincibilityPeriodLeft(INVINCIBILITY_DURATION);}
+            if (hero.invincibilityPeriodLeft==0 && enemy.intersectsHero(hero)) {
+                    hero.health-=enemy.damage; hero.setInvincibilityPeriodLeft(INVINCIBILITY_DURATION);}
         }
         if (hero.getHealth()<=0) {hero.setHealth(100); hero.spawn();}
     }
@@ -136,7 +133,7 @@ public class GameScreen implements Screen {
         game.batch.begin();
 
         for (Entity entity : allEntities) {
-            if (entity.getCurrentDirection() == Direction.RIGHT)
+            if (entity.getCurrentDirection() == Entity.Direction.RIGHT)
                 game.batch.draw(entity.getTexture(), entity.getPosX(), entity.getPosY(), entity.getWidth(), entity.getHeight());
             else
                 game.batch.draw(entity.getTexture(), entity.getPosX() + entity.getWidth(), entity.getPosY(), -entity.getWidth(), entity.getHeight());
@@ -191,20 +188,6 @@ public class GameScreen implements Screen {
             entity.update(delta);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

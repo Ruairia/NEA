@@ -9,14 +9,19 @@ public abstract class Entity {
     public static final float MAXFALLSPEED = -900f; // Pixels per second
     public static final float GRAVITY = 1200f; //Pixels per second squared
 
+    public enum Direction {
+        LEFT,
+        RIGHT
+    }
 
-    private State CurrentState = State.Idle;
+
     private Direction currentDirection = Direction.RIGHT;
     private Texture texture;
 
 
     float lastOnGround=0;
     boolean isOnGround;
+    boolean isAffectedByGravity=true;
 
 
     float posX, posY;
@@ -26,7 +31,6 @@ public abstract class Entity {
     float width =0;
     float height =0;
     boolean visibility;
-    boolean fixed;
 
 
     public Entity(float posX, float posY, float width, float height){
@@ -43,7 +47,7 @@ public abstract class Entity {
         oldX = posX;
         oldY = posY;
 
-        if  (!fixed) velocityY -= (float) (GRAVITY*delta);
+        if  (isAffectedByGravity) velocityY -= (float) (GRAVITY*delta);
 
         posX += (float) (velocityX * delta);
         posY += (float) (velocityY * delta);
@@ -67,15 +71,15 @@ public abstract class Entity {
     }
 
 
-    public static boolean intersect(Entity first, Entity second){
+    public  boolean intersect(Entity other){
         return
-                        first.posX < second.posX + second.width
+                        this.posX < other.posX + other.width
                         &&
-                        first.posX + first.width > second.posX
+                        this.posX + this.width > other.posX
                         &&
-                        first.posY < second.posY + second.height
+                        this.posY < other.posY + other.height
                         &&
-                        first.posY + first.height > second.posY;
+                        this.posY + this.height > other.posY;
     }
 
 
@@ -86,10 +90,7 @@ public abstract class Entity {
 
 
 
-    public void setCurrentState(State currentState, Direction direction) {
-        CurrentState = currentState;
-        currentDirection = direction;
-    }
+
 
 
     public String toString(){
@@ -120,9 +121,7 @@ public abstract class Entity {
         return oldY;
     }
 
-    public void setCurrentState(State currentState){
-        CurrentState = currentState;
-    }
+
 
     public float getPosX() {
         return posX;
@@ -156,9 +155,7 @@ public abstract class Entity {
         this.velocityY = velocityY;
     }
 
-    public State getCurrentState() {
-        return CurrentState;
-    }
+
 
     public boolean isVisible() {
         return visibility;

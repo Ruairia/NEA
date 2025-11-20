@@ -22,9 +22,9 @@ public class Background {
     }
 
     public void drawBackground(Camera camera, Main game){
-        drawLayer(camera, game, backgroundFar, 0.1f);
-        drawLayer(camera, game, backgroundMid, 0.2f);
-        drawLayer(camera, game, backgroundNear, 0.3f);
+        drawLayer(camera, game, backgroundFar, 0.05f);
+        drawLayer(camera, game, backgroundMid, 0.1f);
+        drawLayer(camera, game, backgroundNear, 0.2f);
     }
 
     private void drawLayer(Camera camera, Main game, Texture texture, float parallaxCoefficient) {

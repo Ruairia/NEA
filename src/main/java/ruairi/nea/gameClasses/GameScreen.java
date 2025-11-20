@@ -3,10 +3,8 @@ package ruairi.nea.gameClasses;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.ScreenUtils;
 import ruairi.nea.applicationClasses.LevelSelectScreen;
 import ruairi.nea.applicationClasses.Main;
 
@@ -16,6 +14,9 @@ public class GameScreen implements Screen {
     private Main game;
     private int level;
 
+    //UI&Background
+    public HealthBar healthBar;
+    public Background background;
 
     final float LERP_X = 0.2f;
     final float LERP_Y = 0.1f;
@@ -26,15 +27,16 @@ public class GameScreen implements Screen {
     final int OUT_OF_WORLD_THRESHOLD_DAMAGE = 10;
     final float INVINCIBILITY_DURATION = 0.6f;
 
+
     public ArrayList<Entity> allEntities;
     public ArrayList<Platform> platforms = new ArrayList<>();;
     ArrayList<Enemy> damagingEntities = new ArrayList<>();
-    ArrayList<Entity> mobileEntity = new ArrayList<>();
+    ArrayList<Entity> mobileEntities = new ArrayList<>();
 
     public Hero hero;
 
-    //UI
-    public HealthBar healthBar;
+
+
 
     //Rendering
     private OrthographicCamera camera;
@@ -52,23 +54,21 @@ public class GameScreen implements Screen {
     public void show() { //Run Once when the screen is shown
         shapeRenderer = new ShapeRenderer();
 
-
-
+        background=new Background(level);
         healthBar = new HealthBar(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 
         LevelLoader levelLoader = new LevelLoader(this);
         allEntities = levelLoader.loadLevel(level);
-
-        hero = new Hero().setSpawnPoint(levelLoader.getSpawnPointX(), levelLoader.getSpawnPointY()).spawn();
-        allEntities.add(hero);
+        allEntities.add(hero = new Hero().setSpawnPoint(levelLoader.getSpawnPointX(), levelLoader.getSpawnPointY()).spawn());
         allEntities.add(new Fireball(200,100, 0,300));
+
 
         for (Entity entity : allEntities){
             if (entity instanceof Platform) platforms.add((Platform) entity);
             else {
 
                 if (entity instanceof Enemy) damagingEntities.add((Enemy) entity);
-                mobileEntity.add(entity);
+                mobileEntities.add(entity);
             }
         }
 
@@ -86,7 +86,7 @@ public class GameScreen implements Screen {
     private void perFrameLogic(float delta){
         updatePositions(delta); //Move hero and entities
 
-        CollisionManager.handleCollisions(mobileEntity, platforms);
+        CollisionManager.handleCollisions(mobileEntities, platforms);
 
         if (hero.getPosY()+hero.getHeight()< OUT_OF_WORLD_THRESHOLD){
             hero.spawn();
@@ -107,7 +107,6 @@ public class GameScreen implements Screen {
             returnToMenu();
         }
 
-        ScreenUtils.clear(Color.DARK_GRAY); //Draw background
 
         perFrameLogic(delta);
 
@@ -119,7 +118,6 @@ public class GameScreen implements Screen {
         camera.update();
 
         drawLevel();
-
         drawUI();
 
     }
@@ -128,15 +126,19 @@ public class GameScreen implements Screen {
         game.setScreen(new LevelSelectScreen(game));
     }
 
+
+
     private void drawLevel() {
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
+        background.drawBackground(camera,game);
+
         for (Entity entity : allEntities) {
             if (entity.getCurrentDirection() == Entity.Direction.RIGHT)
-                game.batch.draw(entity.getTexture(), entity.getPosX(), entity.getPosY(), entity.getWidth(), entity.getHeight());
+                game.batch.draw(entity.getCurrentFrame(), entity.getPosX(), entity.getPosY(), entity.getWidth(), entity.getHeight());
             else
-                game.batch.draw(entity.getTexture(), entity.getPosX() + entity.getWidth(), entity.getPosY(), -entity.getWidth(), entity.getHeight());
+                game.batch.draw(entity.getCurrentFrame(), entity.getPosX() + entity.getWidth(), entity.getPosY(), -entity.getWidth(), entity.getHeight());
         }
         game.batch.end();
     }
@@ -206,7 +208,9 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         for (Entity visibleEntity : allEntities) {
-            visibleEntity.getTexture().dispose();
+            visibleEntity.getCurrentFrame().getTexture().dispose();
         }
+        shapeRenderer.dispose();
+        background.dispose();
     }
 }

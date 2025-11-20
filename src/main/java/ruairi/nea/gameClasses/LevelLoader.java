@@ -35,21 +35,14 @@ public class LevelLoader {
             BufferedReader reader = new BufferedReader(new FileReader(levelPlatformsFile));
 
             String line;
-            line = reader.readLine();
-            String[] elements = line.split(",");
-            spawnPointX = Float.parseFloat(elements[0]);
-            spawnPointY = Float.parseFloat(elements[1]);
+            String[] elements;
+
             while ((line = reader.readLine())!=null){
                 elements = line.split(",");
-                float posX = Float.parseFloat(elements[0]);
-                float posY = Float.parseFloat(elements[1]);
-                String typeName = elements[2].strip().toUpperCase();
-                Platform.PlatformType type = switch (typeName){
-                    case "GRASS" -> Platform.PlatformType.GRASS;
-                    case "WIDEGRASS" -> Platform.PlatformType.WIDEGRASS;
-                    default -> throw new IllegalArgumentException(typeName+" is not a valid type of platform");
-                };
-                levelObjects.add(new Platform(posX, posY,type));
+                switch (elements[0]){
+                    case "SPAWNPOINT" -> loadSpawnPoint(elements);
+                    case "PLATFORM" -> loadPlatform(elements, levelObjects);
+                }
             }
 
 
@@ -58,6 +51,23 @@ public class LevelLoader {
         }
 
         return levelObjects;
+    }
+
+    private void loadSpawnPoint(String[] elements){
+        spawnPointX = Float.parseFloat(elements[1]);
+        spawnPointY = Float.parseFloat(elements[2]);
+    }
+
+    private static void loadPlatform(String[] elements, ArrayList<Entity> levelObjects) {
+        float posX = Float.parseFloat(elements[1]);
+        float posY = Float.parseFloat(elements[2]);
+        String typeName = elements[3].strip().toUpperCase();
+        Platform.PlatformType type = switch (typeName){
+            case "GRASS" -> Platform.PlatformType.GRASS;
+            case "WIDEGRASS" -> Platform.PlatformType.WIDEGRASS;
+            default -> throw new IllegalArgumentException(typeName+" is not a valid type of platform");
+        };
+        levelObjects.add(new Platform(posX, posY,type));
     }
 
     public float getSpawnPointX() {

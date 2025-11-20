@@ -1,14 +1,18 @@
 package ruairi.nea.gameClasses;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Fireball extends Enemy{
-    float SPEED = 100;
-    int DAMAGE = 30;
-    float INTERSECT_TOLERANCE = 20;
+    final float SPEED = 100;
+    final int DAMAGE = 30;
+    final float INTERSECT_TOLERANCE = 20;
 
-    Texture frameOne;
-    Texture frameTwo;
+
+    Animation<TextureRegion> animation;
+    float stateTime = 0;
+
 
     float leftBound;
     float rightBound;
@@ -16,9 +20,19 @@ public class Fireball extends Enemy{
 
     public Fireball(float posX, float posY, float leftBound, float rightBound) {
         super(posX, posY, 0, 0, 80, 100);
-        frameOne = new Texture("assets/fireballFrame1.png");
-        frameTwo = new Texture("assets/fireballFrame2.png");
-        setTexture(frameOne);
+
+        Texture spriteSheet = new Texture("assets/FireballSpriteSheet.png");
+
+        int frameWidth = 16;
+        int frameHeight = 20;
+
+        TextureRegion[] frames = new TextureRegion[2];
+        frames[0] = new TextureRegion(spriteSheet, 0, 0, frameWidth, frameHeight);
+        frames[1] = new TextureRegion(spriteSheet, frameWidth, 0, frameWidth, frameHeight);
+
+        animation = new Animation<>(0.3f, frames);
+        animation.setPlayMode(Animation.PlayMode.LOOP);
+
         this.leftBound = leftBound;
         this.rightBound = rightBound;
         velocityX = SPEED;
@@ -29,11 +43,14 @@ public class Fireball extends Enemy{
     @Override
     public void update(double delta){
         super.update(delta);
-        float frameDuration = 0.3f; // Seconds
-        if (((double) System.currentTimeMillis() /1000) % (frameDuration*2)> frameDuration) setTexture(frameOne);
-        else setTexture(frameTwo);
+        stateTime += (float) delta;
         if (posX <= leftBound) velocityX = SPEED;
         else if (posX >= rightBound) velocityX = -SPEED;
+    }
+
+    @Override
+    public TextureRegion getCurrentFrame() {
+        return animation.getKeyFrame(stateTime);
     }
 
 

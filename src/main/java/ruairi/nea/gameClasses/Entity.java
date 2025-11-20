@@ -1,7 +1,7 @@
 package ruairi.nea.gameClasses;
 
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 
 public abstract class Entity {
@@ -16,7 +16,7 @@ public abstract class Entity {
 
 
     private Direction currentDirection = Direction.RIGHT;
-    private Texture texture;
+    private TextureRegion textureRegion;
 
 
     float lastOnGround=0;
@@ -165,12 +165,12 @@ public abstract class Entity {
         this.visibility = visibility;
     }
 
-    public Texture getTexture() {
-        return texture;
+    public TextureRegion getCurrentFrame() {
+        return textureRegion;
     }
 
-    public void setTexture(Texture texture) {
-        this.texture = texture;
+    public void setTextureRegion(TextureRegion textureRegion) {
+        this.textureRegion = textureRegion;
     }
 
 

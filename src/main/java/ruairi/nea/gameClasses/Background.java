@@ -23,15 +23,15 @@ public class Background {
 
     public void drawBackground(Camera camera, Main game){
         drawLayer(camera, game, backgroundFar, 0.1f);
-        drawLayer(camera, game, backgroundMid, 0.3f);
-        drawLayer(camera, game, backgroundNear, 0.5f);
+        drawLayer(camera, game, backgroundMid, 0.2f);
+        drawLayer(camera, game, backgroundNear, 0.3f);
     }
 
     private void drawLayer(Camera camera, Main game, Texture texture, float parallaxCoefficient) {
         float parallaxOffsetX = camera.position.x * parallaxCoefficient;
-        float parllaxOffsetY = camera.position.y * parallaxCoefficient;
+        float parallaxOffsetY = camera.position.y * parallaxCoefficient;
 
-        float drawY = camera.position.y - camera.viewportHeight/2 - parllaxOffsetY;
+        float drawY = camera.position.y - camera.viewportHeight/2 - parallaxOffsetY;
         float drawHeight = camera.viewportHeight * BACKGROUND_STRETCH_Y;
 
         int textureWidth = (int) (texture.getWidth()* BACKGROUND_STRETCH_X);
@@ -40,7 +40,7 @@ public class Background {
         float baseX = camera.position.x - camera.viewportWidth/2 - parallaxOffsetX;
 
 
-        float x = baseX - absMod(baseX, textureWidth);
+        float x = baseX - absMod(parallaxOffsetX, textureWidth);
 
         while (x < camera.position.x + camera.viewportWidth/2) {
             game.batch.draw(texture, x, drawY, textureWidth, drawHeight);

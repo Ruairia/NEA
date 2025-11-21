@@ -8,6 +8,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static ruairi.nea.gameClasses.GameScreen.ZOOM;
+
 public class Level {
 
     public ArrayList<Entity> allEntities;
@@ -39,12 +41,12 @@ public class Level {
 
             while ((line = levelReader.readLine()) != null) {
                 elements = line.split(",");
-                allEntities.add(switch (elements[0]) {
+                switch (elements[0]) {
                     case "SPAWNPOINT" -> loadHero(elements);
                     case "PLATFORM" -> loadPlatform(elements);
                     case "ENEMY" -> loadEnemy(elements);
                     default -> throw new IllegalStateException("Unexpected value: " + elements[0]);
-                });
+                }
             }
 
 
@@ -67,7 +69,7 @@ public class Level {
         return new BufferedReader(new FileReader(levelPlatformsFile));
     }
 
-    private Enemy loadEnemy(String[] elements){
+    private void loadEnemy(String[] elements){
         float posX = Float.parseFloat(elements[1]);
         float posY = Float.parseFloat(elements[2]);
         Enemy enemy;
@@ -76,27 +78,37 @@ public class Level {
             default -> throw new IllegalArgumentException(elements[3]);
         }
         damagingEntities.add(enemy);
-        return enemy;
+        allEntities.add(enemy);
     }
 
-    private Hero loadHero(String[] elements){
+    private void loadHero(String[] elements){
         hero = new Hero().setSpawnPoint(Float.parseFloat(elements[1]), Float.parseFloat(elements[2]));
         mobileEntities.add(hero);
-        return hero;
+        allEntities.add(hero);
     }
 
-    private Platform loadPlatform(String[] elements) {
+    private void loadPlatform(String[] elements) {
         float posX = Float.parseFloat(elements[1]);
         float posY = Float.parseFloat(elements[2]);
         String typeName = elements[3].strip().toUpperCase();
-        Platform.PlatformType type = switch (typeName){
-            case "GRASS" -> Platform.PlatformType.GRASS;
-            case "WIDEGRASS" -> Platform.PlatformType.WIDEGRASS;
+        switch (typeName){
+            case "NARROW" -> {
+                loadPlatform(posX,posY, Platform.PlatformType.leftPlatform);
+                loadPlatform(posX+Platform.tileWidth* ZOOM,posY, Platform.PlatformType.rightPlatform);
+            }
+            case "WIDE" -> {
+                loadPlatform(posX,posY, Platform.PlatformType.leftPlatform);
+                loadPlatform(posX+Platform.tileWidth* ZOOM,posY, Platform.PlatformType.midPlatform);
+                loadPlatform(posX+Platform.tileWidth* ZOOM *2,posY, Platform.PlatformType.rightPlatform);
+            }
             default -> throw new IllegalArgumentException(typeName+" is not a valid type of platform");
-        };
-        Platform platform = new Platform(posX, posY,type);
+        }
+    }
+
+    private void loadPlatform(float posX, float posY, Platform.PlatformType type){
+        Platform platform = new Platform(posX,posY,type);
         platforms.add(platform);
-        return platform;
+        allEntities.add(platform);
     }
 
 

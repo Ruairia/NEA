@@ -4,10 +4,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import static ruairi.nea.gameClasses.GameScreen.ZOOM;
+
 public class Fireball extends Enemy{
     final float SPEED = 100;
     final int DAMAGE = 30;
-    final float INTERSECT_TOLERANCE = 20;
+    final float INTERSECT_TOLERANCE = 10;
 
     Texture spriteSheet;
     Animation<TextureRegion> animation;
@@ -19,7 +21,7 @@ public class Fireball extends Enemy{
 
 
     public Fireball(float posX, float posY, float leftBound, float rightBound) {
-        super(posX, posY, 0, 0, 80, 100);
+        super(posX, posY, 0, 0, 16* ZOOM, 20* ZOOM);
 
         spriteSheet = new Texture("assets/FireballSpriteSheet.png");
 

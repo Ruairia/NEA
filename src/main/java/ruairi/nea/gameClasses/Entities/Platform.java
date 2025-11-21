@@ -3,23 +3,33 @@ package ruairi.nea.gameClasses.Entities;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import static ruairi.nea.gameClasses.GameScreen.ZOOM;
+
 public class Platform extends Entity {
 
+    private static TextureRegion leftTile;
+    private static TextureRegion middleTile;
+    private static TextureRegion rightTile;
+    public static final int tileWidth = 24;
+    public static final int tileHeight = 24;
+
     public enum PlatformType {
-        GRASS,
-        WIDEGRASS
+        leftPlatform,
+        midPlatform,
+        rightPlatform
     }
 
-    private static TextureRegion grassPlatform;
-    private static TextureRegion wideGrassPlatform;
+    private static Texture tileSet;
 
     private static void loadTextures() {
-        if (grassPlatform == null) {
-            grassPlatform = new TextureRegion(new Texture("assets/GrassPlatform.png"));
-        }
-        if (wideGrassPlatform == null) {
-            wideGrassPlatform = new TextureRegion(new Texture("assets/WideGrassPlatform.png"));
-        }
+        if (tileSet==null)
+            tileSet = new Texture("assets/tileset.png");
+        if (leftTile==null)
+            leftTile = new TextureRegion(tileSet, tileWidth*5, tileHeight*3, tileWidth, tileHeight);
+        if (middleTile==null)
+            middleTile = new TextureRegion(tileSet, tileWidth*6, tileHeight*3, tileWidth, tileHeight);
+        if (rightTile==null)
+            rightTile = new TextureRegion(tileSet, tileWidth*7, tileHeight*3, tileWidth, tileHeight);
     }
 
     public Platform(float posX, float posY, PlatformType type){
@@ -28,16 +38,23 @@ public class Platform extends Entity {
         loadTextures();
 
         isAffectedByGravity = false;
+        width = tileWidth;
+        height = tileHeight;
         switch (type){
-            case GRASS -> {
-                width = 256;
-                height = 64;
-                setTextureRegion(grassPlatform);
+            case leftPlatform -> {
+                width=tileWidth* ZOOM;
+                height=tileHeight* ZOOM;
+                setTextureRegion( leftTile);
             }
-            case WIDEGRASS -> {
-                width = 512;
-                height = 64;
-                setTextureRegion(wideGrassPlatform);
+            case midPlatform -> {
+                width=tileWidth* ZOOM;
+                height=tileHeight* ZOOM;
+                setTextureRegion(middleTile);
+            }
+            case rightPlatform -> {
+                width=tileWidth* ZOOM;
+                height=tileHeight* ZOOM;
+                setTextureRegion(rightTile);
             }
 
             default -> throw new IllegalArgumentException("Unknown platform type");

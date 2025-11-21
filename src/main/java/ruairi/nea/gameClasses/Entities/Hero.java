@@ -9,13 +9,15 @@ import ruairi.nea.gameClasses.Weapon;
 
 import java.util.ArrayList;
 
+import static ruairi.nea.gameClasses.GameScreen.ZOOM;
+
 public class Hero extends Entity {
     private final InputHandler inputHandler = new InputHandler();
 
     //Define Constant-like variables
-    public static final float JUMPSTRENGTH = 500;
+    public static final float JUMPSTRENGTH = 100*ZOOM;
     public static final float JUMPTIME = 0.25f;
-    public static final float MAXSPEED = 250;
+    public static final float MAXSPEED = 50*ZOOM;
     public static final int MAXHEALTH = 100;
 
     public enum State {
@@ -43,7 +45,7 @@ public class Hero extends Entity {
     float spawnPointY = 100;
 
     public Hero() {
-        super(0,0, 80, 80);
+        super(0,0, 16* ZOOM, 16* ZOOM);
         health=MAXHEALTH;
         loadAnimations();
         setVisibility(true);

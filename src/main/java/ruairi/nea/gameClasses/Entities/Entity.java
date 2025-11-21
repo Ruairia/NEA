@@ -3,11 +3,13 @@ package ruairi.nea.gameClasses.Entities;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import static ruairi.nea.gameClasses.GameScreen.ZOOM;
+
 
 public abstract class Entity {
     //Define Constant-like variables
-    public static final float MAXFALLSPEED = -900f; // Pixels per second
-    public static final float GRAVITY = 1200f; //Pixels per second squared
+    public static final float MAXFALLSPEED = -180*ZOOM; // Pixels per second
+    public static final float GRAVITY = 240*ZOOM; //Pixels per second squared
 
     public enum Direction {
         LEFT,

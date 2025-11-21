@@ -28,6 +28,7 @@ public class GameScreen implements Screen {
     final int OUT_OF_WORLD_THRESHOLD = -30;
     final int OUT_OF_WORLD_THRESHOLD_DAMAGE = 10;
     final float INVINCIBILITY_DURATION = 0.6f;
+    public final static float ZOOM =3;
 
 
 

@@ -9,7 +9,7 @@ public class Fireball extends Enemy{
     final int DAMAGE = 30;
     final float INTERSECT_TOLERANCE = 20;
 
-
+    Texture spriteSheet;
     Animation<TextureRegion> animation;
     float stateTime = 0;
 
@@ -21,7 +21,7 @@ public class Fireball extends Enemy{
     public Fireball(float posX, float posY, float leftBound, float rightBound) {
         super(posX, posY, 0, 0, 80, 100);
 
-        Texture spriteSheet = new Texture("assets/FireballSpriteSheet.png");
+        spriteSheet = new Texture("assets/FireballSpriteSheet.png");
 
         int frameWidth = 16;
         int frameHeight = 20;
@@ -53,6 +53,11 @@ public class Fireball extends Enemy{
         return animation.getKeyFrame(stateTime);
     }
 
+
+    @Override
+    public void dispose(){
+        spriteSheet.dispose();
+    }
 
 
 }

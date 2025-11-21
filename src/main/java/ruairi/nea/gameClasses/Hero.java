@@ -200,4 +200,8 @@ public class Hero extends Entity {
     public void setInvincibilityPeriodLeft(float invincibilityPeriodLeft) {
         this.invincibilityPeriodLeft = invincibilityPeriodLeft;
     }
+    @Override
+    public void dispose(){
+    spriteSheet.dispose();
+    }
 }

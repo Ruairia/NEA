@@ -208,7 +208,7 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         for (Entity visibleEntity : allEntities) {
-            visibleEntity.getCurrentFrame().getTexture().dispose();
+            visibleEntity.dispose();
         }
         shapeRenderer.dispose();
         background.dispose();

@@ -197,4 +197,6 @@ public abstract class Entity {
     public void setHeight(float height) {
         this.height = height;
     }
+
+    public void dispose(){this.textureRegion.getTexture().dispose();}
 }

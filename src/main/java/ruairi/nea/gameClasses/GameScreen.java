@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import ruairi.nea.applicationClasses.LevelSelectScreen;
 import ruairi.nea.applicationClasses.Main;
@@ -41,6 +42,7 @@ public class GameScreen implements Screen {
     private OrthographicCamera camera;
     private OrthographicCamera uiCamera;
     private ShapeRenderer shapeRenderer;
+    private BitmapFont bitmapFont;
 
 
 
@@ -52,6 +54,7 @@ public class GameScreen implements Screen {
     @Override
     public void show() { //Run Once when the screen is shown
         shapeRenderer = new ShapeRenderer();
+        bitmapFont = new BitmapFont();
 
         healthBar = new HealthBar(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 
@@ -106,9 +109,12 @@ public class GameScreen implements Screen {
         camera.position.y += (getTargetY() - camera.position.y) * LERP_Y;
         camera.update();
 
+
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+
         drawLevel();
         drawUI();
-
+        drawFPS();
     }
 
     private void returnToMenu() {
@@ -139,6 +145,14 @@ public class GameScreen implements Screen {
         healthBar.render(shapeRenderer, hero.getHealth());
 
         shapeRenderer.end();
+    }
+
+    private void drawFPS() {
+        game.batch.setProjectionMatrix(uiCamera.combined);
+        game.batch.begin();
+        bitmapFont.setColor(1,1,1,1);
+        bitmapFont.draw(game.batch, "FPS: "+Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight()-40);
+        game.batch.end();
     }
 
     private float getTargetX() {
@@ -201,5 +215,6 @@ public class GameScreen implements Screen {
         }
         shapeRenderer.dispose();
         background.dispose();
+        bitmapFont.dispose();
     }
 }

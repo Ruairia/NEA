@@ -1,5 +1,8 @@
 package ruairi.nea.gameClasses;
 
+import ruairi.nea.gameClasses.Entities.Entity;
+import ruairi.nea.gameClasses.Entities.Platform;
+
 import java.util.ArrayList;
 
 public class CollisionManager {

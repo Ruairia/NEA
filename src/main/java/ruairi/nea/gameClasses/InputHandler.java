@@ -12,7 +12,7 @@ import static java.lang.Math.abs;
 
 public class InputHandler {
 
-    Float horizontalAxisStrength = null; //Coefficient between 0 and 1
+    public Float horizontalAxisStrength = null; //Coefficient between 0 and 1
 
     private Controller gamepad;
     public static final float DEADZONE = 0.3f;

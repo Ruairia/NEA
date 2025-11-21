@@ -1,4 +1,4 @@
-    package ruairi.nea.gameClasses;
+    package ruairi.nea.gameClasses.Entities;
 
     public abstract class Enemy extends Entity {
         int damage;
@@ -21,5 +21,9 @@
                             this.posY + intersectTolerance < hero.posY + hero.height
                             &&
                             this.posY + this.height - intersectTolerance > hero.posY;
+        }
+
+        public int getDamage() {
+            return damage;
         }
     }

@@ -31,9 +31,6 @@ public class MainMenuScreen implements Screen{
             game.setScreen(new LevelSelectScreen(game));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
             game.setScreen(new SettingsScreen(game));
-        }
-        else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-            game.setScreen(new SettingsScreen(game));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }

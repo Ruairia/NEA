@@ -1,4 +1,4 @@
-package ruairi.nea.gameClasses;
+package ruairi.nea.gameClasses.Entities;
 
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;

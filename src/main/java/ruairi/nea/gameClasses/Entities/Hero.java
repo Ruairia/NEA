@@ -1,9 +1,11 @@
-package ruairi.nea.gameClasses;
+package ruairi.nea.gameClasses.Entities;
 
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.gameClasses.InputHandler;
+import ruairi.nea.gameClasses.Weapon;
 
 import java.util.ArrayList;
 
@@ -72,27 +74,19 @@ public class Hero extends Entity {
         int frameHeight = 16;
 
         TextureRegion[] idleFrames = new TextureRegion[1];
-        for (int i = 0; i < 1; i++) {
-            idleFrames[i] = new TextureRegion(spriteSheet, i * frameWidth, 0, frameWidth, frameHeight);
-        }
+        parseFrames(1, idleFrames, frameWidth, 0, frameHeight);
 
 
         TextureRegion[] walkFrames = new TextureRegion[2];
-        for (int i = 0; i < 2; i++) {
-            walkFrames[i] = new TextureRegion(spriteSheet, i * frameWidth, frameHeight, frameWidth, frameHeight);
-        }
+        parseFrames(2, walkFrames, frameWidth, frameHeight, frameHeight);
 
 
         TextureRegion[] attackFrames = new TextureRegion[1];
-        for (int i = 0; i < 1; i++) {
-            attackFrames[i] = new TextureRegion(spriteSheet, i * frameWidth, frameHeight * 2, frameWidth, frameHeight);
-        }
+        parseFrames(1, attackFrames, frameWidth, frameHeight * 2, frameHeight);
 
 
         TextureRegion[] jumpFrames = new TextureRegion[1];
-        for (int i = 0; i < 1; i++) {
-            jumpFrames[i] = new TextureRegion(spriteSheet, i * frameWidth, frameHeight * 3, frameWidth, frameHeight);
-        }
+        parseFrames(1, jumpFrames, frameWidth, frameHeight * 3, frameHeight);
 
         idleAnimation = new Animation<>(1, idleFrames);
         walkAnimation = new Animation<>(0.2f, walkFrames);
@@ -103,6 +97,12 @@ public class Hero extends Entity {
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
         jumpAnimation.setPlayMode(Animation.PlayMode.NORMAL);
         attackAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+    }
+
+    private void parseFrames(int x, TextureRegion[] idleFrames, int frameWidth, int y, int frameHeight) {
+        for (int i = 0; i < x; i++) {
+            idleFrames[i] = new TextureRegion(spriteSheet, i * frameWidth, y, frameWidth, frameHeight);
+        }
     }
 
     @Override
@@ -117,6 +117,9 @@ public class Hero extends Entity {
     }
 
 
+    public void damage(int damage){
+        health-=damage;
+    }
 
     public void jump(){
         //Handle logic for jumping

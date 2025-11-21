@@ -1,4 +1,4 @@
-package ruairi.nea.gameClasses;
+package ruairi.nea.gameClasses.Entities;
 
 public class Coin extends Entity {
     static float COINWIDTH = 10;

@@ -7,12 +7,14 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import ruairi.nea.applicationClasses.LevelSelectScreen;
 import ruairi.nea.applicationClasses.Main;
-
-import java.util.ArrayList;
+import ruairi.nea.gameClasses.Entities.Enemy;
+import ruairi.nea.gameClasses.Entities.Entity;
+import ruairi.nea.gameClasses.Entities.Hero;
 
 public class GameScreen implements Screen {
     private Main game;
-    private int level;
+    private int levelNumber;
+    private Level level;
 
     //UI&Background
     public HealthBar healthBar;
@@ -28,10 +30,7 @@ public class GameScreen implements Screen {
     final float INVINCIBILITY_DURATION = 0.6f;
 
 
-    public ArrayList<Entity> allEntities;
-    public ArrayList<Platform> platforms = new ArrayList<>();;
-    ArrayList<Enemy> damagingEntities = new ArrayList<>();
-    ArrayList<Entity> mobileEntities = new ArrayList<>();
+
 
     public Hero hero;
 
@@ -45,32 +44,22 @@ public class GameScreen implements Screen {
 
 
 
-    public GameScreen(Main game, int level) {
+    public GameScreen(Main game, int levelNumber) {
         this.game = game;
-        this.level = level;
+        this.levelNumber = levelNumber;
     }
 
     @Override
     public void show() { //Run Once when the screen is shown
         shapeRenderer = new ShapeRenderer();
 
-        background=new Background(level);
         healthBar = new HealthBar(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 
-        LevelLoader levelLoader = new LevelLoader(this);
-        allEntities = levelLoader.loadLevel(level);
-        allEntities.add(hero = new Hero().setSpawnPoint(levelLoader.getSpawnPointX(), levelLoader.getSpawnPointY()).spawn());
-        allEntities.add(new Fireball(200,100, 0,300));
+        level = new Level();
+        level.loadLevel(this.levelNumber);
+        hero = level.getHero().spawn();
 
 
-        for (Entity entity : allEntities){
-            if (entity instanceof Platform) platforms.add((Platform) entity);
-            else {
-
-                if (entity instanceof Enemy) damagingEntities.add((Enemy) entity);
-                mobileEntities.add(entity);
-            }
-        }
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -86,15 +75,15 @@ public class GameScreen implements Screen {
     private void perFrameLogic(float delta){
         updatePositions(delta); //Move hero and entities
 
-        CollisionManager.handleCollisions(mobileEntities, platforms);
+        CollisionManager.handleCollisions(level.mobileEntities, level.platforms);
 
         if (hero.getPosY()+hero.getHeight()< OUT_OF_WORLD_THRESHOLD){
             hero.spawn();
-            hero.health-=OUT_OF_WORLD_THRESHOLD_DAMAGE;
+            hero.damage(OUT_OF_WORLD_THRESHOLD_DAMAGE);
         }
-        for (Enemy enemy : damagingEntities){
-            if (hero.invincibilityPeriodLeft==0 && enemy.intersectsHero(hero)) {
-                    hero.health-=enemy.damage; hero.setInvincibilityPeriodLeft(INVINCIBILITY_DURATION);}
+        for (Enemy enemy : level.damagingEntities){
+            if (hero.getInvincibilityPeriodLeft()==0 && enemy.intersectsHero(hero)) {
+                    hero.damage(enemy.getDamage()); hero.setInvincibilityPeriodLeft(INVINCIBILITY_DURATION);}
         }
         if (hero.getHealth()<=0) {hero.setHealth(100); hero.spawn();}
     }
@@ -132,9 +121,9 @@ public class GameScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
-        background.drawBackground(camera,game);
+        level.background.drawBackground(camera,game);
 
-        for (Entity entity : allEntities) {
+        for (Entity entity : level.allEntities) {
             if (entity.getCurrentDirection() == Entity.Direction.RIGHT)
                 game.batch.draw(entity.getCurrentFrame(), entity.getPosX(), entity.getPosY(), entity.getWidth(), entity.getHeight());
             else
@@ -186,7 +175,7 @@ public class GameScreen implements Screen {
 
 
     private void updatePositions(float delta) {
-        for (Entity entity : allEntities) {
+        for (Entity entity : level.allEntities) {
             entity.update(delta);
         }
     }
@@ -207,7 +196,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        for (Entity visibleEntity : allEntities) {
+        for (Entity visibleEntity : level.allEntities) {
             visibleEntity.dispose();
         }
         shapeRenderer.dispose();

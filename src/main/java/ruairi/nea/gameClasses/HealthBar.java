@@ -2,6 +2,7 @@ package ruairi.nea.gameClasses;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import ruairi.nea.gameClasses.Entities.Hero;
 
 public class HealthBar {
     public static final float WIDTH = 128;

@@ -17,10 +17,16 @@ public class InputHandler {
     private Controller gamepad;
     public static final float DEADZONE = 0.3f;
 
+    private boolean jumpWasPressed = false;
+
     public InputHandler() {
         if (Controllers.getControllers().size > 0) {
             gamepad = Controllers.getControllers().first();
         }
+    }
+
+    public void vibrateController(int milliseconds, float strength){
+        if (gamepad!=null) gamepad.startVibration(milliseconds,strength);
     }
 
     public ArrayList<String> getInputs() {
@@ -28,7 +34,8 @@ public class InputHandler {
 
         if (gamepad==null) horizontalAxisStrength =1f;
 
-        if (isJumpPressed()) inputs.add("JUMP");
+        if (isJumpJustPressed()) inputs.add("JUMP");
+        if (isJumpPressed()) inputs.add("HOLDJUMP");
         if (checkMoveLeft()) inputs.add("LEFT");
         if (checkMoveRight()) inputs.add("RIGHT");
         if (isAttackPressed()) inputs.add("ATTACK");
@@ -41,7 +48,24 @@ public class InputHandler {
     private boolean isJumpPressed() {
         if (Gdx.input.isKeyPressed(Input.Keys.W)) return true;
         //A button (Xbox)
-        return gamepad != null && gamepad.getButton(0);
+        if (gamepad != null){
+            if (gamepad.getButton(0)) {
+                jumpWasPressed = true;
+                return true;
+            } else {
+                jumpWasPressed = false;
+            }
+        }
+        return false;
+    }
+
+    private boolean isJumpJustPressed(){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.W)) return true;
+        if (gamepad != null && gamepad.getButton(0)){
+            if (!jumpWasPressed){
+                return true;}
+        }
+        return false;
     }
 
     private boolean checkMoveLeft() {

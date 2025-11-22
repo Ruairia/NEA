@@ -16,9 +16,11 @@ public class Hero extends Entity {
 
     //Define Constant-like variables
     public static final float JUMPSTRENGTH = 100*ZOOM;
-    public static final float JUMPTIME = 0.25f;
+    public static final float MAXJUMPTIME = 0.25f;
+    private static final float DOUBLE_JUMP_STRENGTH = 80 * ZOOM;
     public static final float MAXSPEED = 50*ZOOM;
     public static final int MAXHEALTH = 100;
+    private static final int MAX_JUMPS = 2;
 
     public enum State {
         IDLE,
@@ -28,15 +30,17 @@ public class Hero extends Entity {
     }
     private State currentState = State.IDLE;
 
+
     private Texture spriteSheet;
     private Animation<TextureRegion> idleAnimation;
     private Animation<TextureRegion> walkAnimation;
-    private Animation<TextureRegion> jumpAnimation;
+    private Animation<TextureRegion> inAirAnimation;
     private Animation<TextureRegion> attackAnimation;
     private float stateTime = 0;
 
     int health;
-
+    private int jumpsRemaining = 2;
+    private float currentJumpTime=0;
     float invincibilityPeriodLeft = 0;
 
     Weapon currentWeapon;
@@ -66,7 +70,7 @@ public class Hero extends Entity {
         if (invincibilityPeriodLeft>0) invincibilityPeriodLeft-= (float) delta;
         else invincibilityPeriodLeft=0;
 
-        move();
+        move(delta);
     }
 
     private void loadAnimations(){
@@ -87,17 +91,17 @@ public class Hero extends Entity {
         parseFrames(1, attackFrames, frameWidth, frameHeight * 2, frameHeight);
 
 
-        TextureRegion[] jumpFrames = new TextureRegion[1];
-        parseFrames(1, jumpFrames, frameWidth, frameHeight * 3, frameHeight);
+        TextureRegion[] inAirFrames = new TextureRegion[1];
+        parseFrames(1, inAirFrames, frameWidth, frameHeight * 3, frameHeight);
 
         idleAnimation = new Animation<>(1, idleFrames);
         walkAnimation = new Animation<>(0.2f, walkFrames);
         attackAnimation = new Animation<>(1, attackFrames);
-        jumpAnimation = new Animation<>(1, jumpFrames);
+        inAirAnimation = new Animation<>(1, inAirFrames);
 
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
-        jumpAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+        inAirAnimation.setPlayMode(Animation.PlayMode.NORMAL);
         attackAnimation.setPlayMode(Animation.PlayMode.NORMAL);
     }
 
@@ -112,7 +116,7 @@ public class Hero extends Entity {
         Animation<TextureRegion> currentAnimation = switch (currentState) {
             case IDLE -> idleAnimation;
             case WALKING -> walkAnimation;
-            case IN_AIR -> jumpAnimation;
+            case IN_AIR -> inAirAnimation;
             case ATTACKING -> attackAnimation;
         };
         return  currentAnimation.getKeyFrame(stateTime);
@@ -125,13 +129,26 @@ public class Hero extends Entity {
 
     public void jump(){
         //Handle logic for jumping
-        if (lastOnGround<JUMPTIME){
-            velocityY= JUMPSTRENGTH;
-            isOnGround=false;
+        if (jumpsRemaining > 0) {
+            velocityY = (jumpsRemaining == MAX_JUMPS) ? JUMPSTRENGTH : DOUBLE_JUMP_STRENGTH;
+            isOnGround = false;
+            jumpsRemaining--;
+            currentJumpTime = 0;
+            if (jumpsRemaining == 0) {
+                inputHandler.vibrateController(200,0.25f);
+            }
         }
     }
 
-    public void move(){
+    public void holdJump(double delta){
+        if (currentJumpTime<MAXJUMPTIME) {
+            currentJumpTime+= (float) delta;
+            if (jumpsRemaining == 1) {if (velocityY<JUMPSTRENGTH*0.9) velocityY = (float) (JUMPSTRENGTH*0.9);}
+            else if (velocityY<DOUBLE_JUMP_STRENGTH*0.9) velocityY = (float) (DOUBLE_JUMP_STRENGTH*0.9);
+        }
+    }
+
+    public void move(double delta){
         State previousState = currentState;
 
         ArrayList<String> input = inputHandler.getInputs();
@@ -150,12 +167,19 @@ public class Hero extends Entity {
             velocityX=0;
         }
         if (input.contains("JUMP")){
+            if (isOnGround) jumpsRemaining = MAX_JUMPS;
             jump();
         }
+        if (input.contains("HOLDJUMP")){
+            holdJump(delta);
+        }
         if (input.contains("ATTACK")) setCurrentState(State.ATTACKING);
-        if (!isOnGround) setCurrentState(State.IN_AIR);
+        if (!isOnGround) {
+            setCurrentState(State.IN_AIR);
+            if (jumpsRemaining>0&&currentJumpTime>MAXJUMPTIME) jumpsRemaining=1;
+        }
+        else currentJumpTime=0;
         if (getCurrentState()==State.ATTACKING) velocityX/=5;
-
         if (currentState!=previousState) stateTime=0;
     }
 

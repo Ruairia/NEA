@@ -22,9 +22,9 @@ public class HealthBar {
     public void render(ShapeRenderer shapeRenderer, float currentHealth){
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.rect(posX-BORDERWIDTH, posY-BORDERWIDTH, WIDTH+BORDERWIDTH*2, HEIGHT+BORDERWIDTH*2);
-        shapeRenderer.setColor(Color.RED);
+        shapeRenderer.setColor(Color.FIREBRICK);
         shapeRenderer.rect(posX, posY, WIDTH, HEIGHT);
-        shapeRenderer.setColor(Color.GREEN);
+        shapeRenderer.setColor(Color.OLIVE);
         shapeRenderer.rect(posX, posY, WIDTH*(currentHealth)/ Hero.MAXHEALTH, HEIGHT);
         shapeRenderer.end();
     }

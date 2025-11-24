@@ -4,6 +4,7 @@ package ruairi.nea.gameClasses.Entities;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.applicationClasses.Main;
 import ruairi.nea.gameClasses.InputHandler;
 
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class Hero extends Entity {
         health=MAXHEALTH;
         loadAnimations();
         setVisibility(true);
+        currentStaff = new Staff(this);
     }
 
     public Hero spawn() {
@@ -71,6 +73,8 @@ public class Hero extends Entity {
 
         move(delta);
     }
+
+
 
     private void loadAnimations(){
         spriteSheet = new Texture("assets/WizardSpriteSheetNoStaff.png");
@@ -219,6 +223,10 @@ public class Hero extends Entity {
         return this;
     }
 
+    public float getStateTime() {
+        return stateTime;
+    }
+
     public float getInvincibilityPeriodLeft() {
         return invincibilityPeriodLeft;
     }
@@ -229,5 +237,11 @@ public class Hero extends Entity {
     @Override
     public void dispose(){
     spriteSheet.dispose();
+    }
+
+    @Override
+    public void draw(Main game){
+        super.draw(game);
+        currentStaff.draw(game);
     }
 }

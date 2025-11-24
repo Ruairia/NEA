@@ -27,13 +27,13 @@ public abstract class Entity {
     boolean isAffectedByGravity=true;
 
 
-    float posX, posY;
-    float oldX, oldY;
-    float velocityX = 0;
-    float velocityY = 0;
-    float width =0;
-    float height =0;
-    boolean visibility;
+    protected float posX, posY;
+    protected float oldX, oldY;
+    protected float velocityX = 0;
+    protected float velocityY = 0;
+    protected float width =0;
+    protected float height =0;
+    protected boolean visibility;
 
 
     public Entity(float posX, float posY, float width, float height){

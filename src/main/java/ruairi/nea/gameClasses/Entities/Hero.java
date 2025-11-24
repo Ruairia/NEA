@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.gameClasses.InputHandler;
-import ruairi.nea.gameClasses.Weapon;
 
 import java.util.ArrayList;
 
@@ -43,7 +42,7 @@ public class Hero extends Entity {
     private float currentJumpTime=0;
     float invincibilityPeriodLeft = 0;
 
-    Weapon currentWeapon;
+    Staff currentStaff;
 
     float spawnPointX = 100;
     float spawnPointY = 100;
@@ -74,25 +73,21 @@ public class Hero extends Entity {
     }
 
     private void loadAnimations(){
-        spriteSheet = new Texture("assets/WizardSpriteSheet.png");
+        spriteSheet = new Texture("assets/WizardSpriteSheetNoStaff.png");
 
         int frameWidth = 16;
         int frameHeight = 16;
 
-        TextureRegion[] idleFrames = new TextureRegion[1];
-        parseFrames(1, idleFrames, frameWidth, 0, frameHeight);
+        TextureRegion[] idleFrames = parseFrames(1, frameWidth, 0, frameHeight,spriteSheet,1);
 
 
-        TextureRegion[] walkFrames = new TextureRegion[2];
-        parseFrames(2, walkFrames, frameWidth, frameHeight, frameHeight);
+        TextureRegion[] walkFrames =  parseFrames(2, frameWidth, frameHeight, frameHeight,spriteSheet,2);
 
 
-        TextureRegion[] attackFrames = new TextureRegion[1];
-        parseFrames(1, attackFrames, frameWidth, frameHeight * 2, frameHeight);
+        TextureRegion[] attackFrames = parseFrames(1, frameWidth, frameHeight * 2, frameHeight,spriteSheet,1);
 
 
-        TextureRegion[] inAirFrames = new TextureRegion[1];
-        parseFrames(1, inAirFrames, frameWidth, frameHeight * 3, frameHeight);
+        TextureRegion[] inAirFrames = parseFrames(1, frameWidth, frameHeight * 3, frameHeight,spriteSheet,1);
 
         idleAnimation = new Animation<>(1, idleFrames);
         walkAnimation = new Animation<>(0.2f, walkFrames);
@@ -105,10 +100,12 @@ public class Hero extends Entity {
         attackAnimation.setPlayMode(Animation.PlayMode.NORMAL);
     }
 
-    private void parseFrames(int x, TextureRegion[] idleFrames, int frameWidth, int y, int frameHeight) {
+    protected static TextureRegion[] parseFrames(int x, int frameWidth, int y, int frameHeight, Texture spriteSheet, int framesNumber) {
+        TextureRegion[] frames = new TextureRegion[framesNumber];
         for (int i = 0; i < x; i++) {
-            idleFrames[i] = new TextureRegion(spriteSheet, i * frameWidth, y, frameWidth, frameHeight);
+            frames[i] = new TextureRegion(spriteSheet, i * frameWidth, y, frameWidth, frameHeight);
         }
+        return frames;
     }
 
     @Override
@@ -204,12 +201,12 @@ public class Hero extends Entity {
         this.health = health;
     }
 
-    public Weapon getCurrentWeapon() {
-        return currentWeapon;
+    public Staff getCurrentWeapon() {
+        return currentStaff;
     }
 
-    public void setCurrentWeapon(Weapon currentWeapon) {
-        this.currentWeapon = currentWeapon;
+    public void setCurrentWeapon(Staff currentStaff) {
+        this.currentStaff = currentStaff;
     }
 
     public float[] getSpawnPoint() {

@@ -2,6 +2,7 @@ package ruairi.nea.gameClasses.Entities;
 
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.applicationClasses.Main;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
@@ -88,7 +89,12 @@ public abstract class Entity {
 
 
 
-
+    public void draw(Main game) {
+        if (this.getCurrentDirection() == Direction.RIGHT)
+            game.batch.draw(this.getCurrentFrame(), this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight());
+        else
+            game.batch.draw(this.getCurrentFrame(), this.getPosX() + this.getWidth(), this.getPosY(), -this.getWidth(), this.getHeight());
+    }
 
 
 

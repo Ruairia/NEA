@@ -131,13 +131,12 @@ public class GameScreen implements Screen {
         level.background.drawBackground(camera,game);
 
         for (Entity entity : level.allEntities) {
-            if (entity.getCurrentDirection() == Entity.Direction.RIGHT)
-                game.batch.draw(entity.getCurrentFrame(), entity.getPosX(), entity.getPosY(), entity.getWidth(), entity.getHeight());
-            else
-                game.batch.draw(entity.getCurrentFrame(), entity.getPosX() + entity.getWidth(), entity.getPosY(), -entity.getWidth(), entity.getHeight());
+            entity.draw(game);
         }
         game.batch.end();
     }
+
+
 
     private void drawUI() {
         shapeRenderer.setProjectionMatrix(uiCamera.combined);

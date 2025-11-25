@@ -87,7 +87,9 @@ public class GameScreen implements Screen {
         }
         for (Enemy enemy : level.damagingEntities){
             if (hero.getInvincibilityPeriodLeft()==0 && enemy.intersectsHero(hero)) {
-                    hero.damage(enemy.getDamage()); hero.setInvincibilityPeriodLeft(INVINCIBILITY_DURATION);}
+                    hero.damage(enemy.getDamage());
+                    hero.setInvincibilityPeriodLeft(INVINCIBILITY_DURATION);
+                    hero.applyKnockback(enemy);}
         }
         if (hero.getHealth()<=0) {hero.setHealth(100); hero.spawn();}
     }
@@ -131,7 +133,7 @@ public class GameScreen implements Screen {
         level.background.drawBackground(camera,game);
 
         for (Entity entity : level.allEntities) {
-            entity.draw(game);
+            entity.draw(game.batch);
         }
         game.batch.end();
     }

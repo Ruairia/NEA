@@ -1,6 +1,7 @@
 package ruairi.nea.gameClasses.Entities;
 
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.applicationClasses.Main;
 
@@ -89,11 +90,11 @@ public abstract class Entity {
 
 
 
-    public void draw(Main game) {
+    public void draw(Batch batch) {
         if (this.getCurrentDirection() == Direction.RIGHT)
-            game.batch.draw(this.getCurrentFrame(), this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight());
+            batch.draw(this.getCurrentFrame(), this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight());
         else
-            game.batch.draw(this.getCurrentFrame(), this.getPosX() + this.getWidth(), this.getPosY(), -this.getWidth(), this.getHeight());
+            batch.draw(this.getCurrentFrame(), this.getPosX() + this.getWidth(), this.getPosY(), -this.getWidth(), this.getHeight());
     }
 
 

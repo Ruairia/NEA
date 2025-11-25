@@ -6,7 +6,7 @@
 
 
 
-        public Enemy(float posX, float posY, float velocityX, float velocityY, float width, float height) {
+        public Enemy(float posX, float posY, float width, float height) {
             super(posX, posY, width, height);
             intersectTolerance = 0;
         }

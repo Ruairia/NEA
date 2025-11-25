@@ -3,38 +3,54 @@ package ruairi.nea.gameClasses.Entities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import ruairi.nea.applicationClasses.Main;
 
 
 public class Staff {
+    private static final String SPRITESHEET_PATH = "assets/StaffSpriteSheet.png";
+    private static final int FRAME_WIDTH = 16;
+    private static final int FRAME_HEIGHT = 16;
 
     int maxAmmo;
     int currentAmmo;
     int ammoReserves;
+
+    final Color colour;
+    final Hero hero;
 
     private Texture spriteSheet;
     private Animation<TextureRegion> idleAnimation;
     private Animation<TextureRegion> walkAnimation;
     private Animation<TextureRegion> inAirAnimation;
     private Animation<TextureRegion> attackAnimation;
-    Hero hero;
 
-    public Staff(Hero hero){
+
+    public Staff(Color colour, Hero hero){
         loadAnimations();
         this.hero = hero;
+        this.colour = colour;
     }
 
 
+    public void draw(Batch batch){
 
-    public void draw(Main game){
-        game.batch.setColor(Color.BLUE);
-        if (hero.getCurrentDirection() == Entity.Direction.RIGHT)
-            game.batch.draw(getCurrentFrame(hero.getStateTime(), hero.getCurrentState()),
-                    hero.getPosX(), hero.getPosY(),hero.getWidth(),hero.getHeight());
-        else game.batch.draw(getCurrentFrame(hero.getStateTime(),hero.getCurrentState()),
-                hero.getPosX()+hero.width, hero.getPosY(),-hero.getWidth(),hero.getHeight());
-        game.batch.setColor(Color.WHITE);
+        float posY = hero.getPosY();
+        float height = hero.getHeight();
+        float stateTime = hero.getStateTime();
+
+        batch.setColor(colour);
+
+        float posX = hero.getPosX();
+        float width = hero.getWidth();
+
+        if (hero.getCurrentDirection() == Entity.Direction.LEFT){
+            posX += width;
+            width = -1 * width;
+        }
+
+        batch.draw(getCurrentFrame(stateTime,hero.getCurrentState()),posX,posY,width,height);
+        batch.setColor(Color.WHITE);
     }
 
 
@@ -47,31 +63,23 @@ public class Staff {
     }
 
     private void loadAnimations(){
-        spriteSheet = new Texture("assets/StaffSpriteSheet.png");
+        spriteSheet = new Texture(SPRITESHEET_PATH);
 
-        int frameWidth = 16;
-        int frameHeight = 16;
+        TextureRegion[] idleFrames = Hero.parseFrames(1, FRAME_WIDTH, 0, FRAME_HEIGHT,spriteSheet,1);
+        TextureRegion[] walkFrames =  Hero.parseFrames(2, FRAME_WIDTH, FRAME_HEIGHT, FRAME_HEIGHT,spriteSheet,2);
+        TextureRegion[] attackFrames = Hero.parseFrames(1, FRAME_WIDTH, FRAME_HEIGHT * 2, FRAME_HEIGHT,spriteSheet,1);
+        TextureRegion[] inAirFrames = Hero.parseFrames(1, FRAME_WIDTH, FRAME_HEIGHT * 3, FRAME_HEIGHT,spriteSheet,1);
 
-        TextureRegion[] idleFrames = Hero.parseFrames(1, frameWidth, 0, frameHeight,spriteSheet,1);
+        idleAnimation = createAnimation(1, idleFrames, Animation.PlayMode.LOOP);
+        walkAnimation = createAnimation(0.2f, walkFrames, Animation.PlayMode.LOOP);
+        attackAnimation = createAnimation(1,attackFrames, Animation.PlayMode.NORMAL);
+        inAirAnimation = createAnimation(1,inAirFrames, Animation.PlayMode.NORMAL);
+    }
 
-
-        TextureRegion[] walkFrames =  Hero.parseFrames(2, frameWidth, frameHeight, frameHeight,spriteSheet,2);
-
-
-        TextureRegion[] attackFrames = Hero.parseFrames(1, frameWidth, frameHeight * 2, frameHeight,spriteSheet,1);
-
-
-        TextureRegion[] inAirFrames = Hero.parseFrames(1, frameWidth, frameHeight * 3, frameHeight,spriteSheet,1);
-
-        idleAnimation = new Animation<>(1, idleFrames);
-        walkAnimation = new Animation<>(0.2f, walkFrames);
-        attackAnimation = new Animation<>(1, attackFrames);
-        inAirAnimation = new Animation<>(1, inAirFrames);
-
-        idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
-        walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
-        inAirAnimation.setPlayMode(Animation.PlayMode.NORMAL);
-        attackAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+    public Animation<TextureRegion> createAnimation(float frameDuration, TextureRegion[] frames, Animation.PlayMode playMode) {
+        Animation<TextureRegion> animation= new Animation<>(frameDuration, frames);
+        animation.setPlayMode(playMode);
+        return animation;
     }
 
 
@@ -83,5 +91,9 @@ public class Staff {
             case ATTACKING -> attackAnimation;
         };
         return  currentAnimation.getKeyFrame(stateTime);
+    }
+
+    public void dispose(){
+        spriteSheet.dispose();
     }
 }

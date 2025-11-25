@@ -1,13 +1,14 @@
 package ruairi.nea.gameClasses;
 
 import ruairi.nea.gameClasses.Entities.Entity;
+import ruairi.nea.gameClasses.Entities.Fireball;
 import ruairi.nea.gameClasses.Entities.Platform;
 
 import java.util.ArrayList;
 
 public class CollisionManager {
-    public static void handleCollisions(ArrayList<Entity> spritesToBeChecked, ArrayList<Platform> platformsToBeChecked) {
-        for (Entity entity : spritesToBeChecked) {
+    public static void handleCollisions(ArrayList<Entity> mobileEntities, ArrayList<Platform> platformsToBeChecked) {
+        for (Entity entity : mobileEntities) {
             boolean hasCollided = false;
             for (Platform platform : platformsToBeChecked) {
                 if (entity.intersect(platform)){
@@ -45,14 +46,17 @@ public class CollisionManager {
                 (entity.getPosX() + entity.getWidth() > platform.getPosX())) {
             // Came from the left
             entity.setPosX(platform.getPosX() - entity.getWidth());
-            entity.setVelocityX(0);
+            if (entity instanceof Fireball) entity.setVelocityX(-entity.getVelocityX());
+            else entity.setVelocityX(0);
+
         }
 
         else if ((oldX >= platform.getPosX() + platform.getWidth()) &&
                 (entity.getPosX() < platformRight)) {
             // Came from the right
             entity.setPosX(platformRight);
-            entity.setVelocityX(0);
+            if (entity instanceof Fireball) entity.setVelocityX(-entity.getVelocityX());
+            else entity.setVelocityX(0);
         }
 
 

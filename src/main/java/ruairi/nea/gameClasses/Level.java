@@ -78,6 +78,7 @@ public class Level {
             default -> throw new IllegalArgumentException(elements[3]);
         }
         damagingEntities.add(enemy);
+        mobileEntities.add(enemy);
         allEntities.add(enemy);
     }
 

@@ -4,10 +4,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
 public class Fireball extends Enemy{
-    final float SPEED = 100;
+    private static final String SPRITESHEET_PATH = "assets/FireballSpriteSheet.png";
+    final float SPEED = 50*ZOOM;
     final int DAMAGE = 30;
     final float INTERSECT_TOLERANCE = 10;
 
@@ -21,9 +23,9 @@ public class Fireball extends Enemy{
 
 
     public Fireball(float posX, float posY, float leftBound, float rightBound) {
-        super(posX, posY, 0, 0, 16* ZOOM, 20* ZOOM);
+        super(posX, posY, 16* ZOOM, 20* ZOOM);
 
-        spriteSheet = new Texture("assets/FireballSpriteSheet.png");
+        spriteSheet = new Texture(SPRITESHEET_PATH);
 
         int frameWidth = 16;
         int frameHeight = 20;
@@ -42,12 +44,13 @@ public class Fireball extends Enemy{
         intersectTolerance = INTERSECT_TOLERANCE;
         isAffectedByGravity=false;
     }
+
     @Override
     public void update(double delta){
-        super.update(delta);
         stateTime += (float) delta;
-        if (posX <= leftBound) velocityX = SPEED;
-        else if (posX >= rightBound) velocityX = -SPEED;
+        if (posX <= leftBound) {velocityX = SPEED; setCurrentDirection(Direction.RIGHT);}
+        else if (posX >= rightBound) {velocityX = -SPEED; setCurrentDirection(Direction.LEFT);}
+        super.update(delta);
     }
 
     @Override

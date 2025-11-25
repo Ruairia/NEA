@@ -1,10 +1,11 @@
 package ruairi.nea.gameClasses.Entities;
 
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import ruairi.nea.applicationClasses.Main;
 import ruairi.nea.gameClasses.InputHandler;
 
 import java.util.ArrayList;
@@ -15,10 +16,11 @@ public class Hero extends Entity {
     private final InputHandler inputHandler = new InputHandler();
 
     //Define Constant-like variables
+    private static final String SPRITESHEET_PATH = "assets/WizardSpriteSheetNoStaff.png";
     public static final float JUMPSTRENGTH = 100*ZOOM;
     public static final float MAXJUMPTIME = 0.25f;
     private static final float DOUBLE_JUMP_STRENGTH = 80 * ZOOM;
-    public static final float MAXSPEED = 50*ZOOM;
+    public static final float WALKSPEED = 50*ZOOM;
     public static final int MAXHEALTH = 100;
     private static final int MAX_JUMPS = 2;
 
@@ -29,7 +31,6 @@ public class Hero extends Entity {
         ATTACKING
     }
     private State currentState = State.IDLE;
-
 
     private Texture spriteSheet;
     private Animation<TextureRegion> idleAnimation;
@@ -43,6 +44,11 @@ public class Hero extends Entity {
     private float currentJumpTime=0;
     float invincibilityPeriodLeft = 0;
 
+    private static final float KNOCKBACK_TIMER_MAX=0.15f;
+    private float knockbackTimer = 0;
+    private static final float KNOCKBACK_STRENGTH_X = 140 * ZOOM;
+    private static final float KNOCKBACK_STRENGTH_Y = 80 * ZOOM;
+
     Staff currentStaff;
 
     float spawnPointX = 100;
@@ -53,12 +59,15 @@ public class Hero extends Entity {
         health=MAXHEALTH;
         loadAnimations();
         setVisibility(true);
-        currentStaff = new Staff(this);
+        currentStaff = new Staff(Color.CYAN,this);
     }
 
     public Hero spawn() {
         setPosX(spawnPointX);
         setPosY(spawnPointY);
+        setVelocityX(0);
+        setVelocityY(0);
+        setInvincibilityPeriodLeft(0);
         return this;
     }
 
@@ -68,6 +77,9 @@ public class Hero extends Entity {
 
         stateTime += (float) delta;
 
+        if (knockbackTimer>0) knockbackTimer-= (float) delta;
+        else knockbackTimer=0;
+
         if (invincibilityPeriodLeft>0) invincibilityPeriodLeft-= (float) delta;
         else invincibilityPeriodLeft=0;
 
@@ -75,9 +87,8 @@ public class Hero extends Entity {
     }
 
 
-
     private void loadAnimations(){
-        spriteSheet = new Texture("assets/WizardSpriteSheetNoStaff.png");
+        spriteSheet = new Texture(SPRITESHEET_PATH);
 
         int frameWidth = 16;
         int frameHeight = 16;
@@ -128,6 +139,17 @@ public class Hero extends Entity {
         health-=damage;
     }
 
+    public void applyKnockback(Enemy enemy) {
+        velocityX = (this.posX < enemy.getPosX()) ? -KNOCKBACK_STRENGTH_X  : KNOCKBACK_STRENGTH_X;
+
+        velocityY = KNOCKBACK_STRENGTH_Y;
+
+        knockbackTimer = KNOCKBACK_TIMER_MAX;
+    }
+
+
+
+
     public void jump(){
         //Handle logic for jumping
         if (jumpsRemaining > 0) {
@@ -155,17 +177,17 @@ public class Hero extends Entity {
         ArrayList<String> input = inputHandler.getInputs();
 
         if (input.contains("LEFT") && !input.contains("RIGHT")){
-            velocityX= - MAXSPEED*inputHandler.horizontalAxisStrength;
+            if (knockbackTimer==0) velocityX= -WALKSPEED *inputHandler.horizontalAxisStrength;
             if (isOnGround) setCurrentState(State.WALKING, Direction.LEFT);
         }
         else if (input.contains("RIGHT") && !input.contains("LEFT")){
-            velocityX= MAXSPEED*inputHandler.horizontalAxisStrength;
+            if (knockbackTimer==0) velocityX= WALKSPEED *inputHandler.horizontalAxisStrength;
             if (isOnGround) setCurrentState(State.WALKING, Direction.RIGHT);
         }
         else {
             if (isOnGround) setCurrentState(State.IDLE);
             else setCurrentState(State.IN_AIR);
-            velocityX=0;
+            if (knockbackTimer==0) velocityX=0;
         }
         if (input.contains("JUMP")){
             if (isOnGround) jumpsRemaining = MAX_JUMPS;
@@ -237,11 +259,14 @@ public class Hero extends Entity {
     @Override
     public void dispose(){
     spriteSheet.dispose();
+    currentStaff.dispose();
     }
 
     @Override
-    public void draw(Main game){
-        super.draw(game);
-        currentStaff.draw(game);
+    public void draw(Batch batch){
+        if (invincibilityPeriodLeft>0) batch.setColor(Color.SALMON);
+        super.draw(batch);
+        currentStaff.draw(batch);
+        batch.setColor(Color.WHITE);
     }
 }

@@ -6,7 +6,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.gameClasses.Staffs.FireStaff;
 import ruairi.nea.gameClasses.InputHandler;
+import ruairi.nea.gameClasses.Staffs.Staff;
 
 import java.util.ArrayList;
 
@@ -59,7 +61,7 @@ public class Hero extends Entity {
         health=MAXHEALTH;
         loadAnimations();
         setVisibility(true);
-        currentStaff = new Staff(Color.CYAN,this);
+        currentStaff = new FireStaff(this);
     }
 
     public Hero spawn() {
@@ -115,7 +117,7 @@ public class Hero extends Entity {
         attackAnimation.setPlayMode(Animation.PlayMode.NORMAL);
     }
 
-    protected static TextureRegion[] parseFrames(int x, int frameWidth, int y, int frameHeight, Texture spriteSheet, int framesNumber) {
+    public static TextureRegion[] parseFrames(int x, int frameWidth, int y, int frameHeight, Texture spriteSheet, int framesNumber) {
         TextureRegion[] frames = new TextureRegion[framesNumber];
         for (int i = 0; i < x; i++) {
             frames[i] = new TextureRegion(spriteSheet, i * frameWidth, y, frameWidth, frameHeight);

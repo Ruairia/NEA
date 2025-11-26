@@ -1,13 +1,15 @@
-package ruairi.nea.gameClasses.Entities;
+package ruairi.nea.gameClasses.Staffs;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.gameClasses.Entities.Entity;
+import ruairi.nea.gameClasses.Entities.Hero;
 
 
-public class Staff {
+public abstract class Staff {
     private static final String SPRITESHEET_PATH = "assets/StaffSpriteSheet.png";
     private static final int FRAME_WIDTH = 16;
     private static final int FRAME_HEIGHT = 16;
@@ -25,6 +27,7 @@ public class Staff {
     private Animation<TextureRegion> inAirAnimation;
     private Animation<TextureRegion> attackAnimation;
 
+    public abstract void attack();
 
     public Staff(Color colour, Hero hero){
         loadAnimations();

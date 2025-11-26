@@ -130,7 +130,13 @@ public abstract class Entity {
         return oldY;
     }
 
+    public boolean isAffectedByGravity() {
+        return isAffectedByGravity;
+    }
 
+    public void setAffectedByGravity(boolean affectedByGravity) {
+        isAffectedByGravity = affectedByGravity;
+    }
 
     public float getPosX() {
         return posX;

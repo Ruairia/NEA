@@ -1,4 +1,4 @@
-package ruairi.nea.gameClasses.Staffs;
+package ruairi.nea.gameClasses.Combat;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -8,12 +8,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Entities.Hero;
 
+import static ruairi.nea.gameClasses.Utils.createAnimation;
+
 
 public abstract class Staff {
     private static final String SPRITESHEET_PATH = "assets/StaffSpriteSheet.png";
     private static final int FRAME_WIDTH = 16;
     private static final int FRAME_HEIGHT = 16;
 
+    float cooldown=0;
     int maxAmmo;
     int currentAmmo;
     int ammoReserves;
@@ -26,6 +29,7 @@ public abstract class Staff {
     private Animation<TextureRegion> walkAnimation;
     private Animation<TextureRegion> inAirAnimation;
     private Animation<TextureRegion> attackAnimation;
+    Animation<TextureRegion> currentAnimation;
 
     public abstract void attack();
 
@@ -33,8 +37,13 @@ public abstract class Staff {
         loadAnimations();
         this.hero = hero;
         this.colour = colour;
+        currentAnimation = idleAnimation;
     }
 
+    public void  updateCooldownTimer(float delta){
+        if (cooldown>0) cooldown-=delta;
+        else cooldown=0;
+    }
 
     public void draw(Batch batch){
 
@@ -73,27 +82,28 @@ public abstract class Staff {
         TextureRegion[] attackFrames = Hero.parseFrames(1, FRAME_WIDTH, FRAME_HEIGHT * 2, FRAME_HEIGHT,spriteSheet,1);
         TextureRegion[] inAirFrames = Hero.parseFrames(1, FRAME_WIDTH, FRAME_HEIGHT * 3, FRAME_HEIGHT,spriteSheet,1);
 
-        idleAnimation = createAnimation(1, idleFrames, Animation.PlayMode.LOOP);
-        walkAnimation = createAnimation(0.2f, walkFrames, Animation.PlayMode.LOOP);
-        attackAnimation = createAnimation(1,attackFrames, Animation.PlayMode.NORMAL);
-        inAirAnimation = createAnimation(1,inAirFrames, Animation.PlayMode.NORMAL);
+        idleAnimation = createAnimation(idleFrames, 0.1f, Animation.PlayMode.LOOP);
+        walkAnimation = createAnimation(walkFrames,0.2f, Animation.PlayMode.LOOP);
+        inAirAnimation = createAnimation(inAirFrames, 0.1f, Animation.PlayMode.NORMAL);
+        attackAnimation = createAnimation(attackFrames,0.28f, Animation.PlayMode.NORMAL);
     }
 
-    public Animation<TextureRegion> createAnimation(float frameDuration, TextureRegion[] frames, Animation.PlayMode playMode) {
-        Animation<TextureRegion> animation= new Animation<>(frameDuration, frames);
-        animation.setPlayMode(playMode);
-        return animation;
-    }
 
 
     public TextureRegion getCurrentFrame(float stateTime, Hero.State currentState){
-        Animation<TextureRegion> currentAnimation = switch (currentState) {
+        if (stateTime>=currentAnimation.getAnimationDuration() || currentAnimation!=attackAnimation){
+            currentAnimation = switch (currentState) {
             case IDLE -> idleAnimation;
             case WALKING -> walkAnimation;
             case IN_AIR -> inAirAnimation;
             case ATTACKING -> attackAnimation;
         };
+        }
         return  currentAnimation.getKeyFrame(stateTime);
+    }
+
+    public float getCooldown() {
+        return cooldown;
     }
 
     public void dispose(){

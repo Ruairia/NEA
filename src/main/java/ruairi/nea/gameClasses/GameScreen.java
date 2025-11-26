@@ -8,9 +8,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import ruairi.nea.applicationClasses.LevelSelectScreen;
 import ruairi.nea.applicationClasses.Main;
+import ruairi.nea.gameClasses.Combat.Projectile;
 import ruairi.nea.gameClasses.Entities.Enemy;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Entities.Hero;
+import ruairi.nea.gameClasses.Entities.Platform;
+
+import java.util.Iterator;
 
 public class GameScreen implements Screen {
     private Main game;
@@ -92,6 +96,39 @@ public class GameScreen implements Screen {
                     hero.applyKnockback(enemy);}
         }
         if (hero.getHealth()<=0) {hero.setHealth(100); hero.spawn();}
+
+        Iterator<Projectile> projectileIterator = Projectile.projectiles.iterator();
+        while (projectileIterator.hasNext()) {
+            Projectile projectile = projectileIterator.next();
+            projectile.update(delta);
+            boolean removed = false;
+
+            // Check intersection with Platforms
+            for (Platform platform : level.platforms) {
+                if (projectile.intersect(platform)) {
+                    projectileIterator.remove(); // Safely remove the projectile
+                    removed = true;
+                    break; // Stop checking platforms once removed
+                }
+            }
+
+            // Check intersection with Enemies (only if not already removed)
+            if (!removed) {
+                for (Enemy enemy : level.damagingEntities) {
+                    if (projectile.intersect(enemy)) {
+                        enemy.damageEnemy(projectile.damage);
+                        if (enemy.getHealth() <= 0) {
+                            level.damagingEntities.remove(enemy);
+                            level.mobileEntities.remove(enemy);
+                            level.allEntities.remove(enemy);
+                        }
+                        projectileIterator.remove(); // Safely remove the projectile
+                        // No need for a separate 'removed' flag here as we will continue to the next projectile
+                        break; // Stop checking enemies once hit
+                    }
+                }
+            }
+        }
     }
 
 
@@ -134,6 +171,9 @@ public class GameScreen implements Screen {
 
         for (Entity entity : level.allEntities) {
             entity.draw(game.batch);
+        }
+        for (Projectile projectile : Projectile.projectiles){
+            projectile.draw(game.batch);
         }
         game.batch.end();
     }

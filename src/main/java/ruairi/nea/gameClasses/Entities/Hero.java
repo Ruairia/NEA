@@ -213,6 +213,8 @@ public class Hero extends Entity {
         }
         if (input.contains("HOLDJUMP")){
             holdJump(delta);
+        } else {
+            currentJumpTime=MAX_JUMP_DURATION;
         }
         if (input.contains("ATTACK") && currentStaff.getCooldown()==0) {
             if (mana>=CAST_AMOUNT) {

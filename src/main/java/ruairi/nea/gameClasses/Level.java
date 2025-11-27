@@ -46,7 +46,7 @@ public class Level {
                 elements = line.split(",");
                 switch (elements[0]) {
                     case "SPAWNPOINT" -> loadHero(elements);
-                    case "PLATFORM" -> loadPlatform(elements);
+                    case "PLATFORM" -> loadPlatformTile(elements);
                     case "ENEMY" -> loadEnemy(elements);
                     default -> throw new IllegalStateException("Unexpected value: " + elements[0]);
                 }
@@ -91,35 +91,36 @@ public class Level {
         allEntities.add(hero);
     }
 
-    private void loadPlatform(String[] elements) {
+    private void loadPlatformTile(String[] elements) {
         float posX = Float.parseFloat(elements[1]);
         float posY = Float.parseFloat(elements[2]);
         String typeName = elements[3].strip().toUpperCase();
         switch (typeName){
             case "NARROW" -> {
-                loadPlatform(posX,posY, Platform.PlatformType.leftPlatform);
-                loadPlatform(posX+Platform.tileWidth* ZOOM,posY, Platform.PlatformType.rightPlatform);
+                createPlatform(posX,posY,2);
             }
             case "WIDE" -> {
-                loadPlatform(posX,posY, Platform.PlatformType.leftPlatform);
-                loadPlatform(posX+Platform.tileWidth* ZOOM,posY, Platform.PlatformType.midPlatform);
-                loadPlatform(posX+Platform.tileWidth* ZOOM *2,posY, Platform.PlatformType.rightPlatform);
+                createPlatform(posX,posY,4);
             }
             case "ULTRAWIDE" -> {
-                loadPlatform(posX,posY, Platform.PlatformType.leftPlatform);
-                loadPlatform(posX+Platform.tileWidth* ZOOM,posY, Platform.PlatformType.midPlatform);
-                loadPlatform(posX+Platform.tileWidth* ZOOM *2, posY, Platform.PlatformType.midPlatform);
-                loadPlatform(posX+Platform.tileWidth* ZOOM *3,posY, Platform.PlatformType.midPlatform);
-                loadPlatform(posX+Platform.tileWidth* ZOOM *4,posY, Platform.PlatformType.rightPlatform);
+                createPlatform(posX,posY,6);
             }
             default -> throw new IllegalArgumentException(typeName+" is not a valid type of platform");
         }
     }
 
-    private void loadPlatform(float posX, float posY, Platform.PlatformType type){
+    private void loadPlatformTile(float posX, float posY, Platform.PlatformType type){
         Platform platform = new Platform(posX,posY,type);
         platforms.add(platform);
         allEntities.add(platform);
+    }
+
+    private void createPlatform(float posX, float posY, int tilesWide){
+        loadPlatformTile(posX,posY, Platform.PlatformType.leftPlatform);
+        for (int i = 1; i < tilesWide-1; i++) {
+            loadPlatformTile(posX+Platform.tileWidth*ZOOM*i,posY, Platform.PlatformType.midPlatform);
+        }
+        loadPlatformTile(posX+Platform.tileWidth*ZOOM*(tilesWide-1),posY, Platform.PlatformType.rightPlatform);
     }
 
 

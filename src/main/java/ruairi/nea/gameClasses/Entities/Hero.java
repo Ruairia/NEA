@@ -183,8 +183,8 @@ public class Hero extends Entity {
     public void holdJump(double delta){
         if (currentJumpTime< MAX_JUMP_DURATION) {
             currentJumpTime+= (float) delta;
-            if (jumpsRemaining == 1) {if (velocityY< JUMP_STRENGTH *0.9) velocityY = (float) (JUMP_STRENGTH *0.9);}
-            else if (velocityY<DOUBLE_JUMP_STRENGTH*0.9) velocityY = (float) (DOUBLE_JUMP_STRENGTH*0.9);
+            if (jumpsRemaining == 1) {if (velocityY < JUMP_STRENGTH *0.8) velocityY = (float) (JUMP_STRENGTH *0.8);}
+            else if (velocityY<DOUBLE_JUMP_STRENGTH*0.8) velocityY = (float) (DOUBLE_JUMP_STRENGTH*0.8);
         }
     }
 

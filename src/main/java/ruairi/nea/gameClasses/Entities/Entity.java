@@ -31,9 +31,9 @@ public abstract class Entity {
     protected float oldX, oldY;
     protected float velocityX = 0;
     protected float velocityY = 0;
-    protected float width =0;
-    protected float height =0;
-    protected boolean visibility;
+    protected float width = 0;
+    protected float height = 0;
+
 
 
     public Entity(float posX, float posY, float width, float height){
@@ -43,7 +43,7 @@ public abstract class Entity {
         this.height=height;
 
 
-        this.visibility=true;
+
     }
 
     public void update(double delta){
@@ -118,7 +118,7 @@ public abstract class Entity {
 
 
     public String toString(){
-        return "posX: " + posX + " posY: " + posY + " velocityX: " + velocityX + " velocityY: " + velocityY + " visibility: " + visibility;
+        return "posX: " + posX + " posY: " + posY + " velocityX: " + velocityX + " velocityY: " + velocityY;
     }
 
     public boolean isOnGround() {
@@ -187,13 +187,6 @@ public abstract class Entity {
 
 
 
-    public boolean isVisible() {
-        return visibility;
-    }
-
-    public void setVisibility(boolean visibility) {
-        this.visibility = visibility;
-    }
 
     public TextureRegion getCurrentFrame() {
         return textureRegion;

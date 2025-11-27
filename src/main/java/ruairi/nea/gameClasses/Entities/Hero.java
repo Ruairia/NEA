@@ -73,7 +73,6 @@ public class Hero extends Entity {
 
         loadAnimations();
         currentAnimation = idleAnimation;
-        setVisibility(true);
         currentStaff = new FireStaff(this,level.projectiles);
     }
 
@@ -304,5 +303,26 @@ public class Hero extends Entity {
         super.draw(batch);
         currentStaff.draw(batch);
         batch.setColor(Color.WHITE);
+    }
+
+    @Override
+    public String toString() {
+        return "Hero{" +
+                "currentState=" + currentState +
+                ", health=" + health +
+                ", mana=" + mana +
+                ", jumpsRemaining=" + jumpsRemaining +
+                ", currentJumpTime=" + currentJumpTime +
+                ", invincibilityPeriodLeft=" + invincibilityPeriodLeft +
+                ", knockbackTimer=" + knockbackTimer +
+                ", lastOnGround=" + lastOnGround +
+                ", isOnGround=" + isOnGround +
+                ", posX=" + posX +
+                ", posY=" + posY +
+                ", velocityX=" + velocityX +
+                ", velocityY=" + velocityY +
+                ", width=" + width +
+                ", height=" + height +
+                '}';
     }
 }

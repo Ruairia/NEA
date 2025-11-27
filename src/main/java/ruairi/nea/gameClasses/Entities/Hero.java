@@ -170,6 +170,7 @@ public class Hero extends Entity {
 
     public void jump(){
         //Handle logic for jumping
+        System.out.println( "Jumping, jumps remaining: " + jumpsRemaining);
         if (jumpsRemaining > 0) {
             velocityY = (jumpsRemaining == MAX_JUMPS) ? JUMP_STRENGTH : DOUBLE_JUMP_STRENGTH;
             isOnGround = false;

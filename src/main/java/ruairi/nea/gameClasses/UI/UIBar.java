@@ -1,4 +1,4 @@
-package ruairi.nea.gameClasses;
+package ruairi.nea.gameClasses.UI;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;

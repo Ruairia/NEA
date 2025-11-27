@@ -13,6 +13,8 @@ import ruairi.nea.gameClasses.Combat.Projectile;
 import ruairi.nea.gameClasses.Entities.Enemy;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Entities.Hero;
+import ruairi.nea.gameClasses.UI.HealthBar;
+import ruairi.nea.gameClasses.UI.ManaBar;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -6,14 +6,15 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import org.lwjgl.opengl.GL20;
 import ruairi.nea.applicationClasses.LevelSelectScreen;
 import ruairi.nea.applicationClasses.Main;
 import ruairi.nea.gameClasses.Combat.Projectile;
 import ruairi.nea.gameClasses.Entities.Enemy;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Entities.Hero;
-import ruairi.nea.gameClasses.Entities.Platform;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GameScreen implements Screen {
@@ -23,6 +24,7 @@ public class GameScreen implements Screen {
 
     //UI&Background
     public HealthBar healthBar;
+    public ManaBar manaBar;
     public Background background;
 
     final float LERP_X = 0.2f;
@@ -32,7 +34,7 @@ public class GameScreen implements Screen {
     final float CAMERA_LOWER_BUFFER_Y = 1f / 3f;
     final int OUT_OF_WORLD_THRESHOLD = -30;
     final int OUT_OF_WORLD_THRESHOLD_DAMAGE = 10;
-    final float INVINCIBILITY_DURATION = 0.6f;
+
     public final static float ZOOM =3;
 
 
@@ -62,6 +64,7 @@ public class GameScreen implements Screen {
         bitmapFont = new BitmapFont();
 
         healthBar = new HealthBar(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        manaBar = new ManaBar(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 
         level = new Level();
         level.loadLevel(this.levelNumber);
@@ -81,54 +84,20 @@ public class GameScreen implements Screen {
 
 
     private void perFrameLogic(float delta){
-        updatePositions(delta); //Move hero and entities
+        updateEntities(delta); //Move hero and entities
 
-        CollisionManager.handleCollisions(level.mobileEntities, level.platforms);
+        CollisionManager.handlePlatformCollisions(level.mobileEntities, level.platforms);
 
         if (hero.getPosY()+hero.getHeight()< OUT_OF_WORLD_THRESHOLD){
             hero.spawn();
             hero.damage(OUT_OF_WORLD_THRESHOLD_DAMAGE);
         }
-        for (Enemy enemy : level.damagingEntities){
-            if (hero.getInvincibilityPeriodLeft()==0 && enemy.intersectsHero(hero)) {
-                    hero.damage(enemy.getDamage());
-                    hero.setInvincibilityPeriodLeft(INVINCIBILITY_DURATION);
-                    hero.applyKnockback(enemy);}
-        }
+
+        CollisionManager.handleEnemyCollisions(level.enemies,hero);
+
         if (hero.getHealth()<=0) {hero.setHealth(100); hero.spawn();}
 
-        Iterator<Projectile> projectileIterator = Projectile.projectiles.iterator();
-        while (projectileIterator.hasNext()) {
-            Projectile projectile = projectileIterator.next();
-            projectile.update(delta);
-            boolean removed = false;
-
-            // Check intersection with Platforms
-            for (Platform platform : level.platforms) {
-                if (projectile.intersect(platform)) {
-                    projectileIterator.remove(); // Safely remove the projectile
-                    removed = true;
-                    break; // Stop checking platforms once removed
-                }
-            }
-
-            // Check intersection with Enemies (only if not already removed)
-            if (!removed) {
-                for (Enemy enemy : level.damagingEntities) {
-                    if (projectile.intersect(enemy)) {
-                        enemy.damageEnemy(projectile.damage);
-                        if (enemy.getHealth() <= 0) {
-                            level.damagingEntities.remove(enemy);
-                            level.mobileEntities.remove(enemy);
-                            level.allEntities.remove(enemy);
-                        }
-                        projectileIterator.remove(); // Safely remove the projectile
-                        // No need for a separate 'removed' flag here as we will continue to the next projectile
-                        break; // Stop checking enemies once hit
-                    }
-                }
-            }
-        }
+        updateProjectiles(level,delta);
     }
 
 
@@ -172,7 +141,7 @@ public class GameScreen implements Screen {
         for (Entity entity : level.allEntities) {
             entity.draw(game.batch);
         }
-        for (Projectile projectile : Projectile.projectiles){
+        for (Projectile projectile : level.projectiles){
             projectile.draw(game.batch);
         }
         game.batch.end();
@@ -182,11 +151,15 @@ public class GameScreen implements Screen {
 
     private void drawUI() {
         shapeRenderer.setProjectionMatrix(uiCamera.combined);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        healthBar.render(shapeRenderer, hero.getHealth());
+        healthBar.draw(shapeRenderer, hero.getHealth());
+        manaBar.draw(shapeRenderer,hero.getMana());
 
         shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     private void drawFPS() {
@@ -230,9 +203,41 @@ public class GameScreen implements Screen {
     }
 
 
-    private void updatePositions(float delta) {
+    private void updateEntities(float delta) {
         for (Entity entity : level.allEntities) {
             entity.update(delta);
+        }
+    }
+
+    private static void updateProjectiles(Level level, float delta) {
+
+
+        Iterator<Projectile> projectileIterator = level.projectiles.iterator();
+        ArrayList<Enemy> deadEnemies = new ArrayList<>();
+
+        while (projectileIterator.hasNext()) {
+            Projectile projectile = projectileIterator.next();
+            projectile.update(delta);
+
+            boolean destroyed = false;
+
+
+            destroyed = CollisionManager.handleProjectilePlatformCollisions(level, projectile, projectileIterator, destroyed);
+            if (destroyed) continue;
+
+
+            CollisionManager.checkProjectileEnemyCollisions(level, projectile, deadEnemies, projectileIterator);
+        }
+
+
+        removeDeadEnemies(level, deadEnemies);
+    }
+
+    private static void removeDeadEnemies(Level level, ArrayList<Enemy> deadEnemies) {
+        for (Enemy dead : deadEnemies) {
+            level.enemies.remove(dead);
+            level.mobileEntities.remove(dead);
+            level.allEntities.remove(dead);
         }
     }
 
@@ -255,6 +260,7 @@ public class GameScreen implements Screen {
         for (Entity visibleEntity : level.allEntities) {
             visibleEntity.dispose();
         }
+        Projectile.disposeTextures();
         shapeRenderer.dispose();
         background.dispose();
         bitmapFont.dispose();

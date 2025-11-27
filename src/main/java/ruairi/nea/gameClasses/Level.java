@@ -1,5 +1,6 @@
 package ruairi.nea.gameClasses;
 
+import ruairi.nea.gameClasses.Combat.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
 
 import java.io.BufferedReader;
@@ -14,8 +15,9 @@ public class Level {
 
     public ArrayList<Entity> allEntities;
     public ArrayList<Platform> platforms;
-    public ArrayList<Enemy> damagingEntities;
+    public ArrayList<Enemy> enemies;
     public ArrayList<Entity> mobileEntities;
+    public ArrayList<Projectile> projectiles;
 
     private Hero hero;
     public Background background;
@@ -23,10 +25,11 @@ public class Level {
     public Level() {
         allEntities = new ArrayList<>();
         platforms = new ArrayList<>();
-        damagingEntities = new ArrayList<>();
+        enemies = new ArrayList<>();
         mobileEntities = new ArrayList<>();
+        projectiles = new ArrayList<>();
 
-    };
+    }
 
     public void loadLevel(int level) {
 
@@ -77,13 +80,13 @@ public class Level {
             case "FIREBALL" -> enemy = new Fireball(posX,posY,Float.parseFloat(elements[4]),Float.parseFloat(elements[5]));
             default -> throw new IllegalArgumentException(elements[3]);
         }
-        damagingEntities.add(enemy);
+        enemies.add(enemy);
         mobileEntities.add(enemy);
         allEntities.add(enemy);
     }
 
     private void loadHero(String[] elements){
-        hero = new Hero().setSpawnPoint(Float.parseFloat(elements[1]), Float.parseFloat(elements[2]));
+        hero = new Hero(this).setSpawnPoint(Float.parseFloat(elements[1]), Float.parseFloat(elements[2]));
         mobileEntities.add(hero);
         allEntities.add(hero);
     }

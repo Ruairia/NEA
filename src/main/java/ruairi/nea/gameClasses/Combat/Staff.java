@@ -83,7 +83,7 @@ public abstract class Staff {
         TextureRegion[] inAirFrames = parseFrames(0, 3*FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, spriteSheet, 1);
 
         idleAnimation = createAnimation(idleFrames, 0.2f, Animation.PlayMode.LOOP);
-        walkAnimation = createAnimation(walkFrames,0.4f, Animation.PlayMode.LOOP);
+        walkAnimation = createAnimation(walkFrames,0.3f, Animation.PlayMode.LOOP);
         inAirAnimation = createAnimation(inAirFrames, 0.2f, Animation.PlayMode.NORMAL);
         attackAnimation = createAnimation(attackFrames,0.3f, Animation.PlayMode.NORMAL);
     }

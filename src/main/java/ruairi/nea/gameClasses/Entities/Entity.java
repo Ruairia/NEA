@@ -3,7 +3,6 @@ package ruairi.nea.gameClasses.Entities;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import ruairi.nea.applicationClasses.Main;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
@@ -48,23 +47,40 @@ public abstract class Entity {
     }
 
     public void update(double delta){
+
         oldX = posX;
         oldY = posY;
 
-        if  (isAffectedByGravity) velocityY -= (float) (GRAVITY*delta);
+        applyGravity(delta);
+        updateVelocity(delta);
+        capVerticalVelocity(delta);
+        updateDirection();
+        updateTimers((float) delta);
 
-        posX += (float) (velocityX * delta);
-        posY += (float) (velocityY * delta);
+    }
 
+    protected void updateTimers(float delta) {
+        if (!isOnGround) {
+            lastOnGround += delta;
+        }
+    }
+
+    protected void applyGravity(double delta) {
+        if  (isAffectedByGravity) velocityY -= (float) (GRAVITY* delta);
+    }
+
+    protected void capVerticalVelocity(double delta){
         if (velocityY < MAXFALLSPEED){
             velocityY = MAXFALLSPEED;
         }
+    }
 
-        if (!isOnGround) {
-            lastOnGround += (float) delta;
-        }
+    protected void updateVelocity(double delta) {
+        posX += (float) (velocityX * delta);
+        posY += (float) (velocityY * delta);
+    }
 
-
+    private void updateDirection(){
         if (velocityX<0){
             currentDirection = Direction.LEFT;
         }
@@ -73,7 +89,6 @@ public abstract class Entity {
         }
 
     }
-
 
     public  boolean intersect(Entity other){
         return

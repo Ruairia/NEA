@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.gameClasses.Combat.FireStaff;
 import ruairi.nea.gameClasses.InputHandler;
 import ruairi.nea.gameClasses.Combat.Staff;
+import ruairi.nea.gameClasses.Level;
 
 import java.util.ArrayList;
 
@@ -20,12 +21,16 @@ public class Hero extends Entity {
 
     //Define Constant-like variables
     private static final String SPRITESHEET_PATH = "assets/WizardSpriteSheetNoStaff.png";
-    public static final float JUMPSTRENGTH = 100*ZOOM;
-    public static final float MAXJUMPTIME = 0.25f;
+    public static final float JUMP_STRENGTH = 100*ZOOM;
+    public static final float MAX_JUMP_DURATION = 0.25f;
     private static final float DOUBLE_JUMP_STRENGTH = 80 * ZOOM;
-    public static final float WALKSPEED = 50*ZOOM;
-    public static final int MAXHEALTH = 100;
+    public static final float WALK_SPEED = 50*ZOOM;
+    public static final int MAX_HEALTH = 100;
+    public static final int MAX_MANA = 10;
+    public static final float MANA_REGENERATION = 1f;
     private static final int MAX_JUMPS = 2;
+    public static final float INVINCIBILITY_DURATION = 0.6f;
+    public static final int CAST_AMOUNT = 2;
 
     public enum State {
         IDLE,
@@ -44,6 +49,8 @@ public class Hero extends Entity {
     Animation<TextureRegion> currentAnimation;
 
     int health;
+    float mana;
+
     private int jumpsRemaining = 2;
     private float currentJumpTime=0;
     float invincibilityPeriodLeft = 0;
@@ -58,13 +65,16 @@ public class Hero extends Entity {
     float spawnPointX = 100;
     float spawnPointY = 100;
 
-    public Hero() {
+    public Hero(Level level) {
         super(0,0, 16* ZOOM, 16* ZOOM);
-        health=MAXHEALTH;
+
+        health = MAX_HEALTH;
+        mana = MAX_MANA;
+
         loadAnimations();
         currentAnimation = idleAnimation;
         setVisibility(true);
-        currentStaff = new FireStaff(this);
+        currentStaff = new FireStaff(this,level.projectiles);
     }
 
     public Hero spawn() {
@@ -76,21 +86,30 @@ public class Hero extends Entity {
         return this;
     }
 
+    public void updateTimers(float delta){
+        super.updateTimers(delta);
+        stateTime+=delta;
+
+        if (knockbackTimer>0) knockbackTimer-= delta;
+        else knockbackTimer=0;
+
+        if (invincibilityPeriodLeft>0) invincibilityPeriodLeft-= delta;
+        else invincibilityPeriodLeft=0;
+
+        if (mana<MAX_MANA) mana += (delta*MANA_REGENERATION);
+        else mana=MAX_MANA;
+
+        currentStaff.updateCooldownTimer(delta);
+    }
+
+    @Override
+    protected void updateVelocity(double delta) {
+        move(delta);
+        super.updateVelocity(delta);
+    }
 
     public void update(double delta){
         super.update(delta);
-
-        stateTime += (float) delta;
-
-        if (knockbackTimer>0) knockbackTimer-= (float) delta;
-        else knockbackTimer=0;
-
-        if (invincibilityPeriodLeft>0) invincibilityPeriodLeft-= (float) delta;
-        else invincibilityPeriodLeft=0;
-
-        currentStaff.updateCooldownTimer((float) delta);
-
-        move(delta);
     }
 
 
@@ -152,7 +171,7 @@ public class Hero extends Entity {
     public void jump(){
         //Handle logic for jumping
         if (jumpsRemaining > 0) {
-            velocityY = (jumpsRemaining == MAX_JUMPS) ? JUMPSTRENGTH : DOUBLE_JUMP_STRENGTH;
+            velocityY = (jumpsRemaining == MAX_JUMPS) ? JUMP_STRENGTH : DOUBLE_JUMP_STRENGTH;
             isOnGround = false;
             jumpsRemaining--;
             currentJumpTime = 0;
@@ -163,9 +182,9 @@ public class Hero extends Entity {
     }
 
     public void holdJump(double delta){
-        if (currentJumpTime<MAXJUMPTIME) {
+        if (currentJumpTime< MAX_JUMP_DURATION) {
             currentJumpTime+= (float) delta;
-            if (jumpsRemaining == 1) {if (velocityY<JUMPSTRENGTH*0.9) velocityY = (float) (JUMPSTRENGTH*0.9);}
+            if (jumpsRemaining == 1) {if (velocityY< JUMP_STRENGTH *0.9) velocityY = (float) (JUMP_STRENGTH *0.9);}
             else if (velocityY<DOUBLE_JUMP_STRENGTH*0.9) velocityY = (float) (DOUBLE_JUMP_STRENGTH*0.9);
         }
     }
@@ -176,11 +195,11 @@ public class Hero extends Entity {
         ArrayList<String> input = inputHandler.getInputs();
 
         if (input.contains("LEFT") && !input.contains("RIGHT")){
-            if (knockbackTimer==0) velocityX= -WALKSPEED *inputHandler.horizontalAxisStrength;
+            if (knockbackTimer==0) velocityX= -WALK_SPEED *inputHandler.horizontalAxisStrength;
             if (isOnGround) setCurrentState(State.WALKING, Direction.LEFT);
         }
         else if (input.contains("RIGHT") && !input.contains("LEFT")){
-            if (knockbackTimer==0) velocityX= WALKSPEED *inputHandler.horizontalAxisStrength;
+            if (knockbackTimer==0) velocityX= WALK_SPEED *inputHandler.horizontalAxisStrength;
             if (isOnGround) setCurrentState(State.WALKING, Direction.RIGHT);
         }
         else {
@@ -196,13 +215,17 @@ public class Hero extends Entity {
             holdJump(delta);
         }
         if (input.contains("ATTACK") && currentStaff.getCooldown()==0) {
+            if (mana>=CAST_AMOUNT) {
             setCurrentState(State.ATTACKING);
-            currentStaff.attack();
+
+                currentStaff.attack();
+                mana-=CAST_AMOUNT;
             velocityX/=10;
+            }
         }
         if (!isOnGround) {
             if (currentState!=State.ATTACKING) setCurrentState(State.IN_AIR);
-            if (jumpsRemaining>0&&currentJumpTime>MAXJUMPTIME) jumpsRemaining=1;
+            if (jumpsRemaining>0&&currentJumpTime> MAX_JUMP_DURATION) jumpsRemaining=1;
         }
         else currentJumpTime=0;
         if (currentState!=previousState) stateTime=0;
@@ -227,6 +250,14 @@ public class Hero extends Entity {
 
     public void setHealth(int health) {
         this.health = health;
+    }
+
+    public float getMana() {
+        return mana;
+    }
+
+    public void setMana(float mana) {
+        this.mana = mana;
     }
 
     public Staff getCurrentWeapon() {

@@ -1,13 +1,13 @@
 package ruairi.nea.gameClasses;
 
-import ruairi.nea.gameClasses.Entities.Entity;
-import ruairi.nea.gameClasses.Entities.Fireball;
-import ruairi.nea.gameClasses.Entities.Platform;
+import ruairi.nea.gameClasses.Combat.Projectile;
+import ruairi.nea.gameClasses.Entities.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class CollisionManager {
-    public static void handleCollisions(ArrayList<Entity> mobileEntities, ArrayList<Platform> platformsToBeChecked) {
+    public static void handlePlatformCollisions(ArrayList<Entity> mobileEntities, ArrayList<Platform> platformsToBeChecked) {
         for (Entity entity : mobileEntities) {
             boolean hasCollided = false;
             for (Platform platform : platformsToBeChecked) {
@@ -58,7 +58,45 @@ public class CollisionManager {
             if (entity instanceof Fireball) entity.setVelocityX(-entity.getVelocityX());
             else entity.setVelocityX(0);
         }
+    }
+
+    public static void handleEnemyCollisions(ArrayList<Enemy> enemies, Hero hero){
+        for (Enemy enemy : enemies){
+            if (hero.getInvincibilityPeriodLeft()>0) return;
+            if (enemy.intersectsHero(hero)) {
+
+                hero.damage(enemy.getDamage());
+                hero.setInvincibilityPeriodLeft(Hero.INVINCIBILITY_DURATION);
+                hero.applyKnockback(enemy);
+            }
+        }
+    }
 
 
+
+    public static void checkProjectileEnemyCollisions(Level level, Projectile projectile, ArrayList<Enemy> deadEnemies, Iterator<Projectile> projectileIterator) {
+        for (Enemy enemy : level.enemies) {
+            if (projectile.intersect(enemy)) {
+                enemy.damageEnemy(projectile.damage);
+
+                if (enemy.getHealth() <= 0) {
+                    deadEnemies.add(enemy);
+                }
+
+                projectileIterator.remove();
+                break;
+            }
+        }
+    }
+
+    public static boolean handleProjectilePlatformCollisions(Level level, Projectile projectile, Iterator<Projectile> projectileIterator, boolean destroyed) {
+        for (Platform platform : level.platforms) {
+            if (projectile.intersect(platform)) {
+                projectileIterator.remove();
+                destroyed = true;
+                break;
+            }
+        }
+        return destroyed;
     }
 }

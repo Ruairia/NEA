@@ -170,6 +170,7 @@ public class Hero extends Entity {
 
     public void jump(){
         //Handle logic for jumping
+        System.out.println( "Jumping, jumps remaining: " + jumpsRemaining);
         if (jumpsRemaining > 0) {
             velocityY = (jumpsRemaining == MAX_JUMPS) ? JUMP_STRENGTH : DOUBLE_JUMP_STRENGTH;
             isOnGround = false;
@@ -213,6 +214,8 @@ public class Hero extends Entity {
         }
         if (input.contains("HOLDJUMP")){
             holdJump(delta);
+        } else {
+            currentJumpTime=MAX_JUMP_DURATION;
         }
         if (input.contains("ATTACK") && currentStaff.getCooldown()==0) {
             if (mana>=CAST_AMOUNT) {

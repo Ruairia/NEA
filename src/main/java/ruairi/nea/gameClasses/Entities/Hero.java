@@ -13,7 +13,7 @@ import ruairi.nea.gameClasses.Combat.Staff;
 import java.util.ArrayList;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
-import static ruairi.nea.gameClasses.Utils.createAnimation;
+import static ruairi.nea.gameClasses.Utils.*;
 
 public class Hero extends Entity {
     private final InputHandler inputHandler = new InputHandler();
@@ -100,16 +100,16 @@ public class Hero extends Entity {
         int frameWidth = 16;
         int frameHeight = 16;
 
-        TextureRegion[] idleFrames = parseFrames(1, frameWidth, 0, frameHeight, spriteSheet, 1);
+        TextureRegion[] idleFrames = parseFrames(0,0, frameWidth, frameHeight, spriteSheet, 1);
 
 
-        TextureRegion[] walkFrames = parseFrames(2, frameWidth, frameHeight, frameHeight, spriteSheet, 2);
+        TextureRegion[] walkFrames = parseFrames(0,1*frameHeight, frameWidth, frameHeight, spriteSheet, 2);
 
 
-        TextureRegion[] attackFrames = parseFrames(1, frameWidth, frameHeight * 2, frameHeight, spriteSheet, 1);
+        TextureRegion[] attackFrames = parseFrames(0,2*frameHeight, frameWidth, frameHeight, spriteSheet, 1);
 
 
-        TextureRegion[] inAirFrames = parseFrames(1, frameWidth, frameHeight * 3, frameHeight, spriteSheet, 1);
+        TextureRegion[] inAirFrames = parseFrames(0, 3*frameHeight, frameWidth, frameHeight, spriteSheet, 1);
 
         idleAnimation = createAnimation(idleFrames, 0.1f, Animation.PlayMode.LOOP);
         walkAnimation = createAnimation(walkFrames, 0.2f, Animation.PlayMode.LOOP);
@@ -119,13 +119,6 @@ public class Hero extends Entity {
 
 
 
-    public static TextureRegion[] parseFrames(int x, int frameWidth, int y, int frameHeight, Texture spriteSheet, int framesNumber) {
-        TextureRegion[] frames = new TextureRegion[framesNumber];
-        for (int i = 0; i < x; i++) {
-            frames[i] = new TextureRegion(spriteSheet, i * frameWidth, y, frameWidth, frameHeight);
-        }
-        return frames;
-    }
 
     @Override
     public TextureRegion getCurrentFrame(){
@@ -134,7 +127,7 @@ public class Hero extends Entity {
             case IDLE -> idleAnimation;
             case WALKING -> walkAnimation;
             case IN_AIR -> inAirAnimation;
-            case ATTACKING -> attackAnimation;
+            case ATTACKING -> {if (isOnGround) yield attackAnimation; else yield inAirAnimation;}
         };
         }
         return  currentAnimation.getKeyFrame(stateTime);
@@ -205,7 +198,7 @@ public class Hero extends Entity {
         if (input.contains("ATTACK") && currentStaff.getCooldown()==0) {
             setCurrentState(State.ATTACKING);
             currentStaff.attack();
-            velocityX/=5;
+            velocityX/=10;
         }
         if (!isOnGround) {
             if (currentState!=State.ATTACKING) setCurrentState(State.IN_AIR);

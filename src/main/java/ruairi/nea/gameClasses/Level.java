@@ -102,6 +102,13 @@ public class Level {
                 loadPlatform(posX+Platform.tileWidth* ZOOM,posY, Platform.PlatformType.midPlatform);
                 loadPlatform(posX+Platform.tileWidth* ZOOM *2,posY, Platform.PlatformType.rightPlatform);
             }
+            case "ULTRAWIDE" -> {
+                loadPlatform(posX,posY, Platform.PlatformType.leftPlatform);
+                loadPlatform(posX+Platform.tileWidth* ZOOM,posY, Platform.PlatformType.midPlatform);
+                loadPlatform(posX+Platform.tileWidth* ZOOM *2, posY, Platform.PlatformType.midPlatform);
+                loadPlatform(posX+Platform.tileWidth* ZOOM *3,posY, Platform.PlatformType.midPlatform);
+                loadPlatform(posX+Platform.tileWidth* ZOOM *4,posY, Platform.PlatformType.rightPlatform);
+            }
             default -> throw new IllegalArgumentException(typeName+" is not a valid type of platform");
         }
     }

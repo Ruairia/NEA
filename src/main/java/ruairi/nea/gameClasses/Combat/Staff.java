@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Entities.Hero;
 
-import static ruairi.nea.gameClasses.Utils.createAnimation;
+import static ruairi.nea.gameClasses.Utils.*;
 
 
 public abstract class Staff {
@@ -77,15 +77,15 @@ public abstract class Staff {
     private void loadAnimations(){
         spriteSheet = new Texture(SPRITESHEET_PATH);
 
-        TextureRegion[] idleFrames = Hero.parseFrames(1, FRAME_WIDTH, 0, FRAME_HEIGHT,spriteSheet,1);
-        TextureRegion[] walkFrames =  Hero.parseFrames(2, FRAME_WIDTH, FRAME_HEIGHT, FRAME_HEIGHT,spriteSheet,2);
-        TextureRegion[] attackFrames = Hero.parseFrames(1, FRAME_WIDTH, FRAME_HEIGHT * 2, FRAME_HEIGHT,spriteSheet,1);
-        TextureRegion[] inAirFrames = Hero.parseFrames(1, FRAME_WIDTH, FRAME_HEIGHT * 3, FRAME_HEIGHT,spriteSheet,1);
+        TextureRegion[] idleFrames = parseFrames(0,0, FRAME_WIDTH, FRAME_HEIGHT, spriteSheet, 1);
+        TextureRegion[] walkFrames = parseFrames(0,1*FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, spriteSheet, 2);
+        TextureRegion[] attackFrames = parseFrames(0,2*FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, spriteSheet, 1);
+        TextureRegion[] inAirFrames = parseFrames(0, 3*FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, spriteSheet, 1);
 
-        idleAnimation = createAnimation(idleFrames, 0.1f, Animation.PlayMode.LOOP);
-        walkAnimation = createAnimation(walkFrames,0.2f, Animation.PlayMode.LOOP);
-        inAirAnimation = createAnimation(inAirFrames, 0.1f, Animation.PlayMode.NORMAL);
-        attackAnimation = createAnimation(attackFrames,0.28f, Animation.PlayMode.NORMAL);
+        idleAnimation = createAnimation(idleFrames, 0.2f, Animation.PlayMode.LOOP);
+        walkAnimation = createAnimation(walkFrames,0.4f, Animation.PlayMode.LOOP);
+        inAirAnimation = createAnimation(inAirFrames, 0.2f, Animation.PlayMode.NORMAL);
+        attackAnimation = createAnimation(attackFrames,0.3f, Animation.PlayMode.NORMAL);
     }
 
 

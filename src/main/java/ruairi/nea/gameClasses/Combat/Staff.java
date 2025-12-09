@@ -20,7 +20,7 @@ public abstract class Staff {
     int maxAmmo;
     int currentAmmo;
     int ammoReserves;
-    public final boolean requiresMana;
+    public boolean requiresMana;
 
     final Color colour;
     final Hero hero;

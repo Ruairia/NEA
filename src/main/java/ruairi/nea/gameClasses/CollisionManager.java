@@ -76,7 +76,7 @@ public class CollisionManager {
 
     public static void checkProjectileEnemyCollisions(Level level, Projectile projectile, ArrayList<Enemy> deadEnemies, Iterator<Projectile> projectileIterator) {
         for (Enemy enemy : level.enemies) {
-            if (projectile.intersect(enemy)) {
+            if (intersectsWithTolerance(enemy,projectile,projectile.intersectTolerance)) {
                 enemy.damageEnemy(projectile.damage);
 
                 if (enemy.getHealth() <= 0) {
@@ -90,7 +90,7 @@ public class CollisionManager {
     }
 
     public static void checkProjectileHeroCollisions(Hero hero, Projectile projectile, Iterator<Projectile> projectileIterator) {
-        if (projectile.intersect(hero)) {
+        if (intersectsWithTolerance(hero,projectile,projectile.intersectTolerance)) {
             if (hero.getInvincibilityPeriodLeft()==0) {
                 hero.damage(projectile.damage);
                 hero.setInvincibilityPeriodLeft(Hero.INVINCIBILITY_DURATION);

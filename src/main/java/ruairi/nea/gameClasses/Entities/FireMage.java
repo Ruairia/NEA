@@ -1,6 +1,9 @@
 package ruairi.nea.gameClasses.Entities;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.gameClasses.Combat.Projectile;
 
@@ -11,11 +14,8 @@ import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 public class FireMage extends PacingEnemy{
 
     private final Hero hero;
-    private static final String SPRITESHEET_PATH = "assets/texture_unknown.png";
+    private static final String SPRITESHEET_PATH = "assets/FireballSpriteSheet.png";
 
-
-    private static final int FRAME_WIDTH = 16;
-    private static final int FRAME_HEIGHT = 16;
 
     private static final float SPEED = 50*ZOOM;
     private static final float NOTICE_DISTANCE = 300*ZOOM;
@@ -23,38 +23,51 @@ public class FireMage extends PacingEnemy{
     private static final float INTERSECT_TOLERANCE = 10;
     private static final int DAMAGE = 20;
     private static final float SHOOT_COOLDOWN = 1.25f;
+    private static final int PROJECTILE_INTERSECT_TOLERANCE = 16;
 
     private static Texture spriteSheet;
 
     private static ArrayList<Projectile> projectiles = null;
 
-
+    private final Animation<TextureRegion> animation;
+    
     float stateTime = 0;
     float shootCooldown = 0;
+
 
     public static void loadTextures(){
         if (spriteSheet==null) spriteSheet = new Texture(SPRITESHEET_PATH);
     }
 
     public static void setProjectileArrayList(ArrayList<Projectile> projectilesList){
-        if (projectiles==null) projectiles=projectilesList;
+        projectiles=projectilesList;
     }
 
-    public void dispose(){
-        if (spriteSheet!=null) spriteSheet.dispose();
-    }
+
 
     public FireMage(float posX, float posY, Hero hero, ArrayList<Projectile> projectiles, float leftBound, float rightBound) {
-        super(posX, posY, 16*ZOOM, 16*ZOOM, leftBound, rightBound, SPEED,INTERSECT_TOLERANCE);
+        super(posX, posY, 16*ZOOM, 20*ZOOM, leftBound, rightBound, SPEED,INTERSECT_TOLERANCE);
 
         this.hero = hero;
         damage = DAMAGE;
 
+        int frameWidth = 16;
+        int frameHeight = 20;
 
         loadTextures();
+
+        TextureRegion[] frames = new TextureRegion[2];
+        frames[0] = new TextureRegion(spriteSheet, 0, 0, frameWidth, frameHeight);
+        frames[1] = new TextureRegion(spriteSheet, frameWidth, 0, frameWidth, frameHeight);
+
+        animation = new Animation<>(0.3f, frames);
+        animation.setPlayMode(Animation.PlayMode.LOOP);
+
+
+
         setProjectileArrayList(projectiles);
 
-        setTextureRegion(new TextureRegion(spriteSheet, 0, 0, FRAME_WIDTH, FRAME_HEIGHT));
+        setTextureRegion(new TextureRegion(spriteSheet, 0, 0, frameWidth, frameHeight));
     }
 
     @Override
@@ -79,16 +92,30 @@ public class FireMage extends PacingEnemy{
 
     private void shootAtHero(float displacementToHeroX, float displacementToHeroY, float euclDistanceToHero){
         float directionX = displacementToHeroX /(euclDistanceToHero);
-        float directionY = 0.5f * displacementToHeroY /(euclDistanceToHero);
+        float directionY = 0.9f * displacementToHeroY /(euclDistanceToHero);
 
         float projectilePosX = posX;
 
         if (this.getCurrentDirection()==Direction.RIGHT) projectilePosX+=width;
 
-        Projectile projectile = new Projectile(projectilePosX,posY+0.5f*height,directionX*PROJECTILE_SPEED,directionY*PROJECTILE_SPEED,DAMAGE);
+        Projectile projectile = new Projectile(projectilePosX,posY+0.5f*height,directionX*PROJECTILE_SPEED,directionY*PROJECTILE_SPEED,DAMAGE,Projectile.projectileType.FIREMAGE);
         projectiles.add(projectile);
         shootCooldown=SHOOT_COOLDOWN;
     }
 
+    @Override
+    public TextureRegion getCurrentFrame(){
+        return animation.getKeyFrame(stateTime);
+    }
 
+    @Override
+    public void draw(Batch batch){
+        batch.setColor(Color.RED);
+        super.draw(batch);
+        batch.setColor(Color.WHITE);
+    }
+
+    public void dispose(){
+        if (spriteSheet!=null) spriteSheet.dispose();
+    }
 }

@@ -7,23 +7,20 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
-public class Fireball extends Enemy{
+public class Fireball extends PacingEnemy{
     private static final String SPRITESHEET_PATH = "assets/FireballSpriteSheet.png";
-    final float SPEED = 50*ZOOM;
-    final int DAMAGE = 30;
-    final float INTERSECT_TOLERANCE = 10;
+    final static float SPEED = 50*ZOOM;
+    final static int DAMAGE = 30;
+    final static float INTERSECT_TOLERANCE = 10;
 
     Texture spriteSheet;
     Animation<TextureRegion> animation;
     float stateTime = 0;
 
 
-    float leftBound;
-    float rightBound;
-
 
     public Fireball(float posX, float posY, float leftBound, float rightBound) {
-        super(posX, posY, 16* ZOOM, 20* ZOOM);
+        super(posX, posY, 16* ZOOM, 20* ZOOM, leftBound, rightBound, SPEED,INTERSECT_TOLERANCE);
 
         spriteSheet = new Texture(SPRITESHEET_PATH);
 
@@ -37,21 +34,21 @@ public class Fireball extends Enemy{
         animation = new Animation<>(0.3f, frames);
         animation.setPlayMode(Animation.PlayMode.LOOP);
 
-        this.leftBound = leftBound;
-        this.rightBound = rightBound;
-        velocityX = SPEED;
         damage = DAMAGE;
-        intersectTolerance = INTERSECT_TOLERANCE;
         isAffectedByGravity=false;
     }
 
     @Override
     public void update(double delta){
-        stateTime += (float) delta;
-        if (posX <= leftBound) {velocityX = SPEED; setCurrentDirection(Direction.RIGHT);}
-        else if (posX >= rightBound) {velocityX = -SPEED; setCurrentDirection(Direction.LEFT);}
         super.update(delta);
     }
+
+    @Override
+    public void updateTimers(float delta){
+        stateTime +=delta;
+        super.updateTimers(delta);
+    }
+
 
     @Override
     public TextureRegion getCurrentFrame() {

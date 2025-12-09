@@ -24,7 +24,7 @@ public class Hero extends Entity {
     public static final float JUMP_STRENGTH = 100*ZOOM;
     public static final float MAX_JUMP_DURATION = 0.25f;
     private static final float DOUBLE_JUMP_STRENGTH = 80 * ZOOM;
-    public static final float WALK_SPEED = 50*ZOOM;
+    public static final float WALK_SPEED = 60*ZOOM;
     public static final int MAX_HEALTH = 100;
     public static final int MAX_MANA = 10;
     public static final float MANA_REGENERATION = 1f;
@@ -73,7 +73,7 @@ public class Hero extends Entity {
 
         loadAnimations();
         currentAnimation = idleAnimation;
-        currentStaff = new FireStaff(this,level.projectiles);
+        currentStaff = new FireStaff(this,level.playerProjectiles);
     }
 
     public Hero spawn() {
@@ -109,6 +109,8 @@ public class Hero extends Entity {
 
     public void update(double delta){
         super.update(delta);
+        if (isOnGround) jumpsRemaining = MAX_JUMPS;
+        if (!isOnGround&&jumpsRemaining==2) jumpsRemaining=1;
     }
 
 
@@ -156,8 +158,8 @@ public class Hero extends Entity {
         health-=damage;
     }
 
-    public void applyKnockback(Enemy enemy) {
-        velocityX = (this.posX < enemy.getPosX()) ? -KNOCKBACK_STRENGTH_X  : KNOCKBACK_STRENGTH_X;
+    public void applyKnockback(Entity entity) {
+        velocityX = (this.posX < entity.getPosX()) ? -KNOCKBACK_STRENGTH_X  : KNOCKBACK_STRENGTH_X;
 
         velocityY = KNOCKBACK_STRENGTH_Y;
 
@@ -207,7 +209,6 @@ public class Hero extends Entity {
             if (knockbackTimer==0) velocityX=0;
         }
         if (input.contains("JUMP")){
-            if (isOnGround) jumpsRemaining = MAX_JUMPS;
             jump();
         }
         if (input.contains("HOLDJUMP")){
@@ -226,7 +227,6 @@ public class Hero extends Entity {
         }
         if (!isOnGround) {
             if (currentState!=State.ATTACKING) setCurrentState(State.IN_AIR);
-            if (jumpsRemaining>0&&currentJumpTime> MAX_JUMP_DURATION) jumpsRemaining=1;
         }
         else currentJumpTime=0;
         if (currentState!=previousState) stateTime=0;

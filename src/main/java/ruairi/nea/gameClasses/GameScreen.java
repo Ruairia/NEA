@@ -99,7 +99,7 @@ public class GameScreen implements Screen {
 
         if (hero.getHealth()<=0) {hero.setHealth(100); hero.spawn();}
 
-        updateProjectiles(level,delta);
+        updateProjectiles(level,delta,hero);
     }
 
 
@@ -143,7 +143,10 @@ public class GameScreen implements Screen {
         for (Entity entity : level.allEntities) {
             entity.draw(game.batch);
         }
-        for (Projectile projectile : level.projectiles){
+        for (Projectile projectile : level.playerProjectiles){
+            projectile.draw(game.batch);
+        }
+        for (Projectile projectile : level.enemyProjectiles){
             projectile.draw(game.batch);
         }
         game.batch.end();
@@ -158,7 +161,8 @@ public class GameScreen implements Screen {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         healthBar.draw(shapeRenderer, hero.getHealth());
-        manaBar.draw(shapeRenderer,hero.getMana());
+
+        if (hero.getCurrentWeapon().requiresMana) manaBar.draw(shapeRenderer,hero.getMana());
 
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
@@ -211,24 +215,40 @@ public class GameScreen implements Screen {
         }
     }
 
-    private static void updateProjectiles(Level level, float delta) {
+    private static void updateProjectiles(Level level, float delta, Hero hero) {
 
 
-        Iterator<Projectile> projectileIterator = level.projectiles.iterator();
+        Iterator<Projectile> projectileIteratorHero = level.playerProjectiles.iterator();
         ArrayList<Enemy> deadEnemies = new ArrayList<>();
 
-        while (projectileIterator.hasNext()) {
-            Projectile projectile = projectileIterator.next();
+        while (projectileIteratorHero.hasNext()) {
+            Projectile projectile = projectileIteratorHero.next();
             projectile.update(delta);
 
             boolean destroyed = false;
 
 
-            destroyed = CollisionManager.handleProjectilePlatformCollisions(level, projectile, projectileIterator, destroyed);
+            destroyed = CollisionManager.handleProjectilePlatformCollisions(level, projectile, projectileIteratorHero, destroyed);
             if (destroyed) continue;
 
 
-            CollisionManager.checkProjectileEnemyCollisions(level, projectile, deadEnemies, projectileIterator);
+            CollisionManager.checkProjectileEnemyCollisions(level, projectile, deadEnemies, projectileIteratorHero);
+
+
+
+        }
+
+        Iterator<Projectile> projectileIteratorEnemy = level.enemyProjectiles.iterator();
+        while (projectileIteratorEnemy.hasNext()) {
+            Projectile projectile = projectileIteratorEnemy.next();
+            projectile.update(delta);
+
+            boolean destroyed = false;
+
+            destroyed = CollisionManager.handleProjectilePlatformCollisions(level, projectile, projectileIteratorEnemy, destroyed);
+            if (destroyed) continue;
+
+            CollisionManager.checkProjectileHeroCollisions(hero, projectile ,projectileIteratorEnemy);
         }
 
 

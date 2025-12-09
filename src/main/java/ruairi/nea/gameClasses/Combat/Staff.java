@@ -20,6 +20,7 @@ public abstract class Staff {
     int maxAmmo;
     int currentAmmo;
     int ammoReserves;
+    public final boolean requiresMana;
 
     final Color colour;
     final Hero hero;
@@ -33,8 +34,9 @@ public abstract class Staff {
 
     public abstract void attack();
 
-    public Staff(Color colour, Hero hero){
+    public Staff(Color colour, Hero hero, boolean requiresMana){
         loadAnimations();
+        this.requiresMana=requiresMana;
         this.hero = hero;
         this.colour = colour;
         currentAnimation = idleAnimation;

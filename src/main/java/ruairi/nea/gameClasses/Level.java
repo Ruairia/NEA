@@ -17,7 +17,8 @@ public class Level {
     public ArrayList<Platform> platforms;
     public ArrayList<Enemy> enemies;
     public ArrayList<Entity> mobileEntities;
-    public ArrayList<Projectile> projectiles;
+    public ArrayList<Projectile> playerProjectiles;
+    public ArrayList<Projectile> enemyProjectiles;
 
     private Hero hero;
     public Background background;
@@ -27,7 +28,8 @@ public class Level {
         platforms = new ArrayList<>();
         enemies = new ArrayList<>();
         mobileEntities = new ArrayList<>();
-        projectiles = new ArrayList<>();
+        playerProjectiles = new ArrayList<>();
+        enemyProjectiles = new ArrayList<>();
 
     }
 
@@ -78,6 +80,7 @@ public class Level {
         Enemy enemy;
         switch (elements[3]){
             case "FIREBALL" -> enemy = new Fireball(posX,posY,Float.parseFloat(elements[4]),Float.parseFloat(elements[5]));
+            case "FIREMAGE" -> enemy = new FireMage(posX,posY,hero,enemyProjectiles,Float.parseFloat(elements[4]),Float.parseFloat(elements[5]));
             default -> throw new IllegalArgumentException(elements[3]);
         }
         enemies.add(enemy);
@@ -96,6 +99,9 @@ public class Level {
         float posY = Float.parseFloat(elements[2]);
         String typeName = elements[3].strip().toUpperCase();
         switch (typeName){
+            case "SINGLE" ->{
+                createPlatform(posX,posY,1);
+            }
             case "NARROW" -> {
                 createPlatform(posX,posY,2);
             }
@@ -116,6 +122,10 @@ public class Level {
     }
 
     private void createPlatform(float posX, float posY, int tilesWide){
+        if (tilesWide==1) {
+            loadPlatformTile(posX,posY, Platform.PlatformType.singlePlatform);
+            return;
+        }
         loadPlatformTile(posX,posY, Platform.PlatformType.leftPlatform);
         for (int i = 1; i < tilesWide-1; i++) {
             loadPlatformTile(posX+Platform.tileWidth*ZOOM*i,posY, Platform.PlatformType.midPlatform);

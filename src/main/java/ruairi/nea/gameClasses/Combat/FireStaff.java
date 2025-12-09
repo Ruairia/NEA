@@ -9,20 +9,20 @@ import java.util.ArrayList;
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
 public class FireStaff extends Staff {
-    public FireStaff(Hero hero,ArrayList<Projectile> projectiles) {
-        super(Color.ORANGE,hero);
-        this.projectiles = projectiles;
+    public FireStaff(Hero hero,ArrayList<Projectile> playerProjectiles) {
+        super(Color.ORANGE,hero, false);
+        this.playerProjectiles = playerProjectiles;
     }
 
-    ArrayList<Projectile> projectiles;
+    ArrayList<Projectile> playerProjectiles;
 
     @Override
     public void attack() {
         if (cooldown>0) return;
         float posX = hero.getPosX() + hero.getWidth() * (hero.getCurrentDirection()== Entity.Direction.RIGHT? 1 : 0);
         float velocityX = 200 * ZOOM * (hero.getCurrentDirection()== Entity.Direction.RIGHT? 1 : -1);
-        projectiles.add(new Projectile(posX,hero.getPosY() + hero.getHeight()*0.5f,velocityX,0,50));
-        cooldown = 0.5f;
+        playerProjectiles.add(new Projectile(posX,hero.getPosY() + hero.getHeight()*0.5f,velocityX,0,50));
+        cooldown = 0.25f;
     }
 
 

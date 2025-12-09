@@ -46,7 +46,7 @@ public class CollisionManager {
                 (entity.getPosX() + entity.getWidth() > platform.getPosX())) {
             // Came from the left
             entity.setPosX(platform.getPosX() - entity.getWidth());
-            if (entity instanceof Fireball) entity.setVelocityX(-entity.getVelocityX());
+            if (entity instanceof PacingEnemy) entity.setVelocityX(-entity.getVelocityX());
             else entity.setVelocityX(0);
 
         }
@@ -63,7 +63,7 @@ public class CollisionManager {
     public static void handleEnemyCollisions(ArrayList<Enemy> enemies, Hero hero){
         for (Enemy enemy : enemies){
             if (hero.getInvincibilityPeriodLeft()>0) return;
-            if (enemy.intersectsHero(hero)) {
+            if (intersectsWithTolerance(enemy,hero,enemy.intersectTolerance)) {
 
                 hero.damage(enemy.getDamage());
                 hero.setInvincibilityPeriodLeft(Hero.INVINCIBILITY_DURATION);
@@ -89,6 +89,17 @@ public class CollisionManager {
         }
     }
 
+    public static void checkProjectileHeroCollisions(Hero hero, Projectile projectile, Iterator<Projectile> projectileIterator) {
+        if (projectile.intersect(hero)) {
+            if (hero.getInvincibilityPeriodLeft()==0) {
+                hero.damage(projectile.damage);
+                hero.setInvincibilityPeriodLeft(Hero.INVINCIBILITY_DURATION);
+                hero.applyKnockback(projectile);
+            }
+            projectileIterator.remove();
+        }
+    }
+
     public static boolean handleProjectilePlatformCollisions(Level level, Projectile projectile, Iterator<Projectile> projectileIterator, boolean destroyed) {
         for (Platform platform : level.platforms) {
             if (projectile.intersect(platform)) {
@@ -99,4 +110,16 @@ public class CollisionManager {
         }
         return destroyed;
     }
+
+    public static boolean intersectsWithTolerance(Entity a, Entity b, float intersectTolerance){
+        return
+                a.getPosX() + intersectTolerance < a.getPosX() + a.getWidth()
+                        &&
+                        a.getPosX() + a.getWidth() - intersectTolerance > b.getPosX()
+                        &&
+                        a.getPosY() + intersectTolerance < b.getPosY() + b.getHeight()
+                        &&
+                        a.getPosY() + a.getHeight() - intersectTolerance > b.getPosY();
+    }
+
 }

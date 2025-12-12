@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL20;
 import ruairi.nea.applicationClasses.LevelSelectScreen;
 import ruairi.nea.applicationClasses.Main;
 import ruairi.nea.gameClasses.Combat.Projectile;
+import ruairi.nea.gameClasses.Entities.Checkpoint;
 import ruairi.nea.gameClasses.Entities.Enemy;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Entities.Hero;
@@ -100,6 +101,9 @@ public class GameScreen implements Screen {
         if (hero.getHealth()<=0) {hero.setHealth(100); hero.spawn();}
 
         updateProjectiles(level,delta,hero);
+
+        checkCheckpoints(level);
+
     }
 
 
@@ -116,8 +120,8 @@ public class GameScreen implements Screen {
 
         //Rendering
 
-        camera.position.x += (getTargetX() - camera.position.x) * LERP_X;
-        camera.position.y += (getTargetY() - camera.position.y) * LERP_Y;
+        camera.position.x += (getCameraTargetX() - camera.position.x) * LERP_X;
+        camera.position.y += (getCameraTargetY() - camera.position.y) * LERP_Y;
         camera.update();
 
 
@@ -176,7 +180,7 @@ public class GameScreen implements Screen {
         game.batch.end();
     }
 
-    private float getTargetX() {
+    private float getCameraTargetX() {
 
         float bufferZone = camera.viewportWidth* CAMERA_BUFFER_X;
         float leftBound = camera.position.x - (camera.viewportWidth / 2) + bufferZone;
@@ -191,7 +195,7 @@ public class GameScreen implements Screen {
         return targetX;
     }
 
-    private float getTargetY(){
+    private float getCameraTargetY(){
 
         float upperBufferZone = camera.viewportHeight* CAMERA_UPPER_BUFFER_Y;
         float lowerBufferZone = camera.viewportHeight* CAMERA_LOWER_BUFFER_Y;
@@ -261,6 +265,22 @@ public class GameScreen implements Screen {
             level.mobileEntities.remove(dead);
             level.allEntities.remove(dead);
         }
+    }
+
+    public static void checkCheckpoints(Level level){
+        ArrayList<Checkpoint> checkpoints = level.checkpoints;
+        Hero hero = level.getHero();
+        Iterator<Checkpoint> checkpointIterator = checkpoints.iterator();
+        while (checkpointIterator.hasNext()){
+            Checkpoint checkpoint = checkpointIterator.next();
+            if (checkpoint.intersect(hero)){
+                checkpoint.collect(hero);
+                checkpointIterator.remove();
+                level.checkpoints.remove(checkpoint);
+                level.allEntities.remove(checkpoint);
+            }
+        }
+
     }
 
 

@@ -46,23 +46,23 @@ public class Platform extends Entity {
         height = tileHeight;
         switch (type){
             case singlePlatform ->{
-                width=tileWidth* ZOOM;
-                height=tileHeight* ZOOM;
+                width = tileWidth * ZOOM;
+                height = tileHeight * ZOOM;
                 setTextureRegion(singleTile);
             }
             case leftPlatform -> {
-                width=tileWidth* ZOOM;
-                height=tileHeight* ZOOM;
+                width = tileWidth * ZOOM;
+                height = tileHeight * ZOOM;
                 setTextureRegion( leftTile);
             }
             case midPlatform -> {
-                width=tileWidth* ZOOM;
-                height=tileHeight* ZOOM;
+                width = tileWidth * ZOOM;
+                height = tileHeight * ZOOM;
                 setTextureRegion(middleTile);
             }
             case rightPlatform -> {
-                width=tileWidth* ZOOM;
-                height=tileHeight* ZOOM;
+                width = tileWidth * ZOOM;
+                height = tileHeight * ZOOM;
                 setTextureRegion(rightTile);
             }
 

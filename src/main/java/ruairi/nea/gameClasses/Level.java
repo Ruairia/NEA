@@ -19,6 +19,7 @@ public class Level {
     public ArrayList<Entity> mobileEntities;
     public ArrayList<Projectile> playerProjectiles;
     public ArrayList<Projectile> enemyProjectiles;
+    public ArrayList<Checkpoint> checkpoints = new ArrayList<>();
 
     private Hero hero;
     public Background background;
@@ -50,6 +51,7 @@ public class Level {
                     case "SPAWNPOINT" -> loadHero(elements);
                     case "PLATFORM" -> loadPlatformTile(elements);
                     case "ENEMY" -> loadEnemy(elements);
+                    case "CHECKPOINT" -> loadCheckpoint(elements);
                     default -> throw new IllegalStateException("Unexpected value: " + elements[0]);
                 }
             }
@@ -72,6 +74,14 @@ public class Level {
         };
 
         return new BufferedReader(new FileReader(levelPlatformsFile));
+    }
+
+    private void loadCheckpoint(String[] elements){
+        float posX = Float.parseFloat(elements[1]);
+        float posY = Float.parseFloat(elements[2]);
+        Checkpoint checkpoint = new Checkpoint(posX,posY);
+        allEntities.add(checkpoint);
+        checkpoints.add(checkpoint);
     }
 
     private void loadEnemy(String[] elements){

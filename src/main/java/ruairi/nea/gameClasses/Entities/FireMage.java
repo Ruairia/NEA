@@ -23,7 +23,6 @@ public class FireMage extends PacingEnemy{
     private static final float INTERSECT_TOLERANCE = 10;
     private static final int DAMAGE = 20;
     private static final float SHOOT_COOLDOWN = 1.25f;
-    private static final int PROJECTILE_INTERSECT_TOLERANCE = 16;
 
     private static Texture spriteSheet;
 
@@ -110,7 +109,7 @@ public class FireMage extends PacingEnemy{
 
     @Override
     public void draw(Batch batch){
-        batch.setColor(Color.RED);
+        batch.setColor(1,0.5f,0.5f,1);
         super.draw(batch);
         batch.setColor(Color.WHITE);
     }

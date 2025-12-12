@@ -66,13 +66,13 @@ public class Projectile extends Entity {
 
     @Override
     public void draw(Batch batch) {
-        if (type == projectileType.FIREMAGE) batch.setColor(Color.RED);
+        if (type == projectileType.FIREMAGE) batch.setColor(1,0.5f,0.5f,1);
 
         batch.draw(
                 getCurrentFrame(),
                 posX,
                 posY,
-                width / 2f,       // originX (rotate around center)
+                width / 2f,       // originX
                 height / 2f,      // originY
                 width,
                 height,

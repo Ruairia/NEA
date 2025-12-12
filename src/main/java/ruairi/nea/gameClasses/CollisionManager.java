@@ -60,6 +60,8 @@ public class CollisionManager {
         }
     }
 
+
+
     public static void handleEnemyCollisions(ArrayList<Enemy> enemies, Hero hero){
         for (Enemy enemy : enemies){
             if (hero.getInvincibilityPeriodLeft()>0) return;

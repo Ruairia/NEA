@@ -27,7 +27,7 @@ public class Hero extends Entity {
     public static final float WALK_SPEED = 60*ZOOM;
     public static final int MAX_HEALTH = 100;
     public static final int MAX_MANA = 100;
-    public static final float MANA_REGENERATION = 10f;
+    public static final float MANA_REGENERATION = 30f; //Per second
     private static final int MAX_JUMPS = 2;
     public static final float INVINCIBILITY_DURATION = 0.6f;
 
@@ -248,7 +248,6 @@ public class Hero extends Entity {
 
         if (getStoodOnPlatform()!=null){
             velocityX+=getStoodOnPlatform().getVelocityX();
-            velocityY+=getStoodOnPlatform().getVelocityY();
         }
 
         if (currentState!=previousState) stateTime=0;

@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class CollisionManager {
-    public static void handlePlatformCollisions(ArrayList<Entity> mobileEntities, ArrayList<Platform> platformsToBeChecked) {
+    public static void handleEntityPlatformCollisions(ArrayList<Entity> mobileEntities, ArrayList<Platform> platformsToBeChecked) {
         for (Entity entity : mobileEntities) {
             boolean hasCollided = false;
             for (Platform platform : platformsToBeChecked) {
                 if (entity.intersect(platform)){
-                    resolveCollision(entity, platform, entity.getOldX(), entity.getOldY());
+                    resolveEntityPlatformCollision(entity, platform);
                     hasCollided=true;
                 }
             }
@@ -20,49 +20,68 @@ public class CollisionManager {
         }
     }
 
-    public static void resolveCollision(Entity entity, Platform platform, float oldX, float oldY) {
-        float platformTop = platform.getPosY() + platform.getHeight();
-        float platformRight = platform.getPosX() + platform.getWidth();
+    public static void resolveEntityPlatformCollision(Entity entity, Platform platform) {
+        if (entity instanceof Platform) return;
 
-        if ((oldY >= platformTop) &&
-                (entity.getPosY() < platformTop)) {
+        float platformX = platform.getPosX();
+        float platformY = platform.getPosY();
+        float platformOldX = platform.getOldX();
+        float platformOldY = platform.getOldY();
+        float platformOldRight = platformOldX + platform.getWidth();
+        float platformRight = platform.getPosX() + platform.getWidth();
+        float platformOldTop = platformOldY + platform.getHeight();
+        float platformTop = platform.getPosY() + platform.getHeight();
+
+        float entityX = entity.getPosX();
+        float entityY = entity.getPosY();
+        float entityOldX = entity.getOldX();
+        float entityOldY = entity.getOldY();
+        float entityOldRight = entityOldX + entity.getWidth();
+        float entityRight = entity.getPosX() + entity.getWidth();
+        float entityOldTop = entityOldY + entity.getHeight();
+        float entityTop = entity.getPosY() + entity.getHeight();
+
+        if ((entityOldY >= platformOldTop) &&
+                (entityY <= platformTop)) {
             //Came from above
             if(entity.getVelocityY()<=0){
                 entity.setPosY(platform.getPosY() + platform.getHeight());
 
                 if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
                     entity.setVelocityY(-entity.getVelocityY());
-                else entity.setVelocityY(0);
+                else entity.setVelocityY(platform.getVelocityY());
 
                 entity.setOnGround(true);
                 entity.setStoodOnPlatform(platform);
             }
         }
-        else if ((oldY+ entity.getHeight() <= platform.getPosY()) &&
-                (entity.getPosY() + entity.getHeight() > platform.getPosY())) {
+        else if ((entityOldTop <= platformOldY) &&
+                (entityTop > platformY)) {
             //Came from Below
-            entity.setPosY(platform.getPosY()- entity.getHeight());
+            entity.setPosY(platformY- entity.getHeight());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
                 entity.setVelocityY(-entity.getVelocityY());
-            else entity.setVelocityY(0);
+            else entity.setVelocityY(platform.getVelocityY());
         }
 
-        else if ((oldX + entity.getWidth() <= platform.getPosX()) &&
-                (entity.getPosX() + entity.getWidth() > platform.getPosX())) {
+        else if ((entityOldRight <= platformOldX) &&
+                (entityRight > platformX)) {
             // Came from the left
-            entity.setPosX(platform.getPosX() - entity.getWidth());
+            entity.setPosX(platformX - entity.getWidth());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.HORIZONTAL) entity.setVelocityX(-entity.getVelocityX());
-            else entity.setVelocityX(0);
+            else entity.setVelocityX(platform.getVelocityX());
 
         }
 
-        else if ((oldX >= platform.getPosX() + platform.getWidth()) &&
-                (entity.getPosX() < platformRight)) {
+        else if ((entityOldX >= platformOldRight) &&
+                (entityX < platformRight)) {
             // Came from the right
             entity.setPosX(platformRight);
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.HORIZONTAL) entity.setVelocityX(-entity.getVelocityX());
-            else entity.setVelocityX(0);
+            else entity.setVelocityX(platform.getVelocityX());
         }
+
+        else entity.setPosY(platformTop);
     }
 
 

@@ -86,7 +86,7 @@ public class GameScreen implements Screen {
     private void perFrameLogic(float delta){
         updateEntities(delta); //Move hero and entities
 
-        CollisionManager.handlePlatformCollisions(level.mobileEntities, level.platforms);
+        CollisionManager.handleEntityPlatformCollisions(level.mobileEntities, level.platforms);
 
         if (hero.getPosY()+hero.getHeight()< OUT_OF_WORLD_THRESHOLD){
             hero.spawn();

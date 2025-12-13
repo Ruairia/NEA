@@ -54,6 +54,7 @@ public class Level {
                     case "SPAWNPOINT" -> loadHero(elements);
                     case "PLATFORM" -> loadPlatform(elements);
                     case "MOVINGPLATFORM" -> loadMovingPlatform(elements);
+                    case "WALL" -> loadWall(elements);
                     case "GROUND" -> loadGround(elements);
                     case "ENEMY" -> loadEnemy(elements);
                     case "CHECKPOINT" -> loadCheckpoint(elements);
@@ -180,6 +181,31 @@ public class Level {
         float lesserBound = Float.parseFloat(elements[5]);
         float greaterBound = Float.parseFloat(elements[6]);
         createMovingPlatform(posX,posY,tilesWide,moveDirection,lesserBound,greaterBound);
+    }
+
+    private void loadWall(String[] elements) {
+        float posX = Float.parseFloat(elements[1]);
+        float posY = Float.parseFloat(elements[2]);
+        int wallLength = Integer.parseInt(elements[3]);
+        createWall(posX,posY,wallLength);
+    }
+
+    private void createWall(float posX, float posY, int tilesWide) {
+        if (tilesWide==1) {
+            loadWallTile(posX,posY,Wall.WallType.singleWall);
+            return;
+        }
+        loadWallTile(posX,posY, Wall.WallType.bottomWall);
+        for (int i = 1; i < tilesWide-1; i++) {
+            loadWallTile(posX,posY+Platform.tileWidth*ZOOM*i, Wall.WallType.middleWall);
+        }
+        loadWallTile(posX,posY+Platform.tileWidth*ZOOM*(tilesWide-1), Wall.WallType.topWall);
+    }
+
+    private void loadWallTile(float posX, float posY, Wall.WallType type){
+        Wall wall = new Wall(posX,posY,type);
+        platforms.add(wall);
+        allEntities.add(wall);
     }
 
     private void loadPlatform(String[] elements) {

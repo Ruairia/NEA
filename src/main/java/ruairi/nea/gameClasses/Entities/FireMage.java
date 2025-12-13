@@ -15,7 +15,7 @@ public class FireMage extends PacingEnemy{
 
     private final Hero hero;
     private static final String SPRITESHEET_PATH = "assets/FireballSpriteSheet.png";
-
+    public static final Color COLOUR = new Color(1,0.5f,0.5f,1);
 
     private static final float SPEED = 50*ZOOM;
     private static final float NOTICE_DISTANCE = 300*ZOOM;
@@ -109,9 +109,7 @@ public class FireMage extends PacingEnemy{
 
     @Override
     public void draw(Batch batch){
-        batch.setColor(1,0.5f,0.5f,1);
-        super.draw(batch);
-        batch.setColor(Color.WHITE);
+        super.draw(batch, COLOUR);
     }
 
     public void dispose(){

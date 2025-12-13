@@ -80,7 +80,7 @@ public class Hero extends Entity {
         setPosY(spawnPointY);
         setVelocityX(0);
         setVelocityY(0);
-        setInvincibilityPeriodLeft(0);
+        setInvincibilityPeriodLeft(0.3f);
         return this;
     }
 

@@ -1,6 +1,7 @@
 package ruairi.nea.gameClasses.Entities;
 
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -106,6 +107,12 @@ public abstract class Entity {
             batch.draw(this.getCurrentFrame(), this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight());
         else
             batch.draw(this.getCurrentFrame(), this.getPosX() + this.getWidth(), this.getPosY(), -this.getWidth(), this.getHeight());
+    }
+
+    public void draw(Batch batch, Color color){
+        batch.setColor(color);
+        draw(batch);
+        batch.setColor(Color.WHITE);
     }
 
 

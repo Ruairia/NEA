@@ -48,22 +48,22 @@ public class Platform extends Entity {
             case singlePlatform ->{
                 width = tileWidth * ZOOM;
                 height = tileHeight * ZOOM;
-                setTextureRegion(singleTile);
+                setFrame(singleTile);
             }
             case leftPlatform -> {
                 width = tileWidth * ZOOM;
                 height = tileHeight * ZOOM;
-                setTextureRegion( leftTile);
+                setFrame( leftTile);
             }
             case midPlatform -> {
                 width = tileWidth * ZOOM;
                 height = tileHeight * ZOOM;
-                setTextureRegion(middleTile);
+                setFrame(middleTile);
             }
             case rightPlatform -> {
                 width = tileWidth * ZOOM;
                 height = tileHeight * ZOOM;
-                setTextureRegion(rightTile);
+                setFrame(rightTile);
             }
 
             default -> throw new IllegalArgumentException("Unknown platform type");

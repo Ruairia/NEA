@@ -113,6 +113,10 @@ public class Hero extends Entity {
         super.updateVelocity(delta);
     }
 
+    @Override
+    protected void updateDirection() {
+    }
+
     public void update(double delta){
         super.update(delta);
         if (isOnGround) jumpsRemaining = MAX_JUMPS;
@@ -191,8 +195,12 @@ public class Hero extends Entity {
     public void holdJump(double delta){
         if (currentJumpTime< MAX_JUMP_DURATION) {
             currentJumpTime+= (float) delta;
-            if (jumpsRemaining == 1) {if (velocityY < JUMP_STRENGTH *0.8) velocityY = (float) (JUMP_STRENGTH *0.8);}
-            else if (velocityY<DOUBLE_JUMP_STRENGTH*0.8) velocityY = (float) (DOUBLE_JUMP_STRENGTH*0.8);
+            if (jumpsRemaining == 1) {
+                if (velocityY < JUMP_STRENGTH *0.8)
+                    velocityY = (float) (JUMP_STRENGTH *0.8);
+            }
+            else if (velocityY<DOUBLE_JUMP_STRENGTH*0.8)
+                velocityY = (float) (DOUBLE_JUMP_STRENGTH*0.8);
         }
     }
 
@@ -203,11 +211,13 @@ public class Hero extends Entity {
 
         if (input.contains("LEFT") && !input.contains("RIGHT")){
             if (knockbackTimer==0) velocityX= -WALK_SPEED *inputHandler.horizontalAxisStrength;
-            if (isOnGround) setCurrentState(State.WALKING, Direction.LEFT);
+            if (isOnGround) setCurrentState(State.WALKING);
+            setCurrentDirection(Direction.LEFT);
         }
         else if (input.contains("RIGHT") && !input.contains("LEFT")){
             if (knockbackTimer==0) velocityX= WALK_SPEED *inputHandler.horizontalAxisStrength;
-            if (isOnGround) setCurrentState(State.WALKING, Direction.RIGHT);
+            if (isOnGround) setCurrentState(State.WALKING);
+            setCurrentDirection(Direction.RIGHT);
         }
         else {
             if (isOnGround) setCurrentState(State.IDLE);
@@ -234,7 +244,13 @@ public class Hero extends Entity {
         if (!isOnGround) {
             if (currentState!=State.ATTACKING) setCurrentState(State.IN_AIR);
         }
-        else currentJumpTime=0;
+
+
+        if (getStoodOnPlatform()!=null){
+            velocityX+=getStoodOnPlatform().getVelocityX();
+            velocityY+=getStoodOnPlatform().getVelocityY();
+        }
+
         if (currentState!=previousState) stateTime=0;
     }
 

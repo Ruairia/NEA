@@ -66,7 +66,7 @@ public class FireMage extends PacingEnemy{
 
         setProjectileArrayList(projectiles);
 
-        setTextureRegion(new TextureRegion(spriteSheet, 0, 0, frameWidth, frameHeight));
+        setFrame(new TextureRegion(spriteSheet, 0, 0, frameWidth, frameHeight));
     }
 
     @Override
@@ -91,11 +91,11 @@ public class FireMage extends PacingEnemy{
 
     private void shootAtHero(float displacementToHeroX, float displacementToHeroY, float euclDistanceToHero){
         float directionX = displacementToHeroX /(euclDistanceToHero);
-        float directionY = 0.9f * displacementToHeroY /(euclDistanceToHero);
+        float directionY = 0.75f * displacementToHeroY /(euclDistanceToHero);
 
         float projectilePosX = posX;
 
-        if (this.getCurrentDirection()==Direction.RIGHT) projectilePosX+=width;
+        if (this.getCurrentDirection()==Direction.LEFT) projectilePosX+=width;
 
         Projectile projectile = new Projectile(projectilePosX,posY+0.5f*height,directionX*PROJECTILE_SPEED,directionY*PROJECTILE_SPEED,DAMAGE,Projectile.projectileType.FIREMAGE);
         projectiles.add(projectile);

@@ -38,11 +38,9 @@ public class Projectile extends Entity {
         int frameHeight = 8;
 
         loadTextures();
-        TextureRegion[] frames = new TextureRegion[2];
-        frames[0] = new TextureRegion(spriteSheet, 0, 0, frameWidth, frameHeight);
-        frames[1] = new TextureRegion(spriteSheet, frameWidth, 0, frameWidth, frameHeight);
+        TextureRegion[] frames = TextureRegion.split(spriteSheet, frameWidth, frameHeight)[0];
 
-        animation = new Animation<>(0.3f, frames);
+        animation = new Animation<>(0.15f, frames);
         animation.setPlayMode(Animation.PlayMode.LOOP);
 
         setAffectedByGravity(false);

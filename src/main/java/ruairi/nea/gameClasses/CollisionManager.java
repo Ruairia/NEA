@@ -35,9 +35,9 @@ public class CollisionManager {
                 else entity.setVelocityY(0);
 
                 entity.setOnGround(true);
+                entity.setStoodOnPlatform(platform);
             }
         }
-
         else if ((oldY+ entity.getHeight() <= platform.getPosY()) &&
                 (entity.getPosY() + entity.getHeight() > platform.getPosY())) {
             //Came from Below

@@ -9,7 +9,6 @@ import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
 
 public abstract class Entity {
-    //Define Constant-like variables
     public static final float MAXFALLSPEED = -180*ZOOM; // Pixels per second
     public static final float GRAVITY = 240*ZOOM; //Pixels per second squared
 
@@ -18,11 +17,12 @@ public abstract class Entity {
         RIGHT
     }
 
+    private Platform stoodOnPlatform = null;
+
 
     private Direction currentDirection = Direction.RIGHT;
-    private TextureRegion textureRegion;
 
-
+    private TextureRegion frame;
 
     boolean isOnGround;
     boolean isAffectedByGravity=true;
@@ -32,8 +32,8 @@ public abstract class Entity {
     protected float oldX, oldY;
     protected float velocityX = 0;
     protected float velocityY = 0;
-    protected float width = 0;
-    protected float height = 0;
+    protected float width;
+    protected float height;
 
 
 
@@ -42,9 +42,6 @@ public abstract class Entity {
         this.posY=posY;
         this.width=width;
         this.height=height;
-
-
-
     }
 
     public void update(double delta){
@@ -58,6 +55,9 @@ public abstract class Entity {
         updateDirection();
         updateTimers((float) delta);
 
+        if (!isOnGround){
+            setStoodOnPlatform(null);
+        }
     }
 
     protected void updateTimers(float delta) {}
@@ -77,7 +77,7 @@ public abstract class Entity {
         posY += (float) (velocityY * delta);
     }
 
-    private void updateDirection(){
+    protected void updateDirection(){
         if (velocityX<0){
             currentDirection = Direction.LEFT;
         }
@@ -135,8 +135,6 @@ public abstract class Entity {
         isOnGround = onGround;
     }
 
-
-
     public float getOldX() {
         return oldX;
     }
@@ -185,17 +183,13 @@ public abstract class Entity {
         this.velocityY = velocityY;
     }
 
-
-
-
     public TextureRegion getCurrentFrame() {
-        return textureRegion;
+        return frame;
     }
 
-    public void setTextureRegion(TextureRegion textureRegion) {
-        this.textureRegion = textureRegion;
+    public void setFrame(TextureRegion frame) {
+        this.frame = frame;
     }
-
 
     public Direction getCurrentDirection() {
         return currentDirection;
@@ -221,5 +215,13 @@ public abstract class Entity {
         this.height = height;
     }
 
-    public void dispose(){this.textureRegion.getTexture().dispose();}
+    public Platform getStoodOnPlatform() {
+        return stoodOnPlatform;
+    }
+
+    public void setStoodOnPlatform(Platform stoodOnPlatform) {
+        this.stoodOnPlatform = stoodOnPlatform;
+    }
+
+    public void dispose(){this.frame.getTexture().dispose();}
 }

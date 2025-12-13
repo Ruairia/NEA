@@ -20,8 +20,8 @@ public class Checkpoint extends Entity{
 
     @Override
     public void draw(Batch batch){
-        batch.setColor(0.5f,1,0.9f,0.9f);
-        super.draw(batch);
-        batch.setColor(Color.WHITE);
+        Color colour = new Color(0.5f,1,0.9f,0.9f);
+        super.draw(batch,colour);
+
     }
 }

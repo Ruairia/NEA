@@ -12,8 +12,8 @@ public class Goal extends Checkpoint{
 
     @Override
     public void draw(Batch batch) {
-        batch.setColor(0.4f,0.4f,0.9f,0.9f);
-        batch.draw(getCurrentFrame(),posX,posY,width,height);
+        Color colour = new Color(0.4f,0.4f,0.9f,0.9f);
+        super.draw(batch,colour);
         batch.setColor(Color.WHITE);
     }
 }

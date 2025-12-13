@@ -111,7 +111,10 @@ public abstract class Entity {
 
     public void draw(Batch batch, Color color){
         batch.setColor(color);
-        draw(batch);
+        if (this.getCurrentDirection() == Direction.RIGHT)
+            batch.draw(this.getCurrentFrame(), this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight());
+        else
+            batch.draw(this.getCurrentFrame(), this.getPosX() + this.getWidth(), this.getPosY(), -this.getWidth(), this.getHeight());
         batch.setColor(Color.WHITE);
     }
 

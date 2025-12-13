@@ -95,7 +95,7 @@ public class GameScreen implements Screen {
 
         CollisionManager.handleEnemyCollisions(level.enemies,hero);
 
-        if (hero.getHealth()<=0) {hero.setHealth(100); hero.spawn();}
+        if (hero.getHealth()<=0) {hero.respawn();}
 
         updateProjectiles(level,delta,hero);
 

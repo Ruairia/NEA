@@ -9,7 +9,7 @@ public class Checkpoint extends Entity{
     public Checkpoint(float posX, float posY) {
         super(posX, posY, 64, 64);
         setAffectedByGravity(false);
-        setTextureRegion(new TextureRegion(new Texture("assets/texture_unknown.png")));
+        setTextureRegion(new TextureRegion(new Texture("assets/TextureUnknown.png")));
     }
 
     public void collect(Hero hero){

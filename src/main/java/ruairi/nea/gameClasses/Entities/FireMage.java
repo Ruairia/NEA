@@ -45,7 +45,7 @@ public class FireMage extends PacingEnemy{
 
 
     public FireMage(float posX, float posY, Hero hero, ArrayList<Projectile> projectiles, float leftBound, float rightBound) {
-        super(posX, posY, 16*ZOOM, 20*ZOOM, leftBound, rightBound, SPEED,INTERSECT_TOLERANCE);
+        super(posX, posY, 16*ZOOM, 20*ZOOM, leftBound, rightBound, SPEED,INTERSECT_TOLERANCE,PaceDirection.HORIZONTAL);
 
         this.hero = hero;
         damage = DAMAGE;

@@ -22,7 +22,7 @@ public abstract class Entity {
     private TextureRegion textureRegion;
 
 
-    float lastOnGround=0;
+
     boolean isOnGround;
     boolean isAffectedByGravity=true;
 
@@ -59,11 +59,7 @@ public abstract class Entity {
 
     }
 
-    protected void updateTimers(float delta) {
-        if (!isOnGround) {
-            lastOnGround += delta;
-        }
-    }
+    protected void updateTimers(float delta) {}
 
     protected void applyGravity(double delta) {
         if  (isAffectedByGravity) velocityY -= (float) (GRAVITY* delta);
@@ -129,13 +125,7 @@ public abstract class Entity {
         isOnGround = onGround;
     }
 
-    public float getLastOnGround() {
-        return lastOnGround;
-    }
 
-    public void setLastOnGround(float lastOnGround) {
-        this.lastOnGround = lastOnGround;
-    }
 
     public float getOldX() {
         return oldX;

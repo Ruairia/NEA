@@ -29,8 +29,11 @@ public class CollisionManager {
             //Came from above
             if(entity.getVelocityY()<=0){
                 entity.setPosY(platform.getPosY() + platform.getHeight());
-                entity.setVelocityY(0);
-                entity.setLastOnGround(0);
+
+                if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
+                    entity.setVelocityY(-entity.getVelocityY());
+                else entity.setVelocityY(0);
+
                 entity.setOnGround(true);
             }
         }
@@ -39,14 +42,16 @@ public class CollisionManager {
                 (entity.getPosY() + entity.getHeight() > platform.getPosY())) {
             //Came from Below
             entity.setPosY(platform.getPosY()- entity.getHeight());
-            entity.setVelocityY(0);
+            if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
+                entity.setVelocityY(-entity.getVelocityY());
+            else entity.setVelocityY(0);
         }
 
         else if ((oldX + entity.getWidth() <= platform.getPosX()) &&
                 (entity.getPosX() + entity.getWidth() > platform.getPosX())) {
             // Came from the left
             entity.setPosX(platform.getPosX() - entity.getWidth());
-            if (entity instanceof PacingEnemy) entity.setVelocityX(-entity.getVelocityX());
+            if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.HORIZONTAL) entity.setVelocityX(-entity.getVelocityX());
             else entity.setVelocityX(0);
 
         }
@@ -55,7 +60,7 @@ public class CollisionManager {
                 (entity.getPosX() < platformRight)) {
             // Came from the right
             entity.setPosX(platformRight);
-            if (entity instanceof Fireball) entity.setVelocityX(-entity.getVelocityX());
+            if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.HORIZONTAL) entity.setVelocityX(-entity.getVelocityX());
             else entity.setVelocityX(0);
         }
     }

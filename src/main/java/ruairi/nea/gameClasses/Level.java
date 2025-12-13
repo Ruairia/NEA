@@ -104,6 +104,7 @@ public class Level {
         switch (elements[3]){
             case "FIREBALL" -> enemy = new Fireball(posX,posY,Float.parseFloat(elements[4]),Float.parseFloat(elements[5]));
             case "FIREMAGE" -> enemy = new FireMage(posX,posY,hero,enemyProjectiles,Float.parseFloat(elements[4]),Float.parseFloat(elements[5]));
+            case "WILLOWISP" -> enemy = new WillOWisp(posX,posY,Float.parseFloat(elements[4]),Float.parseFloat(elements[5]));
             default -> {System.out.println(elements[3]+" not a valid type of enemy"); return;}
         }
         enemies.add(enemy);

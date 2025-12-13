@@ -20,7 +20,7 @@ public class Fireball extends PacingEnemy{
 
 
     public Fireball(float posX, float posY, float leftBound, float rightBound) {
-        super(posX, posY, 16* ZOOM, 20* ZOOM, leftBound, rightBound, SPEED,INTERSECT_TOLERANCE);
+        super(posX, posY, 16* ZOOM, 20* ZOOM, leftBound, rightBound, SPEED,INTERSECT_TOLERANCE,PaceDirection.HORIZONTAL);
 
         spriteSheet = new Texture(SPRITESHEET_PATH);
 

@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Goal extends Checkpoint{
     public Goal(float posX, float posY) {
         super(posX, posY);
-        setTextureRegion(new TextureRegion(new Texture("assets/texture_unknown.png")));
     }
 
     @Override

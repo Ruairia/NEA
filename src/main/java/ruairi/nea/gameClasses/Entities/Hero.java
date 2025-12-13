@@ -84,6 +84,13 @@ public class Hero extends Entity {
         return this;
     }
 
+    public void respawn(){
+        spawn();
+        health = MAX_HEALTH;
+        mana = MAX_MANA;
+    }
+
+
     public void updateTimers(float delta){
         super.updateTimers(delta);
         stateTime+=delta;
@@ -313,14 +320,13 @@ public class Hero extends Entity {
                 ", currentJumpTime=" + currentJumpTime +
                 ", invincibilityPeriodLeft=" + invincibilityPeriodLeft +
                 ", knockbackTimer=" + knockbackTimer +
-                ", lastOnGround=" + lastOnGround +
                 ", isOnGround=" + isOnGround +
                 ", posX=" + posX +
                 ", posY=" + posY +
                 ", velocityX=" + velocityX +
                 ", velocityY=" + velocityY +
                 ", width=" + width +
-                ", height=" + height +
+                ", HEIGHT=" + height +
                 '}';
     }
 }

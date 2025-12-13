@@ -26,11 +26,10 @@ public class Hero extends Entity {
     private static final float DOUBLE_JUMP_STRENGTH = 80 * ZOOM;
     public static final float WALK_SPEED = 60*ZOOM;
     public static final int MAX_HEALTH = 100;
-    public static final int MAX_MANA = 10;
-    public static final float MANA_REGENERATION = 1f;
+    public static final int MAX_MANA = 100;
+    public static final float MANA_REGENERATION = 10f;
     private static final int MAX_JUMPS = 2;
     public static final float INVINCIBILITY_DURATION = 0.6f;
-    public static final int CAST_AMOUNT = 2;
 
     public enum State {
         IDLE,
@@ -217,12 +216,12 @@ public class Hero extends Entity {
             currentJumpTime=MAX_JUMP_DURATION;
         }
         if (input.contains("ATTACK") && currentStaff.getCooldown()==0) {
-            if (mana>=CAST_AMOUNT) {
+            if (mana>=currentStaff.manaCost) {
             setCurrentState(State.ATTACKING);
 
                 currentStaff.attack();
-                mana-=CAST_AMOUNT;
-            velocityX/=10;
+                mana-=currentStaff.manaCost;
+                velocityX/=10;
             }
         }
         if (!isOnGround) {

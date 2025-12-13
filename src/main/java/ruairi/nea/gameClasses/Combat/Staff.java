@@ -21,6 +21,7 @@ public abstract class Staff {
     int currentAmmo;
     int ammoReserves;
     public boolean requiresMana;
+    public int manaCost = 0;
 
     final Color colour;
     final Hero hero;

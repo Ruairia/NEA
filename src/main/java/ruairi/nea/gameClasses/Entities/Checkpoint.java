@@ -14,6 +14,8 @@ public class Checkpoint extends Entity{
 
     public void collect(Hero hero){
         hero.setSpawnPoint(posX,posY);
+        hero.setHealth(Hero.MAX_HEALTH);
+        hero.setMana(Hero.MAX_MANA);
     }
 
     @Override

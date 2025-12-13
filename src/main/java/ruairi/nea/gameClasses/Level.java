@@ -49,10 +49,11 @@ public class Level {
                 elements = line.split(",");
                 switch (elements[0]) {
                     case "SPAWNPOINT" -> loadHero(elements);
-                    case "PLATFORM" -> loadPlatformTile(elements);
+                    case "PLATFORM" -> loadPlatform(elements);
+                    case "GROUND" -> loadGround(elements);
                     case "ENEMY" -> loadEnemy(elements);
                     case "CHECKPOINT" -> loadCheckpoint(elements);
-                    default -> throw new IllegalStateException("Unexpected value: " + elements[0]);
+                    default -> {System.out.println(elements[0] + " not a valid entity type"); return;}
                 }
             }
 
@@ -91,7 +92,7 @@ public class Level {
         switch (elements[3]){
             case "FIREBALL" -> enemy = new Fireball(posX,posY,Float.parseFloat(elements[4]),Float.parseFloat(elements[5]));
             case "FIREMAGE" -> enemy = new FireMage(posX,posY,hero,enemyProjectiles,Float.parseFloat(elements[4]),Float.parseFloat(elements[5]));
-            default -> throw new IllegalArgumentException(elements[3]);
+            default -> {System.out.println(elements[3]+" not a valid type of enemy"); return;}
         }
         enemies.add(enemy);
         mobileEntities.add(enemy);
@@ -104,25 +105,22 @@ public class Level {
         allEntities.add(hero);
     }
 
-    private void loadPlatformTile(String[] elements) {
+    private void loadGround(String[] elements){
         float posX = Float.parseFloat(elements[1]);
         float posY = Float.parseFloat(elements[2]);
-        String typeName = elements[3].strip().toUpperCase();
-        switch (typeName){
-            case "SINGLE" ->{
-                createPlatform(posX,posY,1);
-            }
-            case "NARROW" -> {
-                createPlatform(posX,posY,2);
-            }
-            case "WIDE" -> {
-                createPlatform(posX,posY,4);
-            }
-            case "ULTRAWIDE" -> {
-                createPlatform(posX,posY,6);
-            }
-            default -> throw new IllegalArgumentException(typeName+" is not a valid type of platform");
+        float endX = Float.parseFloat(elements[3]);
+        loadPlatformTile(posX,posY, Platform.PlatformType.leftPlatform);
+        for (float i = posX+Platform.tileWidth*ZOOM; i < endX; i+=Platform.tileWidth*ZOOM) {
+            loadPlatformTile(i,posY, Platform.PlatformType.midPlatform);
         }
+        loadPlatformTile(endX,posY, Platform.PlatformType.rightPlatform);
+    }
+
+    private void loadPlatform(String[] elements) {
+        float posX = Float.parseFloat(elements[1]);
+        float posY = Float.parseFloat(elements[2]);
+        int platformLength = Integer.parseInt(elements[3].strip());
+        createPlatform(posX,posY,platformLength);
     }
 
     private void loadPlatformTile(float posX, float posY, Platform.PlatformType type){

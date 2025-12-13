@@ -9,10 +9,14 @@ import java.util.ArrayList;
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
 public class FireStaff extends Staff {
+
+
+
     public FireStaff(Hero hero,ArrayList<Projectile> playerProjectiles) {
         super(Color.ORANGE,hero, false);
         this.playerProjectiles = playerProjectiles;
         this.requiresMana=true;
+        this.manaCost=70;
     }
 
     ArrayList<Projectile> playerProjectiles;
@@ -23,7 +27,7 @@ public class FireStaff extends Staff {
         float posX = hero.getPosX() + hero.getWidth() * (hero.getCurrentDirection()== Entity.Direction.RIGHT? 1 : 0);
         float velocityX = 200 * ZOOM * (hero.getCurrentDirection()== Entity.Direction.RIGHT? 1 : -1);
         playerProjectiles.add(new Projectile(posX,hero.getPosY() + hero.getHeight()*0.5f,velocityX,0,50, Projectile.projectileType.FIRESTAFF));
-        cooldown = 0.25f;
+        cooldown = 0.4f;
     }
 
 

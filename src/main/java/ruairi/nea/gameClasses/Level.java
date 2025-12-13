@@ -53,6 +53,7 @@ public class Level {
                 switch (elements[0]) {
                     case "SPAWNPOINT" -> loadHero(elements);
                     case "PLATFORM" -> loadPlatform(elements);
+                    case "MOVINGPLATFORM" -> loadMovingPlatform(elements);
                     case "GROUND" -> loadGround(elements);
                     case "ENEMY" -> loadEnemy(elements);
                     case "CHECKPOINT" -> loadCheckpoint(elements);
@@ -129,10 +130,62 @@ public class Level {
         loadPlatformTile(endX,posY, Platform.PlatformType.rightPlatform);
     }
 
+    private void loadMovingPlatformTile(float posX, float posY, MovingPlatform.MoveDirection moveDirection, float lesserBound, float greaterBound, Platform.PlatformType type){
+        MovingPlatform movingPlatform = new MovingPlatform(posX,posY,moveDirection,lesserBound,greaterBound,type);
+        platforms.add(movingPlatform);
+        allEntities.add(movingPlatform);
+    }
+
+    private void createMovingPlatform(float posX, float posY, int tilesWide, MovingPlatform.MoveDirection moveDirection, float lesserBound, float greaterBound){
+        if (tilesWide == 1) {
+            loadMovingPlatformTile(posX, posY, moveDirection, lesserBound, greaterBound, Platform.PlatformType.singlePlatform);
+            return;
+        }
+
+        for (int i = 0; i < tilesWide; i++) {
+            float xOffset = Platform.tileWidth * ZOOM * i;
+            float tileX = posX + xOffset;
+
+            float tileLesserBound, tileGreaterBound;
+            if (moveDirection == MovingPlatform.MoveDirection.VERTICAL) {
+                tileLesserBound = lesserBound;
+                tileGreaterBound = greaterBound;
+            } else {
+                tileLesserBound = lesserBound + xOffset;
+                tileGreaterBound = greaterBound + xOffset;
+            }
+
+            Platform.PlatformType type;
+            if (i == 0) {
+                type = Platform.PlatformType.leftPlatform;
+            } else if (i == tilesWide - 1) {
+                type = Platform.PlatformType.rightPlatform;
+            } else {
+                type = Platform.PlatformType.midPlatform;
+            }
+
+            loadMovingPlatformTile(tileX, posY, moveDirection, tileLesserBound, tileGreaterBound, type);
+        }
+    }
+
+    private void loadMovingPlatform(String[] elements) {
+        float posX = Float.parseFloat(elements[1]);
+        float posY = Float.parseFloat(elements[2]);
+        int tilesWide = Integer.parseInt(elements[3]);
+
+        MovingPlatform.MoveDirection moveDirection;
+        if (elements[4].equals("HORIZONTAL")) moveDirection = MovingPlatform.MoveDirection.HORIZONTAL;
+        else moveDirection = MovingPlatform.MoveDirection.VERTICAL;
+
+        float lesserBound = Float.parseFloat(elements[5]);
+        float greaterBound = Float.parseFloat(elements[6]);
+        createMovingPlatform(posX,posY,tilesWide,moveDirection,lesserBound,greaterBound);
+    }
+
     private void loadPlatform(String[] elements) {
         float posX = Float.parseFloat(elements[1]);
         float posY = Float.parseFloat(elements[2]);
-        int platformLength = Integer.parseInt(elements[3].strip());
+        int platformLength = Integer.parseInt(elements[3]);
         createPlatform(posX,posY,platformLength);
     }
 

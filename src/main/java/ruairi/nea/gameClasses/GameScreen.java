@@ -10,10 +10,7 @@ import org.lwjgl.opengl.GL20;
 import ruairi.nea.applicationClasses.LevelSelectScreen;
 import ruairi.nea.applicationClasses.Main;
 import ruairi.nea.gameClasses.Combat.Projectile;
-import ruairi.nea.gameClasses.Entities.Checkpoint;
-import ruairi.nea.gameClasses.Entities.Enemy;
-import ruairi.nea.gameClasses.Entities.Entity;
-import ruairi.nea.gameClasses.Entities.Hero;
+import ruairi.nea.gameClasses.Entities.*;
 import ruairi.nea.gameClasses.UI.HealthBar;
 import ruairi.nea.gameClasses.UI.ManaBar;
 
@@ -21,8 +18,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GameScreen implements Screen {
-    private Main game;
-    private int levelNumber;
+    private static Main game;
+    private final int levelNumber;
     private Level level;
 
     //UI&Background
@@ -57,7 +54,7 @@ public class GameScreen implements Screen {
 
 
     public GameScreen(Main game, int levelNumber) {
-        this.game = game;
+        GameScreen.game = game;
         this.levelNumber = levelNumber;
     }
 
@@ -132,7 +129,7 @@ public class GameScreen implements Screen {
         drawFPS();
     }
 
-    private void returnToMenu() {
+    private static void returnToMenu() {
         game.setScreen(new LevelSelectScreen(game));
     }
 
@@ -274,6 +271,9 @@ public class GameScreen implements Screen {
         while (checkpointIterator.hasNext()){
             Checkpoint checkpoint = checkpointIterator.next();
             if (checkpoint.intersect(hero)){
+                if (checkpoint instanceof Goal){
+                    returnToMenu();
+                }
                 checkpoint.collect(hero);
                 checkpointIterator.remove();
                 level.checkpoints.remove(checkpoint);

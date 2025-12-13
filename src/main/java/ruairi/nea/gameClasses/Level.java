@@ -47,12 +47,16 @@ public class Level {
 
             while ((line = levelReader.readLine()) != null) {
                 elements = line.split(",");
+                for (int i = 0; i<elements.length; i++){
+                    elements[i]=elements[i].strip();
+                }
                 switch (elements[0]) {
                     case "SPAWNPOINT" -> loadHero(elements);
                     case "PLATFORM" -> loadPlatform(elements);
                     case "GROUND" -> loadGround(elements);
                     case "ENEMY" -> loadEnemy(elements);
                     case "CHECKPOINT" -> loadCheckpoint(elements);
+                    case "GOAL" -> loadGoal(elements);
                     default -> {System.out.println(elements[0] + " not a valid entity type"); return;}
                 }
             }
@@ -75,6 +79,14 @@ public class Level {
         };
 
         return new BufferedReader(new FileReader(levelPlatformsFile));
+    }
+
+    private void loadGoal(String[] elements){
+        float posX = Float.parseFloat(elements[1]);
+        float posY = Float.parseFloat(elements[2]);
+        Goal goal = new Goal(posX,posY);
+        allEntities.add(goal);
+        checkpoints.add(goal);
     }
 
     private void loadCheckpoint(String[] elements){

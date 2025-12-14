@@ -175,6 +175,8 @@ public class GameScreen implements Screen {
         game.batch.begin();
         bitmapFont.setColor(1,1,1,1);
         bitmapFont.draw(game.batch, "FPS: "+Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight()-40);
+        bitmapFont.draw(game.batch, "PosX: "+(int)hero.getPosX(), 10, Gdx.graphics.getHeight()-60);
+        bitmapFont.draw(game.batch, "PosY: "+(int)hero.getPosY(), 10, Gdx.graphics.getHeight()-80);
         game.batch.end();
     }
 

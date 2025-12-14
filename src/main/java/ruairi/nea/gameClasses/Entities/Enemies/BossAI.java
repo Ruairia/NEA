@@ -1,8 +1,5 @@
 package ruairi.nea.gameClasses.Entities.Enemies;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,8 +7,7 @@ import java.util.HashMap;
 
 public final class BossAI{
     static HashMap<BossState, HashMap<BossState, Float>> allWeights = new HashMap<>();
-
-    HashMap<BossState, Animation<TextureRegion>> animations = new HashMap<>();
+    static HashMap<BossState, Float> stateLengths = new HashMap<>();
 
     private BossAI(){}
 
@@ -24,18 +20,8 @@ public final class BossAI{
         }
     }
 
-    public static void main(String[] args) {
-        loadAllWeights();
-        for (BossState previousState : allWeights.keySet()){
-            for (BossState nextState : BossState.values()){
-                if (!allWeights.get(previousState).containsKey(nextState)) allWeights.get(previousState).put(nextState,0.1f);
-            }
-        }
-        saveAllWeights();
-    }
-
-    public static BossState getNextState(BossState currentState){
-        HashMap<BossState, Float> weights = allWeights.get(currentState);
+    public static BossState getNextState(BossState previousState){
+        HashMap<BossState, Float> weights = allWeights.get(previousState);
         ArrayList<BossState> states = new ArrayList<>(weights.keySet());
         double randomValue = Math.random();
         double threshold = 0;
@@ -47,6 +33,8 @@ public final class BossAI{
         }
         return BossState.IDLE;
     }
+
+
 
     public static void reward(BossState previousState, BossState currentState){
         HashMap<BossState, Float> weights = allWeights.get(previousState);
@@ -97,9 +85,13 @@ public final class BossAI{
 
     public static void loadAllWeights(){
         allWeights.clear();
-        for (BossState state : BossState.values()){
-            allWeights.put(state,new HashMap<>());
+        for (BossState previousState : BossState.values()){
+            allWeights.put(previousState,new HashMap<>());
+            for (BossState nextState : BossState.values()){
+                allWeights.get(previousState).put(nextState,0f);
+            }
         }
+
         try{
             BufferedReader reader = new BufferedReader(new FileReader("assets/bossWeights.csv"));
 
@@ -113,14 +105,12 @@ public final class BossAI{
                 BossState previousState = BossState.valueOf(elements[0]);
 
                 BossState nextState = BossState.valueOf(elements[1]);
-                if (allWeights.get(previousState).containsKey(nextState)) throw new RuntimeException("Duplicate state in BossWeights.csv");
 
                 float weight = Float.parseFloat(elements[2]);
 
                 allWeights.get(previousState).put(nextState,weight);
-
-                reader.close();
             }
+                reader.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

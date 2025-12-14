@@ -2,10 +2,7 @@ package ruairi.nea.gameClasses;
 
 import ruairi.nea.gameClasses.Combat.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
-import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
-import ruairi.nea.gameClasses.Entities.Enemies.FireMage;
-import ruairi.nea.gameClasses.Entities.Enemies.Fireball;
-import ruairi.nea.gameClasses.Entities.Enemies.WillOWisp;
+import ruairi.nea.gameClasses.Entities.Enemies.*;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -154,6 +151,7 @@ public class Level {
             case "FIREBALL" -> enemy = new Fireball(posX,posY,Float.parseFloat(elements[4])+offsetX,Float.parseFloat(elements[5])+offsetX);
             case "FIREMAGE" -> enemy = new FireMage(posX,posY,hero,enemyProjectiles,Float.parseFloat(elements[4])+offsetX,Float.parseFloat(elements[5])+offsetX);
             case "WILLOWISP" -> enemy = new WillOWisp(posX,posY,Float.parseFloat(elements[4])+offsetY,Float.parseFloat(elements[5])+offsetY);
+            case "BOSS" -> enemy = new Boss(posX+offsetX,posY+offsetY);
             default -> {System.out.println(elements[3]+" not a valid type of enemy"); return;}
         }
         enemies.add(enemy);

@@ -341,7 +341,7 @@ public class Hero extends Entity {
                 ", velocityX=" + velocityX +
                 ", velocityY=" + velocityY +
                 ", width=" + width +
-                ", HEIGHT=" + height +
+                ", FRAME_HEIGHT=" + height +
                 '}';
     }
 }

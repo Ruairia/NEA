@@ -2,6 +2,7 @@ package ruairi.nea.gameClasses;
 
 import ruairi.nea.gameClasses.Combat.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
+import ruairi.nea.gameClasses.Entities.Enemies.Boss;
 import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
 import ruairi.nea.gameClasses.Entities.Enemies.PacingEnemy;
 
@@ -24,7 +25,6 @@ public class CollisionManager {
 
     public static void resolveEntityPlatformCollision(Entity entity, Platform platform) {
         if (entity instanceof Platform) return;
-
         float platformX = platform.getPosX();
         float platformY = platform.getPosY();
         float platformOldX = platform.getOldX();

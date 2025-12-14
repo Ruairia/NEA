@@ -23,6 +23,7 @@ public class Level {
     public ArrayList<Checkpoint> checkpoints = new ArrayList<>();
 
     private Hero hero;
+    public Boss boss;
     public Background background;
 
     public Level() {
@@ -151,7 +152,10 @@ public class Level {
             case "FIREBALL" -> enemy = new Fireball(posX,posY,Float.parseFloat(elements[4])+offsetX,Float.parseFloat(elements[5])+offsetX);
             case "FIREMAGE" -> enemy = new FireMage(posX,posY,hero,enemyProjectiles,Float.parseFloat(elements[4])+offsetX,Float.parseFloat(elements[5])+offsetX);
             case "WILLOWISP" -> enemy = new WillOWisp(posX,posY,Float.parseFloat(elements[4])+offsetY,Float.parseFloat(elements[5])+offsetY);
-            case "BOSS" -> enemy = new Boss(posX+offsetX,posY+offsetY);
+            case "BOSS" -> {
+                enemy = new Boss(posX+offsetX,posY+offsetY,this);
+                boss= (Boss) enemy;
+            }
             default -> {System.out.println(elements[3]+" not a valid type of enemy"); return;}
         }
         enemies.add(enemy);

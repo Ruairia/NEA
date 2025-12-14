@@ -94,7 +94,7 @@ public class GameScreen implements Screen {
             hero.damage(OUT_OF_WORLD_THRESHOLD_DAMAGE);
         }
 
-        CollisionManager.handleEnemyCollisions(level.enemies,hero);
+        CollisionManager.handleEnemyHeroCollisions(level.enemies,hero);
 
         if (hero.getHealth()<=0) {hero.respawn();}
 

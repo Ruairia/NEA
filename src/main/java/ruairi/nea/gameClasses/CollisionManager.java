@@ -3,6 +3,7 @@ package ruairi.nea.gameClasses;
 import ruairi.nea.gameClasses.Combat.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
 import ruairi.nea.gameClasses.Entities.Enemies.Boss;
+import ruairi.nea.gameClasses.Entities.Enemies.BossAI;
 import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
 import ruairi.nea.gameClasses.Entities.Enemies.PacingEnemy;
 
@@ -88,7 +89,7 @@ public class CollisionManager {
 
 
 
-    public static void handleEnemyCollisions(ArrayList<Enemy> enemies, Hero hero){
+    public static void handleEnemyHeroCollisions(ArrayList<Enemy> enemies, Hero hero){
         for (Enemy enemy : enemies){
             if (hero.getInvincibilityPeriodLeft()>0) return;
             if (intersectsWithTolerance(enemy,hero,enemy.intersectTolerance)) {
@@ -96,6 +97,10 @@ public class CollisionManager {
                 hero.damage(enemy.getDamage());
                 hero.setInvincibilityPeriodLeft(Hero.INVINCIBILITY_DURATION);
                 hero.applyKnockback(enemy);
+                if (enemy instanceof Boss) {
+                    BossAI.rewardMoveTransition(((Boss) enemy).getPreviousState(),((Boss) enemy).getCurrentState());
+                    BossAI.rewardMoveEverywhere(((Boss) enemy).getCurrentState());
+                }
             }
         }
     }
@@ -106,6 +111,11 @@ public class CollisionManager {
         for (Enemy enemy : level.enemies) {
             if (intersectsWithTolerance(enemy,projectile,projectile.intersectTolerance)) {
                 enemy.damageEnemy(projectile.damage);
+
+                if (enemy instanceof Boss) {
+                    BossAI.punishMoveTransition(((Boss) enemy).getPreviousState(),((Boss) enemy).getCurrentState());
+                    BossAI.punishMoveEverywhere(((Boss) enemy).getCurrentState());
+                }
 
                 if (enemy.getHealth() <= 0) {
                     deadEnemies.add(enemy);

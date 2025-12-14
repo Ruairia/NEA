@@ -13,11 +13,8 @@ public final class BossAI{
 
     public enum BossState {
         IDLE,
-        ATTACK1,
-        ATTACK2;
-        public BossState parseState(String state){
-            return BossState.valueOf(state);
-        }
+        WALK_AWAY,
+        WALK_TOWARDS
     }
 
     public static BossState getNextState(BossState previousState){
@@ -34,37 +31,59 @@ public final class BossAI{
         return BossState.IDLE;
     }
 
-
-
-    public static void reward(BossState previousState, BossState currentState){
-        HashMap<BossState, Float> weights = allWeights.get(previousState);
-
-        ArrayList<BossState> states = new ArrayList<>(weights.keySet());
-
-        float amountToGoUp = 0.2f;
-        weights.put(currentState,weights.get(currentState)+amountToGoUp);
-
-        float totalProbability = 0;
-        for (BossState state : states){
-            totalProbability += weights.get(state);
-        }
-        for (BossState state : states){
-            weights.put(state,weights.get(state)/totalProbability);
+    public static void rewardMoveEverywhere(BossState state){
+        for (BossState previousState : BossState.values()){
+            allWeights.get(previousState).put(state,allWeights.get(previousState).get(state)+0.1f);
+            capProbabilitiesAndNormalise(allWeights.get(previousState));
         }
     }
 
-    public static void punish(BossState previousState, BossState currentState){
+    public static void punishMoveEverywhere(BossState state){
+        for (BossState previousState : BossState.values()){
+            allWeights.get(previousState).put(state,Math.max(0,allWeights.get(previousState).get(state)-0.2f));
+            capProbabilitiesAndNormalise(allWeights.get(previousState));
+        }
+    }
+
+    public static void rewardMoveTransition(BossState previousState, BossState currentState){
         HashMap<BossState, Float> weights = allWeights.get(previousState);
-        ArrayList<BossState> states = new ArrayList<>(weights.keySet());
-        float amountToGoDown = 0.2f;
+
+        float amountToGoUp = 0.1f;
+        weights.put(currentState,weights.get(currentState)+amountToGoUp);
+
+        capProbabilitiesAndNormalise(weights);
+        saveAllWeights();
+    }
+
+    public static void punishMoveTransition(BossState previousState, BossState currentState){
+        HashMap<BossState, Float> weights = allWeights.get(previousState);
+        float amountToGoDown = 0.1f;
         weights.put(currentState, Math.max(0,weights.get(currentState) - amountToGoDown));
+        capProbabilitiesAndNormalise(weights);
+        saveAllWeights();
+    }
+
+    private static void normaliseWeights(HashMap<BossState, Float> weights) {
+        ArrayList<BossState> states = new ArrayList<>(weights.keySet());
         float totalProbability = 0;
         for (BossState state : states){
             totalProbability += weights.get(state);
         }
         for (BossState state : states){
-            weights.put(state,weights.get(state)/totalProbability);
+            weights.put(state, weights.get(state)/totalProbability);
         }
+    }
+
+    public static void capProbabilitiesAndNormalise(HashMap<BossState, Float> weights){
+        for (BossState nextState : weights.keySet()){
+            if (weights.get(nextState)>0.8){
+                weights.put(nextState,0.8f);
+            }
+            if (weights.get(nextState)<0.1){
+                weights.put(nextState,0.1f);
+            }
+        }
+        normaliseWeights(weights);
     }
 
     public static void saveAllWeights(){

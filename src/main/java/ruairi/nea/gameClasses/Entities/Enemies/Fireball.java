@@ -1,4 +1,4 @@
-package ruairi.nea.gameClasses.Entities;
+package ruairi.nea.gameClasses.Entities.Enemies;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -35,7 +35,7 @@ public class Fireball extends PacingEnemy{
         animation.setPlayMode(Animation.PlayMode.LOOP);
 
         damage = DAMAGE;
-        isAffectedByGravity=false;
+        setAffectedByGravity(false);
     }
 
     @Override

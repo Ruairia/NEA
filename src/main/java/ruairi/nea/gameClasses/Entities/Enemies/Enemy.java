@@ -1,4 +1,6 @@
-    package ruairi.nea.gameClasses.Entities;
+    package ruairi.nea.gameClasses.Entities.Enemies;
+
+    import ruairi.nea.gameClasses.Entities.Entity;
 
     public abstract class Enemy extends Entity {
         int damage;

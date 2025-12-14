@@ -1,4 +1,4 @@
-package ruairi.nea.gameClasses.Entities;
+package ruairi.nea.gameClasses.Entities.Enemies;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.gameClasses.Combat.Projectile;
+import ruairi.nea.gameClasses.Entities.Entity;
+import ruairi.nea.gameClasses.Entities.Hero;
 
 import java.util.ArrayList;
 
@@ -95,7 +97,7 @@ public class FireMage extends PacingEnemy{
 
         float projectilePosX = posX;
 
-        if (this.getCurrentDirection()==Direction.LEFT) projectilePosX+=width;
+        if (this.getCurrentDirection()== Entity.Direction.LEFT) projectilePosX+=width;
 
         Projectile projectile = new Projectile(projectilePosX,posY+0.5f*height,directionX*PROJECTILE_SPEED,directionY*PROJECTILE_SPEED,DAMAGE,Projectile.projectileType.FIREMAGE);
         projectiles.add(projectile);

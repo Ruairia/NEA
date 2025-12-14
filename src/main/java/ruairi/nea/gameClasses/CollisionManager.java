@@ -2,6 +2,8 @@ package ruairi.nea.gameClasses;
 
 import ruairi.nea.gameClasses.Combat.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
+import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
+import ruairi.nea.gameClasses.Entities.Enemies.PacingEnemy;
 
 import java.util.ArrayList;
 import java.util.Iterator;

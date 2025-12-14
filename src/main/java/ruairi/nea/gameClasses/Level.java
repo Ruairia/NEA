@@ -2,6 +2,10 @@ package ruairi.nea.gameClasses;
 
 import ruairi.nea.gameClasses.Combat.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
+import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
+import ruairi.nea.gameClasses.Entities.Enemies.FireMage;
+import ruairi.nea.gameClasses.Entities.Enemies.Fireball;
+import ruairi.nea.gameClasses.Entities.Enemies.WillOWisp;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -37,6 +41,7 @@ public class Level {
     public void loadLevel(int level) {
 
         background = new Background(level);
+        hero = new Hero(this);
 
         try {
 
@@ -51,7 +56,7 @@ public class Level {
                     elements[i]=elements[i].strip();
                 }
                 switch (elements[0]) {
-                    case "SPAWNPOINT" -> loadHero(elements);
+                    case "SPAWNPOINT" -> setHeroSpawnPoint(elements);
                     case "PLATFORM" -> loadPlatform(elements);
                     case "MOVINGPLATFORM" -> loadMovingPlatform(elements);
                     case "WALL" -> loadWall(elements);
@@ -59,6 +64,46 @@ public class Level {
                     case "ENEMY" -> loadEnemy(elements);
                     case "CHECKPOINT" -> loadCheckpoint(elements);
                     case "GOAL" -> loadGoal(elements);
+                    case "PREFAB" -> loadPrefab(elements);
+                    default -> {System.out.println(elements[0] + " not a valid entity type"); return;}
+                }
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadPrefab(String[] constructionElements){loadPrefab(constructionElements,0,0);}
+
+    public void loadPrefab(String[] constructionElements, float offsetX, float offsetY){
+        offsetX += Float.parseFloat(constructionElements[1]);
+        offsetY += Float.parseFloat(constructionElements[2]);
+
+        int prefabID = Integer.parseInt(constructionElements[3]);
+
+        try {
+
+            BufferedReader levelReader = getLevelReader(prefabID);
+
+            String line;
+            String[] elements;
+
+            while ((line = levelReader.readLine()) != null) {
+                elements = line.split(",");
+                for (int i = 0; i<elements.length; i++){
+                    elements[i]=elements[i].strip();
+                }
+                switch (elements[0]) {
+                    case "PLATFORM" -> loadPlatform(elements,offsetX,offsetY);
+                    case "MOVINGPLATFORM" -> loadMovingPlatform(elements,offsetX,offsetY);
+                    case "WALL" -> loadWall(elements,offsetX,offsetY);
+                    case "GROUND" -> loadGround(elements,offsetX,offsetY);
+                    case "ENEMY" -> loadEnemy(elements,offsetX,offsetY);
+                    case "CHECKPOINT","SPAWNPOINT" -> loadCheckpoint(elements,offsetX,offsetY);
+                    case "GOAL" -> loadGoal(elements,offsetX,offsetY);
+                    case "PREFAB" -> loadPrefab(elements,offsetX,offsetY);
                     default -> {System.out.println(elements[0] + " not a valid entity type"); return;}
                 }
             }
@@ -71,11 +116,11 @@ public class Level {
 
     private static BufferedReader getLevelReader(int level) throws FileNotFoundException {
         String levelPlatformsFile = switch (level) {
-            case 1 -> "assets/level1Platforms.csv";
-            case 2 -> "assets/level2Platforms.csv";
-            case 3 -> "assets/level3Platforms.csv";
-            case 4 -> "assets/level4Platforms.csv";
-            case 5 -> "assets/level5Platforms.csv";
+            case 1 -> "assets/level1.csv";
+            case 2 -> "assets/level2.csv";
+            case 3 -> "assets/level3.csv";
+            case 4 -> "assets/level4.csv";
+            case 10 -> "assets/bossArena.csv";
 
             default -> throw new IllegalStateException("Unexpected value: " + level);
         };
@@ -83,53 +128,57 @@ public class Level {
         return new BufferedReader(new FileReader(levelPlatformsFile));
     }
 
-    private void loadGoal(String[] elements){
-        float posX = Float.parseFloat(elements[1]);
-        float posY = Float.parseFloat(elements[2]);
+    private void loadGoal(String[] elements,float offsetX,float offsetY){
+        float posX = Float.parseFloat(elements[1])+offsetX;
+        float posY = Float.parseFloat(elements[2])+offsetY;
         Goal goal = new Goal(posX,posY);
         allEntities.add(goal);
         checkpoints.add(goal);
     }
+    private void loadGoal(String[] elements){loadGoal(elements,0,0);}
 
-    private void loadCheckpoint(String[] elements){
-        float posX = Float.parseFloat(elements[1]);
-        float posY = Float.parseFloat(elements[2]);
+    private void loadCheckpoint(String[] elements,float offsetX,float offsetY){
+        float posX = Float.parseFloat(elements[1])+offsetX;
+        float posY = Float.parseFloat(elements[2])+offsetY;
         Checkpoint checkpoint = new Checkpoint(posX,posY);
         allEntities.add(checkpoint);
         checkpoints.add(checkpoint);
     }
+    private void loadCheckpoint(String[] elements){loadCheckpoint(elements,0,0);}
 
-    private void loadEnemy(String[] elements){
-        float posX = Float.parseFloat(elements[1]);
-        float posY = Float.parseFloat(elements[2]);
+    private void loadEnemy(String[] elements,float offsetX,float offsetY) {
+        float posX = Float.parseFloat(elements[1])+offsetX;
+        float posY = Float.parseFloat(elements[2])+offsetY;
         Enemy enemy;
         switch (elements[3]){
-            case "FIREBALL" -> enemy = new Fireball(posX,posY,Float.parseFloat(elements[4]),Float.parseFloat(elements[5]));
-            case "FIREMAGE" -> enemy = new FireMage(posX,posY,hero,enemyProjectiles,Float.parseFloat(elements[4]),Float.parseFloat(elements[5]));
-            case "WILLOWISP" -> enemy = new WillOWisp(posX,posY,Float.parseFloat(elements[4]),Float.parseFloat(elements[5]));
+            case "FIREBALL" -> enemy = new Fireball(posX,posY,Float.parseFloat(elements[4])+offsetX,Float.parseFloat(elements[5])+offsetX);
+            case "FIREMAGE" -> enemy = new FireMage(posX,posY,hero,enemyProjectiles,Float.parseFloat(elements[4])+offsetX,Float.parseFloat(elements[5])+offsetX);
+            case "WILLOWISP" -> enemy = new WillOWisp(posX,posY,Float.parseFloat(elements[4])+offsetY,Float.parseFloat(elements[5])+offsetY);
             default -> {System.out.println(elements[3]+" not a valid type of enemy"); return;}
         }
         enemies.add(enemy);
         mobileEntities.add(enemy);
         allEntities.add(enemy);
     }
+    private void loadEnemy(String[] elements) {loadEnemy(elements,0,0);}
 
-    private void loadHero(String[] elements){
-        hero = new Hero(this).setSpawnPoint(Float.parseFloat(elements[1]), Float.parseFloat(elements[2]));
+    private void setHeroSpawnPoint(String[] elements){
+        hero.setSpawnPoint(Float.parseFloat(elements[1]), Float.parseFloat(elements[2]));
         mobileEntities.add(hero);
         allEntities.add(hero);
     }
 
-    private void loadGround(String[] elements){
-        float posX = Float.parseFloat(elements[1]);
-        float posY = Float.parseFloat(elements[2]);
-        float endX = Float.parseFloat(elements[3]);
+    private void loadGround(String[] elements,float offsetX,float offsetY) {
+        float posX = Float.parseFloat(elements[1])+offsetX;
+        float posY = Float.parseFloat(elements[2])+offsetY;
+        float endX = Float.parseFloat(elements[3])+offsetX;
         loadPlatformTile(posX,posY, Platform.PlatformType.leftPlatform);
         for (float i = posX+Platform.tileWidth*ZOOM; i < endX; i+=Platform.tileWidth*ZOOM) {
             loadPlatformTile(i,posY, Platform.PlatformType.midPlatform);
         }
         loadPlatformTile(endX,posY, Platform.PlatformType.rightPlatform);
     }
+    private void loadGround(String[] elements) {loadGround(elements,0,0);}
 
     private void loadMovingPlatformTile(float posX, float posY, MovingPlatform.MoveDirection moveDirection, float lesserBound, float greaterBound, Platform.PlatformType type){
         MovingPlatform movingPlatform = new MovingPlatform(posX,posY,moveDirection,lesserBound,greaterBound,type);
@@ -169,26 +218,38 @@ public class Level {
         }
     }
 
-    private void loadMovingPlatform(String[] elements) {
-        float posX = Float.parseFloat(elements[1]);
-        float posY = Float.parseFloat(elements[2]);
+    private void loadMovingPlatform(String[] elements,float offsetX,float offsetY) {
+        float posX = Float.parseFloat(elements[1])+offsetX;
+        float posY = Float.parseFloat(elements[2])+offsetY;
         int tilesWide = Integer.parseInt(elements[3]);
-
-        MovingPlatform.MoveDirection moveDirection;
-        if (elements[4].equals("HORIZONTAL")) moveDirection = MovingPlatform.MoveDirection.HORIZONTAL;
-        else moveDirection = MovingPlatform.MoveDirection.VERTICAL;
 
         float lesserBound = Float.parseFloat(elements[5]);
         float greaterBound = Float.parseFloat(elements[6]);
+
+        MovingPlatform.MoveDirection moveDirection;
+        if (elements[4].equals("HORIZONTAL")){
+            moveDirection = MovingPlatform.MoveDirection.HORIZONTAL;
+            lesserBound+=offsetX;
+            greaterBound+=offsetX;
+        }
+        else{
+            moveDirection = MovingPlatform.MoveDirection.VERTICAL;
+            lesserBound+=offsetY;
+            greaterBound+=offsetY;
+        }
+
+
         createMovingPlatform(posX,posY,tilesWide,moveDirection,lesserBound,greaterBound);
     }
+    private void loadMovingPlatform(String[] elements) {loadMovingPlatform(elements,0,0);}
 
-    private void loadWall(String[] elements) {
-        float posX = Float.parseFloat(elements[1]);
-        float posY = Float.parseFloat(elements[2]);
+    private void loadWall(String[] elements,float offsetX,float offsetY) {
+        float posX = Float.parseFloat(elements[1])+offsetX;
+        float posY = Float.parseFloat(elements[2])+offsetY;
         int wallLength = Integer.parseInt(elements[3]);
         createWall(posX,posY,wallLength);
     }
+    private void loadWall(String[] elements) {loadWall(elements,0,0);}
 
     private void createWall(float posX, float posY, int tilesWide) {
         if (tilesWide==1) {
@@ -208,12 +269,13 @@ public class Level {
         allEntities.add(wall);
     }
 
-    private void loadPlatform(String[] elements) {
-        float posX = Float.parseFloat(elements[1]);
-        float posY = Float.parseFloat(elements[2]);
+    private void loadPlatform(String[] elements, float offsetX, float offsetY) {
+        float posX = Float.parseFloat(elements[1])+offsetX;
+        float posY = Float.parseFloat(elements[2])+offsetY;
         int platformLength = Integer.parseInt(elements[3]);
         createPlatform(posX,posY,platformLength);
     }
+    private void loadPlatform(String[] elements) {loadPlatform(elements,0,0);}
 
     private void loadPlatformTile(float posX, float posY, Platform.PlatformType type){
         Platform platform = new Platform(posX,posY,type);

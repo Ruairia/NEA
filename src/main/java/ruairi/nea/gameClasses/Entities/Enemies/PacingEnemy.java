@@ -1,6 +1,4 @@
-package ruairi.nea.gameClasses.Entities;
-
-import com.badlogic.gdx.graphics.g2d.Batch;
+package ruairi.nea.gameClasses.Entities.Enemies;
 
 public abstract class PacingEnemy extends Enemy {
 

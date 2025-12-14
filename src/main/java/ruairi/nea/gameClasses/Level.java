@@ -21,6 +21,7 @@ public class Level {
     public ArrayList<Projectile> playerProjectiles;
     public ArrayList<Projectile> enemyProjectiles;
     public ArrayList<Checkpoint> checkpoints = new ArrayList<>();
+    public ArrayList<Coin> coins = new ArrayList<>();
 
     private Hero hero;
     public Boss boss;
@@ -62,6 +63,7 @@ public class Level {
                     case "ENEMY" -> loadEnemy(elements);
                     case "CHECKPOINT" -> loadCheckpoint(elements);
                     case "GOAL" -> loadGoal(elements);
+                    case "COIN" -> loadCoin(elements);
                     case "PREFAB" -> loadPrefab(elements);
                     default -> {System.out.println(elements[0] + " not a valid entity type"); return;}
                 }
@@ -101,6 +103,7 @@ public class Level {
                     case "ENEMY" -> loadEnemy(elements,offsetX,offsetY);
                     case "CHECKPOINT","SPAWNPOINT" -> loadCheckpoint(elements,offsetX,offsetY);
                     case "GOAL" -> loadGoal(elements,offsetX,offsetY);
+                    case "COIN" -> loadCoin(elements,offsetX,offsetY);
                     case "PREFAB" -> loadPrefab(elements,offsetX,offsetY);
                     default -> {System.out.println(elements[0] + " not a valid entity type"); return;}
                 }
@@ -135,6 +138,15 @@ public class Level {
     }
     private void loadGoal(String[] elements){loadGoal(elements,0,0);}
 
+    private void loadCoin(String[] elements){loadCoin(elements,0,0);}
+    private void loadCoin(String[] elements, float offsetX, float offsetY){
+        float posX = Float.parseFloat(elements[1])+offsetX;
+        float posY = Float.parseFloat(elements[2])+offsetY;
+        Coin coin = new Coin(posX,posY,10);
+        allEntities.add(coin);
+        coins.add(coin);
+    }
+
     private void loadCheckpoint(String[] elements,float offsetX,float offsetY){
         float posX = Float.parseFloat(elements[1])+offsetX;
         float posY = Float.parseFloat(elements[2])+offsetY;
@@ -153,8 +165,8 @@ public class Level {
             case "FIREMAGE" -> enemy = new FireMage(posX,posY,hero,enemyProjectiles,Float.parseFloat(elements[4])+offsetX,Float.parseFloat(elements[5])+offsetX);
             case "WILLOWISP" -> enemy = new WillOWisp(posX,posY,Float.parseFloat(elements[4])+offsetY,Float.parseFloat(elements[5])+offsetY);
             case "BOSS" -> {
-                enemy = new Boss(posX+offsetX,posY+offsetY,this);
-                boss= (Boss) enemy;
+                enemy = new Boss(posX,posY,this);
+                boss = (Boss) enemy;
             }
             default -> {System.out.println(elements[3]+" not a valid type of enemy"); return;}
         }

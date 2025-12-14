@@ -3,7 +3,7 @@
     import ruairi.nea.gameClasses.Entities.Entity;
 
     public abstract class Enemy extends Entity {
-        int damage;
+        int contactDamage;
         public final float intersectTolerance;
 
 
@@ -21,8 +21,8 @@
 
 
 
-        public int getDamage() {
-            return damage;
+        public int getContactDamage() {
+            return contactDamage;
         }
 
         public void damageEnemy(int amount){

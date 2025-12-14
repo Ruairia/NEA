@@ -94,7 +94,7 @@ public class CollisionManager {
             if (hero.getInvincibilityPeriodLeft()>0) return;
             if (intersectsWithTolerance(enemy,hero,enemy.intersectTolerance)) {
 
-                hero.damage(enemy.getDamage());
+                hero.damage(enemy.getContactDamage());
                 hero.setInvincibilityPeriodLeft(Hero.INVINCIBILITY_DURATION);
                 hero.applyKnockback(enemy);
                 if (enemy instanceof Boss) {

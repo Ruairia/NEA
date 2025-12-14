@@ -11,7 +11,9 @@ import ruairi.nea.gameClasses.InputHandler;
 import ruairi.nea.gameClasses.Combat.Staff;
 import ruairi.nea.gameClasses.Level;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 import static ruairi.nea.gameClasses.Utils.*;
@@ -31,19 +33,16 @@ public class Hero extends Entity {
     private static final int MAX_JUMPS = 2;
     public static final float INVINCIBILITY_DURATION = 0.6f;
 
-    public enum State {
+    public enum HeroState {
         IDLE,
         WALKING,
         IN_AIR,
         ATTACKING
     }
-    private State currentState = State.IDLE;
+    private HeroState currentState = HeroState.IDLE;
 
     private Texture spriteSheet;
-    private Animation<TextureRegion> idleAnimation;
-    private Animation<TextureRegion> walkAnimation;
-    private Animation<TextureRegion> inAirAnimation;
-    private Animation<TextureRegion> attackAnimation;
+    private HashMap<HeroState, Animation<TextureRegion>> animations = new HashMap<>();
     private float stateTime = 0;
     Animation<TextureRegion> currentAnimation;
 
@@ -71,7 +70,7 @@ public class Hero extends Entity {
         mana = MAX_MANA;
 
         loadAnimations();
-        currentAnimation = idleAnimation;
+        currentAnimation = animations.get(HeroState.IDLE);
         currentStaff = new FireStaff(this,level.playerProjectiles);
     }
 
@@ -141,10 +140,10 @@ public class Hero extends Entity {
 
         TextureRegion[] inAirFrames = parseFrames(0, 3*frameHeight, frameWidth, frameHeight, spriteSheet, 1);
 
-        idleAnimation = createAnimation(idleFrames, 0.1f, Animation.PlayMode.LOOP);
-        walkAnimation = createAnimation(walkFrames, 0.2f, Animation.PlayMode.LOOP);
-        inAirAnimation = createAnimation(inAirFrames, 0.1f, Animation.PlayMode.LOOP);
-        attackAnimation = createAnimation(attackFrames, 0.25f, Animation.PlayMode.NORMAL);
+        animations.put(HeroState.IDLE,createAnimation(idleFrames, 0.1f, Animation.PlayMode.LOOP));
+        animations.put(HeroState.WALKING,createAnimation(walkFrames, 0.2f, Animation.PlayMode.LOOP));
+        animations.put(HeroState.IN_AIR,createAnimation(inAirFrames, 0.1f, Animation.PlayMode.LOOP));
+        animations.put(HeroState.ATTACKING,createAnimation(attackFrames, 0.25f, Animation.PlayMode.NORMAL));
     }
 
 
@@ -152,12 +151,10 @@ public class Hero extends Entity {
 
     @Override
     public TextureRegion getCurrentFrame(){
-        if (stateTime>=currentAnimation.getAnimationDuration() || currentAnimation!=attackAnimation) {
+        if (stateTime>=currentAnimation.getAnimationDuration() || currentAnimation!=animations.get(HeroState.ATTACKING)) {
         currentAnimation = switch (currentState) {
-            case IDLE -> idleAnimation;
-            case WALKING -> walkAnimation;
-            case IN_AIR -> inAirAnimation;
-            case ATTACKING -> {if (isOnGround) yield attackAnimation; else yield inAirAnimation;}
+            case IDLE,WALKING,IN_AIR -> animations.get(currentState);
+            case ATTACKING -> {if (isOnGround) yield animations.get(currentState); else yield animations.get(HeroState.IN_AIR);}
         };
         }
         return  currentAnimation.getKeyFrame(stateTime);
@@ -205,23 +202,23 @@ public class Hero extends Entity {
     }
 
     public void move(double delta){
-        State previousState = currentState;
+        HeroState previousState = currentState;
 
         ArrayList<String> input = inputHandler.getInputs();
 
         if (input.contains("LEFT") && !input.contains("RIGHT")){
             if (knockbackTimer==0) velocityX= -WALK_SPEED *inputHandler.horizontalAxisStrength;
-            if (isOnGround) setCurrentState(State.WALKING);
+            if (isOnGround) setCurrentState(HeroState.WALKING);
             setCurrentDirection(Direction.LEFT);
         }
         else if (input.contains("RIGHT") && !input.contains("LEFT")){
             if (knockbackTimer==0) velocityX= WALK_SPEED *inputHandler.horizontalAxisStrength;
-            if (isOnGround) setCurrentState(State.WALKING);
+            if (isOnGround) setCurrentState(HeroState.WALKING);
             setCurrentDirection(Direction.RIGHT);
         }
         else {
-            if (isOnGround) setCurrentState(State.IDLE);
-            else setCurrentState(State.IN_AIR);
+            if (isOnGround) setCurrentState(HeroState.IDLE);
+            else setCurrentState(HeroState.IN_AIR);
             if (knockbackTimer==0) velocityX=0;
         }
         if (input.contains("JUMP")){
@@ -234,7 +231,7 @@ public class Hero extends Entity {
         }
         if (input.contains("ATTACK") && currentStaff.getCooldown()==0) {
             if (mana>=currentStaff.manaCost) {
-            setCurrentState(State.ATTACKING);
+            setCurrentState(HeroState.ATTACKING);
 
                 currentStaff.attack();
                 mana-=currentStaff.manaCost;
@@ -242,7 +239,7 @@ public class Hero extends Entity {
             }
         }
         if (!isOnGround) {
-            if (currentState!=State.ATTACKING) setCurrentState(State.IN_AIR);
+            if (currentState!= HeroState.ATTACKING) setCurrentState(HeroState.IN_AIR);
         }
 
 
@@ -253,16 +250,16 @@ public class Hero extends Entity {
         if (currentState!=previousState) stateTime=0;
     }
 
-    public void setCurrentState(State currentState, Direction direction) {
+    public void setCurrentState(HeroState currentState, Direction direction) {
         this.currentState = currentState;
         setCurrentDirection(direction);
     }
 
-    public State getCurrentState() {
+    public HeroState getCurrentState() {
         return currentState;
     }
 
-    public void setCurrentState(State currentState){
+    public void setCurrentState(HeroState currentState){
         this.currentState = currentState;
     }
 

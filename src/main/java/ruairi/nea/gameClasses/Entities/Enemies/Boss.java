@@ -36,10 +36,11 @@ public class Boss extends Enemy{
         this.level = level;
 
         health = MAX_HEALTH;
+        contactDamage = 10;
 
         loadAllWeights();
         loadAnimations();
-        setStateLengthsToOne();
+        setStateLengths();
     }
 
     public void transitionToState(BossState state){
@@ -53,6 +54,19 @@ public class Boss extends Enemy{
             case IDLE -> velocityX=0;
             case WALK_TOWARDS -> velocityX=100*directionToPlayer;
             case WALK_AWAY -> velocityX=-100*directionToPlayer;
+            case DASH -> velocityX=300*directionToPlayer;
+            case JUMP -> {
+                velocityX=200*directionToPlayer;
+                if (isOnGround()) velocityY=500;
+            }
+            case TELEPORT -> {
+                if (Math.abs(level.getHero().getPosX()-posX)>200) return;
+                velocityX=0;
+                posX=level.getHero().getPosX()+75*directionToPlayer;
+                posY=level.getHero().getPosY()+10;
+                if (directionToPlayer==1) setCurrentDirection(Direction.LEFT);
+                else setCurrentDirection(Direction.RIGHT);
+            }
         }
     }
 
@@ -69,10 +83,13 @@ public class Boss extends Enemy{
         animations.put(WALK_AWAY,walkAnimation);
     }
 
-    public void setStateLengthsToOne(){
+    public void setStateLengths(){
         for (int i = 0; i < values().length; i++) {
             stateLengths.put(values()[i],1f);
         }
+        stateLengths.put(DASH,0.3f);
+        stateLengths.put(JUMP,0.5f);
+        stateLengths.put(TELEPORT,0.5f);
     }
 
     @Override
@@ -80,7 +97,9 @@ public class Boss extends Enemy{
         super.update(delta);
         if (stateTime>stateLengths.get(currentState)){
             previousState=currentState;
-            currentState = getNextState(previousState);
+
+            if (currentState!=JUMP||!isOnGround()) currentState = getNextState(previousState);
+
             transitionToState(currentState);
         }
     }
@@ -103,7 +122,8 @@ public class Boss extends Enemy{
 
     @Override
     public void draw(Batch batch){
-        super.draw(batch, Color.RED);
+        if (currentState==TELEPORT) super.draw(batch, new Color(0.2f,0.05f,0.05f,0.5f));
+        else super.draw(batch, Color.RED);
     }
 
     public BossState getPreviousState() {

@@ -14,12 +14,23 @@ public final class BossAI{
     public enum BossState {
         IDLE,
         WALK_AWAY,
-        WALK_TOWARDS
+        WALK_TOWARDS,
+        DASH,
+        JUMP,
+        TELEPORT
     }
 
     public static BossState getNextState(BossState previousState){
+        BossState currentState;
         HashMap<BossState, Float> weights = allWeights.get(previousState);
         ArrayList<BossState> states = new ArrayList<>(weights.keySet());
+
+        currentState=(pickWeightsAtRandom(states, weights));
+
+        return currentState;
+    }
+
+    private static BossState pickWeightsAtRandom(ArrayList<BossState> states, HashMap<BossState, Float> weights) {
         double randomValue = Math.random();
         double threshold = 0;
         for (BossState state : states){
@@ -32,15 +43,19 @@ public final class BossAI{
     }
 
     public static void rewardMoveEverywhere(BossState state){
+        float amountToGoDown = 0.1f;
         for (BossState previousState : BossState.values()){
-            allWeights.get(previousState).put(state,allWeights.get(previousState).get(state)+0.1f);
+            if (allWeights.get(previousState).get(state)!=0)
+                allWeights.get(previousState).put(state,allWeights.get(previousState).get(state)+amountToGoDown);
             capProbabilitiesAndNormalise(allWeights.get(previousState));
         }
     }
 
     public static void punishMoveEverywhere(BossState state){
+        float amountToGoDown = 0.1f;
         for (BossState previousState : BossState.values()){
-            allWeights.get(previousState).put(state,Math.max(0,allWeights.get(previousState).get(state)-0.2f));
+            if (allWeights.get(previousState).get(state)!=0)
+                allWeights.get(previousState).put(state,Math.max(0.1f,allWeights.get(previousState).get(state)-amountToGoDown));
             capProbabilitiesAndNormalise(allWeights.get(previousState));
         }
     }
@@ -58,7 +73,7 @@ public final class BossAI{
     public static void punishMoveTransition(BossState previousState, BossState currentState){
         HashMap<BossState, Float> weights = allWeights.get(previousState);
         float amountToGoDown = 0.1f;
-        weights.put(currentState, Math.max(0,weights.get(currentState) - amountToGoDown));
+        weights.put(currentState, Math.max(01f,weights.get(currentState) - amountToGoDown));
         capProbabilitiesAndNormalise(weights);
         saveAllWeights();
     }
@@ -79,7 +94,7 @@ public final class BossAI{
             if (weights.get(nextState)>0.8){
                 weights.put(nextState,0.8f);
             }
-            if (weights.get(nextState)<0.1){
+            if (weights.get(nextState)<0.1&&weights.get(nextState)!=0){
                 weights.put(nextState,0.1f);
             }
         }

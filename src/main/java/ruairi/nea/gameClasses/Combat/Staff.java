@@ -93,7 +93,7 @@ public abstract class Staff {
 
 
 
-    public TextureRegion getCurrentFrame(float stateTime, Hero.State currentState){
+    public TextureRegion getCurrentFrame(float stateTime, Hero.HeroState currentState){
         if (stateTime>=currentAnimation.getAnimationDuration() || currentAnimation!=attackAnimation){
             currentAnimation = switch (currentState) {
             case IDLE -> idleAnimation;

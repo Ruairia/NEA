@@ -42,7 +42,7 @@ public class GameScreen implements Screen {
 
 
     public Hero hero;
-
+    public static int score=0;
 
 
 
@@ -101,7 +101,7 @@ public class GameScreen implements Screen {
         updateProjectiles(level,delta,hero);
 
         checkCheckpoints(level);
-
+        checkCoins(level);
     }
 
 
@@ -177,6 +177,7 @@ public class GameScreen implements Screen {
         bitmapFont.draw(game.batch, "FPS: "+Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight()-40);
         bitmapFont.draw(game.batch, "PosX: "+(int)hero.getPosX(), 10, Gdx.graphics.getHeight()-60);
         bitmapFont.draw(game.batch, "PosY: "+(int)hero.getPosY(), 10, Gdx.graphics.getHeight()-80);
+        bitmapFont.draw(game.batch, "Score: "+score, 10, Gdx.graphics.getHeight()-100);
         game.batch.end();
     }
 
@@ -265,6 +266,22 @@ public class GameScreen implements Screen {
             level.mobileEntities.remove(dead);
             level.allEntities.remove(dead);
         }
+    }
+
+    public static void checkCoins(Level level){
+        ArrayList<Coin> coins = level.coins;
+        Hero hero = level.getHero();
+        Iterator<Coin> coinIterator = coins.iterator();
+        while (coinIterator.hasNext()){
+            Coin coin = coinIterator.next();
+            if (coin.intersect(hero)){
+                coinIterator.remove();
+                level.coins.remove(coin);
+                level.allEntities.remove(coin);
+                score+=coin.getValue();
+            }
+        }
+
     }
 
     public static void checkCheckpoints(Level level){

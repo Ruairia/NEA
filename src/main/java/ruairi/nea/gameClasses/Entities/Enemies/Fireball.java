@@ -34,7 +34,7 @@ public class Fireball extends PacingEnemy{
         animation = new Animation<>(0.3f, frames);
         animation.setPlayMode(Animation.PlayMode.LOOP);
 
-        damage = DAMAGE;
+        contactDamage = DAMAGE;
         setAffectedByGravity(false);
     }
 

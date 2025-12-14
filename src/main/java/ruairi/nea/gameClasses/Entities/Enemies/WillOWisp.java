@@ -29,7 +29,7 @@ public class WillOWisp extends PacingEnemy {
         animation = new Animation<>(0.1f, frames[0]);
         animation.setPlayMode(Animation.PlayMode.LOOP);
 
-        damage = DAMAGE;
+        contactDamage = DAMAGE;
         setAffectedByGravity(false);
     }
 

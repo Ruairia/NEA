@@ -33,6 +33,7 @@ public abstract class Staff {
     Animation<TextureRegion> currentAnimation;
 
     public abstract void attack();
+    public abstract void attackDownwards();
 
     public Staff(Color colour, Hero hero, boolean requiresMana){
         loadAnimations();

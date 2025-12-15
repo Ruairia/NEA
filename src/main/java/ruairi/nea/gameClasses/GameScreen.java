@@ -304,6 +304,7 @@ public class GameScreen implements Screen {
             if (checkpoint.intersect(hero) && checkpoint.getTimeUntilRemoval()==null){
                 checkpoint.collect(hero);
                 checkpoint.setTimeUntilRemoval(0.05f);
+                if (checkpoint instanceof Goal) returnToMenu();
             }
         }
 

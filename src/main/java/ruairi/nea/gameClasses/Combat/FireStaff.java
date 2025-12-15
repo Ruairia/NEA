@@ -35,5 +35,10 @@ public class FireStaff extends Staff {
         cooldown = 0.4f;
     }
 
+    @Override
+    public void attackDownwards() {
+
+    }
+
 
 }

@@ -101,7 +101,7 @@ public class CollisionManager {
                 }
                 else if (enemy instanceof Explosion && ((Explosion)enemy).getOrigin()== Explosion.Origin.BOSS){
                     BossAI.rewardMoveEverywhere(BossAI.BossState.SHOOT_EXPLOSIVE,0.2f);
-                    enemy.setTimeUntilRemoval(((Explosion) enemy).lifetime+0.3f);
+                    enemy.kill(1.6f-((Explosion) enemy).lifetime);
                 }
             }
         }
@@ -118,15 +118,15 @@ public class CollisionManager {
                 enemy.damageEnemy(projectile.damage);
 
                 if (enemy instanceof Boss) {
-                    BossAI.punishMoveTransition(((Boss) enemy).getPreviousState(),((Boss) enemy).getCurrentState(), 0.1f);
-                    BossAI.punishMoveEverywhere(((Boss) enemy).getCurrentState(), 0.1f);
+                    BossAI.punishMoveTransition(((Boss) enemy).getPreviousState(),((Boss) enemy).getCurrentState(), 0.02f);
+                    BossAI.punishMoveEverywhere(((Boss) enemy).getCurrentState(), 0.02f);
                 }
 
                 if (enemy.getHealth() <= 0 && enemy.getTimeUntilRemoval()==null) {
-                    enemy.setTimeUntilRemoval(0.2f);
+                    enemy.kill(0.2f);
                 }
 
-                if (projectile.getTimeUntilRemoval()==null) projectile.setTimeUntilRemoval(0.1f);
+                if (projectile.getTimeUntilRemoval()==null) projectile.kill(0.1f);
 
                 break;
             }
@@ -142,14 +142,14 @@ public class CollisionManager {
                 if (projectile.type == Projectile.projectileType.BOSS) BossAI.rewardMoveEverywhere(BossAI.BossState.SHOOT, 0.1f);
                 if (projectile.type == Projectile.projectileType.BOSS_EXPLOSIVE) BossAI.rewardMoveEverywhere(BossAI.BossState.SHOOT_EXPLOSIVE,0.1f);
             }
-            if (projectile.getTimeUntilRemoval()==null) projectile.setTimeUntilRemoval(0.1f);
+            if (projectile.getTimeUntilRemoval()==null) projectile.kill(0.1f);
         }
     }
 
     public static boolean handleProjectilePlatformCollisionsAndCheckIfDestroyed(Level level, Projectile projectile) {
         for (Platform platform : level.platforms) {
             if (projectile.intersect(platform)) {
-                if (projectile.getTimeUntilRemoval()==null) projectile.setTimeUntilRemoval(0.1f);
+                if (projectile.getTimeUntilRemoval()==null) projectile.kill(0.1f);
                 return true;
             }
         }

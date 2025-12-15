@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.gameClasses.Entities.Goal;
+import ruairi.nea.gameClasses.Entities.Platform;
 import ruairi.nea.gameClasses.Entities.Projectile;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Level;
@@ -29,7 +31,7 @@ public class Boss extends Enemy{
     public static final int PROJECTILE_DAMAGE = 10;
     public static final float PROJECTILE_SPEED = 200*ZOOM;
     public static final int EXPLOSIVE_PROJECTILE_DAMAGE = 5;
-    public static final float EXPLOSIVE_PROJECTILE_SPEED = 150*ZOOM;
+    public static final float EXPLOSIVE_PROJECTILE_SPEED = 180*ZOOM;
     public static final int EXPLOSIVE_PROJECTILE_EXPLOSION_DAMAGE = 40;
 
 
@@ -80,6 +82,9 @@ public class Boss extends Enemy{
     }
 
     private void teleport() {
+        float oldX = posX;
+        float oldY = posY;
+
         hasContactDamage=false;
         invulnerable=true;
         int directionToPlayer = getDirectionToPlayer();
@@ -87,6 +92,13 @@ public class Boss extends Enemy{
         posX=level.getHero().getPosX()+75* directionToPlayer;
         posY=level.getHero().getPosY()+10;
         facePlayer();
+
+        for (Platform platform : level.platforms){
+            if (platform.intersect(this)){
+                posX=oldX;
+                posY=oldY;
+            }
+        }
     }
 
     private void facePlayer() {
@@ -115,11 +127,10 @@ public class Boss extends Enemy{
 
         if (this.getCurrentDirection()== Direction.LEFT) projectilePosX+=width;
 
-        Projectile projectile = new Projectile
+        return new Projectile
                 (projectilePosX,posY+0.5f*height
                         , directionX *PROJECTILE_SPEED*0.5f, directionY*EXPLOSIVE_PROJECTILE_SPEED,
                         EXPLOSIVE_PROJECTILE_DAMAGE,level,Projectile.projectileType.BOSS_EXPLOSIVE, Projectile.Origin.BOSS);
-        return projectile;
     }
 
     private void shootAtHero(){
@@ -144,10 +155,10 @@ public class Boss extends Enemy{
     public void loadAnimations(){
         TextureRegion[][] frames = TextureRegion.split(spriteSheet,FRAME_WIDTH,FRAME_HEIGHT);
         for (BossState state : BossState.values()){
-            Animation animation = new Animation<>(1,frames[0]);
+            Animation<TextureRegion> animation = new Animation<>(1,frames[0]);
             animations.put(state,animation);
         }
-        Animation walkAnimation = new Animation<>(0.1f,frames[1]);
+        Animation<TextureRegion> walkAnimation = new Animation<>(0.1f,frames[1]);
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
         animations.put(WALK_TOWARDS,walkAnimation);
         animations.put(WALK_AWAY,walkAnimation);
@@ -176,7 +187,17 @@ public class Boss extends Enemy{
         }
     }
 
+    @Override
+    public void kill(float stickAroundTime) {
+        super.kill(stickAroundTime);
+        spawnGoal();
+    }
 
+    private void spawnGoal(){
+        Goal goal = new Goal(posX,posY);
+        level.checkpoints.add(goal);
+        level.allEntities.add(goal);
+    }
 
     @Override
     protected void updateVelocity(double delta) {

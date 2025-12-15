@@ -23,7 +23,9 @@
             health = 100;
         }
 
-
+        public void kill(float stickAroundTime){
+            setTimeUntilRemoval(stickAroundTime);
+        }
 
 
         public int getContactDamage() {

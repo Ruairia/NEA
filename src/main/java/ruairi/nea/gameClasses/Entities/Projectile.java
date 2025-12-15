@@ -91,9 +91,12 @@ public class Projectile extends Entity {
 
     @Override
     public void draw(Batch batch) {
-        if (type == projectileType.FIREMAGE) batch.setColor(1,0.5f,0.5f,1);
-        if (type == projectileType.BOSS) batch.setColor(0.2f,0.7f,1,1);
-        if (type == projectileType.BOSS_EXPLOSIVE) batch.setColor(1,0.8f,0.2f,1);
+        switch (type){
+            case FIREMAGE -> batch.setColor(1,0.05f,0.05f,1);
+            case BOSS -> batch.setColor(0.2f,1f,0.6f,1);
+            case BOSS_EXPLOSIVE -> batch.setColor(1,0.8f,0.2f,1);
+            case FIRE_STAFF -> batch.setColor(1,0.5f,0.1f,1);
+        }
         if (getTimeUntilRemoval()!=null) batch.setColor(0.1f,0.1f,0.1f,0.5f);
 
         batch.draw(
@@ -112,15 +115,19 @@ public class Projectile extends Entity {
         batch.setColor(Color.WHITE);
     }
 
+    public void kill(float stickAroundTime){
+        setTimeUntilRemoval(stickAroundTime);
+        if (type == projectileType.BOSS) BossAI.punishMoveEverywhere(BossAI.BossState.SHOOT,0.01f);
+        if (type == projectileType.BOSS_EXPLOSIVE){
+            level.createExplosion(posX-32/2+width/2,posY-32/2+height/2,32, Boss.EXPLOSIVE_PROJECTILE_EXPLOSION_DAMAGE, Explosion.Origin.BOSS);
+        }
+    }
+
     @Override
     public void update(double delta) {
         super.update(delta);
         if (lifetime!=null && lifetime<=0 && getTimeUntilRemoval()==null){
-            setTimeUntilRemoval(0.1f);
-            if (type == projectileType.BOSS) BossAI.punishMoveEverywhere(BossAI.BossState.SHOOT,0.05f);
-            if (type == projectileType.BOSS_EXPLOSIVE){
-                level.createExplosion(posX-32/2+width/2,posY-32/2+height/2,32, Boss.EXPLOSIVE_PROJECTILE_EXPLOSION_DAMAGE, Explosion.Origin.BOSS);
-            }
+            kill(0.1f);
         }
     }
 

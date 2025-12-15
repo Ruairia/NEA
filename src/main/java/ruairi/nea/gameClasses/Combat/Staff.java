@@ -17,6 +17,8 @@ public abstract class Staff {
     private static final String SPRITESHEET_PATH = "assets/StaffSpriteSheet.png";
     private static final int FRAME_WIDTH = 16;
     private static final int FRAME_HEIGHT = 16;
+    protected float textureOffsetX = 0;
+    protected float textureOffsetY = 0;
 
     float cooldown=0;
     int maxAmmo;
@@ -25,7 +27,7 @@ public abstract class Staff {
     public boolean requiresMana;
     public int manaCost = 0;
 
-    final Color colour;
+    Color colour = Color.WHITE;
     final Hero hero;
 
     private Texture spriteSheet;
@@ -35,29 +37,34 @@ public abstract class Staff {
     public abstract void attack();
     public abstract void attackDownwards();
 
-    public Staff(Color colour, Hero hero, boolean requiresMana){
+    public Staff(Hero hero, boolean requiresMana){
         loadAnimations();
         this.requiresMana=requiresMana;
         this.hero = hero;
-        this.colour = colour;
         currentAnimation = animations.get(Hero.HeroState.IDLE);
     }
 
-    public void  updateCooldownTimer(float delta){
+    public void update(float delta){
+        updateTimers(delta);
+    }
+
+    public void updateTimers(float delta){
         if (cooldown>0) cooldown-=delta;
         else cooldown=0;
     }
 
     public void draw(Batch batch){
 
+        float posX = hero.getPosX();
         float posY = hero.getPosY();
+
+        float width = hero.getWidth();
         float height = hero.getHeight();
         float stateTime = hero.getStateTime();
 
         batch.setColor(colour);
 
-        float posX = hero.getPosX();
-        float width = hero.getWidth();
+
 
         if (hero.getCurrentDirection() == Entity.Direction.LEFT){
             posX += width;
@@ -103,6 +110,10 @@ public abstract class Staff {
             return animations.get(hero.getCurrentState()).getKeyFrame(stateTime);
         }
         return  currentAnimation.getKeyFrame(stateTime);
+    }
+
+    public float getTextureOffsetX() {
+        return textureOffsetX;
     }
 
     public float getCooldown() {

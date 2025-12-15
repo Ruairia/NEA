@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.gameClasses.Combat.FireStaff;
+import ruairi.nea.gameClasses.Combat.MeleeStaff;
 import ruairi.nea.gameClasses.InputHandler;
 import ruairi.nea.gameClasses.Combat.Staff;
 import ruairi.nea.gameClasses.Level;
@@ -28,33 +29,24 @@ public class Hero extends Entity {
     public static final float MAX_JUMP_DURATION = 0.25f;
     private static final float DOUBLE_JUMP_STRENGTH = 80 * ZOOM;
     private static final float HOLD_DOUBLE_JUMP_STRENGTH = 60 * ZOOM;
+    private static final int MAX_JUMPS = 2;
 
     public static final float WALK_SPEED = 60*ZOOM;
 
     public static final int MAX_HEALTH = 100;
+    public static final int HEAL_COST = 90;
+    private static float healCooldown;
+    public static final float MAX_HEAL_COOLDOWN = 0.5f;
+    int health;
 
     public static final int MAX_MANA = 100;
     public static final float MANA_REGENERATION = 30f; //Per second
-    private static final int MAX_JUMPS = 2;
+    float mana;
 
     public static final float INVINCIBILITY_DURATION = 0.6f;
 
-    public enum HeroState {
-        IDLE,
-        WALKING,
-        IN_AIR,
-        ATTACKING,
-        DASH
-    }
-    private HeroState currentState = HeroState.IDLE;
 
-    private Texture spriteSheet;
-    private HashMap<HeroState, Animation<TextureRegion>> animations = new HashMap<>();
-    private float stateTime = 0;
-    Animation<TextureRegion> currentAnimation;
 
-    int health;
-    float mana;
 
     private int jumpsRemaining = 2;
     private float currentJumpTime=0;
@@ -73,7 +65,27 @@ public class Hero extends Entity {
     private static final float KNOCKBACK_STRENGTH_X = 140 * ZOOM;
     private static final float KNOCKBACK_STRENGTH_Y = 80 * ZOOM;
 
+    public enum HeroState {
+        IDLE,
+        WALKING,
+        IN_AIR,
+        ATTACKING,
+        ATTACKING_DOWNWARDS,
+        DASH
+    }
+    private HeroState currentState = HeroState.IDLE;
+
+    private Texture spriteSheet;
+    private HashMap<HeroState, Animation<TextureRegion>> animations = new HashMap<>();
+    private float stateTime = 0;
+    Animation<TextureRegion> currentAnimation;
+
     Staff currentStaff;
+    FireStaff fireStaff;
+    MeleeStaff meleeStaff;
+
+    float swapCooldown=0;
+    public static final float MAX_SWAP_COOLDOWN = 0.5f;
 
     float spawnPointX = 100;
     float spawnPointY = 100;
@@ -86,7 +98,11 @@ public class Hero extends Entity {
 
         loadAnimations();
         currentAnimation = animations.get(HeroState.IDLE);
-        currentStaff = new FireStaff(this,level.projectiles);
+
+        fireStaff = new FireStaff(this,level);
+        meleeStaff = new MeleeStaff(this,level);
+
+        currentStaff=meleeStaff;
     }
 
     public Hero spawn() {
@@ -109,6 +125,12 @@ public class Hero extends Entity {
         super.updateTimers(delta);
         stateTime+=delta;
 
+        swapCooldown -= delta;
+        if (swapCooldown<0) swapCooldown=0;
+
+        healCooldown -= delta;
+        if (healCooldown<0) healCooldown=0;
+
         dashCurrentCooldown -= delta;
         if (dashCurrentCooldown<0) dashCurrentCooldown=0;
 
@@ -121,12 +143,11 @@ public class Hero extends Entity {
         if (mana<MAX_MANA) mana += (delta*MANA_REGENERATION);
         else mana=MAX_MANA;
 
-        currentStaff.updateCooldownTimer(delta);
     }
 
     @Override
     protected void updateVelocity(double delta) {
-        move(delta);
+        moveAndUpdateState(delta);
         super.updateVelocity(delta);
     }
 
@@ -153,6 +174,7 @@ public class Hero extends Entity {
 
     public void update(double delta){
         super.update(delta);
+        currentStaff.update((float) delta);
         if (isOnGround) jumpsRemaining = MAX_JUMPS;
         if (!isOnGround&&jumpsRemaining==2) jumpsRemaining=1;
     }
@@ -194,7 +216,7 @@ public class Hero extends Entity {
         if (stateTime>=currentAnimation.getAnimationDuration() || currentAnimation!=animations.get(HeroState.ATTACKING)) {
         currentAnimation = switch (currentState) {
             case IDLE,WALKING,IN_AIR,DASH -> animations.get(currentState);
-            case ATTACKING -> {if (isOnGround) yield animations.get(currentState); else yield animations.get(HeroState.IN_AIR);}
+            case ATTACKING,ATTACKING_DOWNWARDS -> {if (isOnGround) yield animations.get(currentState); else yield animations.get(HeroState.IN_AIR);}
         };
         }
         return  currentAnimation.getKeyFrame(stateTime);
@@ -242,7 +264,7 @@ public class Hero extends Entity {
         }
     }
 
-    public void move(double delta) {
+    public void moveAndUpdateState(double delta) {
         HeroState previousState = currentState;
 
         ArrayList<String> input = inputHandler.getInputs();
@@ -269,17 +291,35 @@ public class Hero extends Entity {
         }
         if (input.contains("ATTACK") && currentStaff.getCooldown() == 0) {
             if (mana >= currentStaff.manaCost) {
-                setCurrentState(HeroState.ATTACKING);
 
-                currentStaff.attack();
+                if (input.contains("DOWN") && !isOnGround){
+                    setCurrentState(HeroState.ATTACKING_DOWNWARDS);
+                    currentStaff.attackDownwards();
+                }
+
+                else {
+                    setCurrentState(HeroState.ATTACKING);
+                    currentStaff.attack();
+                }
+
                 mana -= currentStaff.manaCost;
                 velocityX /= 10;
             }
         }
+        if (input.contains("SWAP")&&swapCooldown<=0){
+            if (currentStaff instanceof MeleeStaff) currentStaff=fireStaff;
+            else currentStaff=meleeStaff;
+            swapCooldown=MAX_SWAP_COOLDOWN;
+        }
+
+        if (input.contains("HEAL") && mana >= HEAL_COST && health<MAX_HEALTH){
+            heal();
+        }
 
         if (!isOnGround) {
-            if (currentState != HeroState.ATTACKING) setCurrentState(HeroState.IN_AIR);
+            setCurrentState(HeroState.IN_AIR);
         }
+
         if (input.contains("DASH")) {
             if (dashCurrentCooldown == 0 && mana >= DASH_MANA_COST) {
                 dash(getPlayerDirection());
@@ -299,6 +339,11 @@ public class Hero extends Entity {
         }
     }
 
+    private void heal() {
+        mana-=HEAL_COST;
+        health=MAX_HEALTH;
+        healCooldown=MAX_HEAL_COOLDOWN;
+    }
 
 
     public HeroState getCurrentState() {

@@ -18,9 +18,11 @@ public class Fireball extends PacingEnemy{
     float stateTime = 0;
 
 
+    final float targetPosY;
 
     public Fireball(float posX, float posY, float leftBound, float rightBound) {
         super(posX, posY, 16* ZOOM, 20* ZOOM, leftBound, rightBound, SPEED,INTERSECT_TOLERANCE,PaceDirection.HORIZONTAL);
+        targetPosY = posY;
 
         spriteSheet = new Texture(SPRITESHEET_PATH);
 
@@ -49,6 +51,10 @@ public class Fireball extends PacingEnemy{
         super.updateTimers(delta);
     }
 
+    @Override
+    public void updateVelocity(double delta) {
+        super.updateVelocity(delta);
+    }
 
     @Override
     public TextureRegion getCurrentFrame() {

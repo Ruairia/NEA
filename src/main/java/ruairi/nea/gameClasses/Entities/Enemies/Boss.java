@@ -89,7 +89,7 @@ public class Boss extends Enemy{
         invulnerable=true;
         int directionToPlayer = getDirectionToPlayer();
         velocityX=0;
-        posX=level.getHero().getPosX()+75* directionToPlayer;
+        posX=level.getHero().getPosX()+75* -directionToPlayer;
         posY=level.getHero().getPosY()+10;
         facePlayer();
 

@@ -9,7 +9,7 @@ public final class BossAI{
     static HashMap<BossState, HashMap<BossState, Float>> allWeights = new HashMap<>();
     static HashMap<BossState, Float> stateLengths = new HashMap<>();
 
-    public static float LOWEST_ALLOWED_PROBABILITY = 0.05f;
+    public static float LOWEST_ALLOWED_PROBABILITY = 0.025f;
     public static float HIGHEST_ALLOWED_PROBABILITY = 0.8f;
 
     private BossAI(){}

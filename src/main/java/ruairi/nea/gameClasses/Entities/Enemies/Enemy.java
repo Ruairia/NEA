@@ -11,8 +11,6 @@
 
         public float intersectTolerance;
 
-
-
         int health;
 
 
@@ -37,6 +35,11 @@
         }
         public int getHealth() {
             return health;
+        }
+
+        @Override
+        protected void updateTimers(float delta) {
+            super.updateTimers(delta);
         }
 
         @Override

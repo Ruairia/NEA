@@ -20,8 +20,11 @@ public class WillOWisp extends PacingEnemy {
 
     public float stateTime = 0;
 
+    final float targetPosX;
+
     public WillOWisp(float posX, float posY, float lowerBound, float upperBound){
         super(posX,posY, WIDTH*ZOOM, HEIGHT*ZOOM,lowerBound,upperBound, SPEED, INTERSECT_TOLERANCE,PaceDirection.VERTICAL);
+        targetPosX = posX;
         velocityY = SPEED;
 
         Texture spriteSheet = new Texture(SPRITESHEET_PATH);
@@ -38,6 +41,11 @@ public class WillOWisp extends PacingEnemy {
     protected void updateTimers(float delta) {
         super.updateTimers(delta);
         stateTime+=delta;
+    }
+
+    @Override
+    public void updateVelocity(double delta) {
+        super.updateVelocity(delta);
     }
 
     @Override

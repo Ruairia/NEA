@@ -145,14 +145,12 @@ public class GameScreen implements Screen {
         level.background.drawBackground(camera,game);
 
         for (Entity entity : level.allEntities) {
-            entity.draw(game.batch);
+            if (! (entity instanceof Hero)) entity.draw(game.batch);
         }
-        for (Projectile projectile : level.projectiles){
+        for (Projectile projectile : level.projectiles) {
             projectile.draw(game.batch);
         }
-        for (Projectile projectile : level.projectiles){
-            projectile.draw(game.batch);
-        }
+        hero.draw(game.batch);
         game.batch.end();
     }
 
@@ -165,8 +163,7 @@ public class GameScreen implements Screen {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         healthBar.draw(shapeRenderer, hero.getHealth());
-
-        if (hero.getCurrentWeapon().requiresMana) manaBar.draw(shapeRenderer,hero.getMana());
+        manaBar.draw(shapeRenderer,hero.getMana());
 
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
@@ -205,10 +202,10 @@ public class GameScreen implements Screen {
         float targetY = camera.position.y;
 
         if (hero.getPosY() < lowerBound) {
-            targetY += hero.getPosY() - lowerBound; // move camera down
+            targetY += hero.getPosY() - lowerBound; // moveAndUpdateState camera down
             if (targetY<camera.viewportHeight/2) targetY=camera.viewportHeight/2;
         } else if (hero.getPosY() + hero.getWidth() > upperBound) {
-            targetY += hero.getPosY() + hero.getWidth() - upperBound; // move camera up
+            targetY += hero.getPosY() + hero.getWidth() - upperBound; // moveAndUpdateState camera up
         }
         return targetY;
     }

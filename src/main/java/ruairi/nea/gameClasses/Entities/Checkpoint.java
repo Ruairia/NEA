@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import static ruairi.nea.gameClasses.GameScreen.ZOOM;
+
 public class Checkpoint extends Entity{
 
     public static final String SPRITESHEET_PATH = "assets/CheckpointSpriteSheet.png";
@@ -16,7 +18,7 @@ public class Checkpoint extends Entity{
     private float stateTime = 0;
 
     public Checkpoint(float posX, float posY) {
-        super(posX, posY, 64, 64);
+        super(posX, posY, TEXTURE_WIDTH*ZOOM, TEXTURE_HEIGHT*ZOOM);
         loadAnimation();
         setAffectedByGravity(false);
     }

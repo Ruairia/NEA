@@ -44,13 +44,38 @@ public class InputHandler {
         if (isJumpPressed()) inputs.add("HOLD_JUMP");
         if (checkMoveLeft()) inputs.add("LEFT");
         if (checkMoveRight()) inputs.add("RIGHT");
+        if (checkDownPressed()) inputs.add("DOWN");
         if (isAttackPressed()) inputs.add("ATTACK");
         if (isDashJustPressed()) inputs.add("DASH");
         if (isDashPressed()) inputs.add("HOLD_DASH");
+        if (isHealPressed()) inputs.add("HEAL");
+        if (isSwapPressed()) inputs.add("SWAP");
 
         if (horizontalAxisStrength==null) horizontalAxisStrength=1f;
 
         return inputs;
+    }
+
+    private boolean isSwapPressed() {
+        if (Gdx.input.isKeyPressed(Input.Keys.X)) return true;
+
+        if (gamepad != null) return gamepad.getButton(3);
+        return false;
+    }
+
+    private boolean isHealPressed() {
+        if (Gdx.input.isKeyPressed(Input.Keys.H)) return true;
+
+        if (gamepad != null) return gamepad.getButton(12);
+
+        return false;
+    }
+
+    private boolean checkDownPressed() {
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) return true;
+
+        if (gamepad != null) return (gamepad.getAxis(1) > DEADZONE && Math.abs(gamepad.getAxis(2)) < DEADZONE*2);
+        return false;
     }
 
     private boolean isJumpPressed() {

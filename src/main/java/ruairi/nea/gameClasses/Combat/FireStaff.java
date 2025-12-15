@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Entities.Hero;
 import ruairi.nea.gameClasses.Entities.Projectile;
+import ruairi.nea.gameClasses.Level;
 
 import java.util.ArrayList;
 
@@ -13,21 +14,21 @@ public class FireStaff extends Staff {
 
     public static final int MANA_COST = 40;
 
-    public FireStaff(Hero hero,ArrayList<Projectile> playerProjectiles) {
-        super(Color.ORANGE,hero, false);
-        this.playerProjectiles = playerProjectiles;
-        this.requiresMana=true;
+    public FireStaff(Hero hero, Level level) {
+        super(hero,true);
+        this.projectiles = level.projectiles;
         this.manaCost=MANA_COST;
+        colour=Color.ORANGE;
     }
 
-    ArrayList<Projectile> playerProjectiles;
+    ArrayList<Projectile> projectiles;
 
     @Override
     public void attack() {
         if (cooldown>0) return;
         float posX = hero.getPosX() + hero.getWidth() * (hero.getCurrentDirection()== Entity.Direction.RIGHT? 1 : 0);
         float velocityX = 200 * ZOOM * (hero.getCurrentDirection()== Entity.Direction.RIGHT? 1 : -1);
-        playerProjectiles.add(new Projectile(
+        projectiles.add(new Projectile(
                 posX,hero.getPosY() + hero.getHeight()*0.5f,
                 velocityX,0,
                 50, Projectile.projectileType.FIRE_STAFF, Projectile.Origin.PLAYER));
@@ -37,7 +38,16 @@ public class FireStaff extends Staff {
 
     @Override
     public void attackDownwards() {
+        if (cooldown>0) return;
+        float posX = hero.getPosX() + hero.getWidth() * (hero.getCurrentDirection()== Entity.Direction.RIGHT? 1 : 0);
+        float velocityX = 100 * ZOOM * hero.getPlayerDirection();
+        float velocityY = -100 * ZOOM;
+        projectiles.add(new Projectile(
+                posX,hero.getPosY(),
+                velocityX,velocityY,
+                50, Projectile.projectileType.FIRE_STAFF, Projectile.Origin.PLAYER));
 
+        cooldown = 0.4f;
     }
 
 

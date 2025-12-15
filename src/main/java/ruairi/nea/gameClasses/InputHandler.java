@@ -18,6 +18,7 @@ public class InputHandler {
     public static final float DEADZONE = 0.3f;
 
     private boolean jumpWasPressed = false;
+    private boolean dashWasPressed = false;
 
     public InputHandler() {
         if (Controllers.getControllers().size > 0) {
@@ -32,14 +33,20 @@ public class InputHandler {
     public ArrayList<String> getInputs() {
         ArrayList<String> inputs = new ArrayList<>();
 
-        if (gamepad==null) horizontalAxisStrength =1f;
+        if (gamepad==null) {
+            if (Controllers.getControllers().size > 0){
+                gamepad=Controllers.getControllers().first();
+            }
+            horizontalAxisStrength =1f;
+        }
 
         if (isJumpJustPressed()) inputs.add("JUMP");
-        if (isJumpPressed()) inputs.add("HOLDJUMP");
+        if (isJumpPressed()) inputs.add("HOLD_JUMP");
         if (checkMoveLeft()) inputs.add("LEFT");
         if (checkMoveRight()) inputs.add("RIGHT");
         if (isAttackPressed()) inputs.add("ATTACK");
-        if (isDashPressed()) inputs.add("DASH");
+        if (isDashJustPressed()) inputs.add("DASH");
+        if (isDashPressed()) inputs.add("HOLD_DASH");
 
         if (horizontalAxisStrength==null) horizontalAxisStrength=1f;
 
@@ -107,9 +114,21 @@ public class InputHandler {
 
     private boolean isDashPressed() {
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) return true;
+        if (gamepad != null && gamepad.getAxis(5)>0.3) {
+            dashWasPressed = true;
+            return true;
+        } else dashWasPressed = false;
 
-        if (gamepad != null && gamepad.getButton(12)) return true;
 
+        return false;
+    }
+
+    private boolean isDashJustPressed(){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) return true;
+        if (gamepad != null && gamepad.getAxis(5)>0.3){
+            if (!dashWasPressed){
+                return true;}
+        }
         return false;
     }
 }

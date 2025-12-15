@@ -28,6 +28,9 @@ public class Boss extends Enemy{
 
     public static final int PROJECTILE_DAMAGE = 10;
     public static final float PROJECTILE_SPEED = 200*ZOOM;
+    public static final int EXPLOSIVE_PROJECTILE_DAMAGE = 5;
+    public static final float EXPLOSIVE_PROJECTILE_SPEED = 150*ZOOM;
+    public static final int EXPLOSIVE_PROJECTILE_EXPLOSION_DAMAGE = 40;
 
 
     private float stateTime = 0;
@@ -52,6 +55,7 @@ public class Boss extends Enemy{
     public void transitionToState(BossState state){
         stateTime=0;
         hasContactDamage=true;
+        invulnerable=false;
 
         int directionToPlayer = getDirectionToPlayer();
 
@@ -77,6 +81,7 @@ public class Boss extends Enemy{
 
     private void teleport() {
         hasContactDamage=false;
+        invulnerable=true;
         int directionToPlayer = getDirectionToPlayer();
         velocityX=0;
         posX=level.getHero().getPosX()+75* directionToPlayer;
@@ -101,19 +106,19 @@ public class Boss extends Enemy{
         float euclDistanceToHero = (float) Math.sqrt(Math.pow(displacementToHeroX,2)+Math.pow(displacementToHeroY,2));
         float directionX = displacementToHeroX /(euclDistanceToHero);
         float directionY = 0.75f * displacementToHeroY / euclDistanceToHero;
-        Projectile projectile = summonExplosiveProjectile(euclDistanceToHero, directionX,directionY);
+        Projectile projectile = summonExplosiveProjectile(directionX,directionY);
         level.projectiles.add(projectile);
     }
 
-    private Projectile summonExplosiveProjectile(float euclDistanceToHero, float directionX,float directionY) {
+    private Projectile summonExplosiveProjectile(float directionX,float directionY) {
         float projectilePosX = posX;
 
         if (this.getCurrentDirection()== Direction.LEFT) projectilePosX+=width;
 
         Projectile projectile = new Projectile
                 (projectilePosX,posY+0.5f*height
-                        , directionX *PROJECTILE_SPEED*0.5f, directionY*PROJECTILE_SPEED*0.5f,
-                        PROJECTILE_DAMAGE,level,Projectile.projectileType.BOSS_EXPLOSIVE, Projectile.Origin.BOSS);
+                        , directionX *PROJECTILE_SPEED*0.5f, directionY*EXPLOSIVE_PROJECTILE_SPEED,
+                        EXPLOSIVE_PROJECTILE_DAMAGE,level,Projectile.projectileType.BOSS_EXPLOSIVE, Projectile.Origin.BOSS);
         return projectile;
     }
 
@@ -191,7 +196,7 @@ public class Boss extends Enemy{
 
     @Override
     public void draw(Batch batch){
-        if (currentState==TELEPORT) super.draw(batch, new Color(0.2f,0.05f,0.05f,0.5f));
+        if (invulnerable) super.draw(batch, new Color(0.2f,0.05f,0.05f,0.5f));
         else super.draw(batch, Color.RED);
     }
 

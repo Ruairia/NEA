@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.gameClasses.Entities.Enemies.Boss;
 import ruairi.nea.gameClasses.Entities.Enemies.BossAI;
 import ruairi.nea.gameClasses.Entities.Enemies.Explosion;
 import ruairi.nea.gameClasses.Level;
@@ -118,7 +119,7 @@ public class Projectile extends Entity {
             setTimeUntilRemoval(0.1f);
             if (type == projectileType.BOSS) BossAI.punishMoveEverywhere(BossAI.BossState.SHOOT,0.05f);
             if (type == projectileType.BOSS_EXPLOSIVE){
-                level.createExplosion(posX-32/2+width/2,posY-32/2+height/2,32,32, Explosion.Origin.BOSS);
+                level.createExplosion(posX-32/2+width/2,posY-32/2+height/2,32, Boss.EXPLOSIVE_PROJECTILE_EXPLOSION_DAMAGE, Explosion.Origin.BOSS);
             }
         }
     }

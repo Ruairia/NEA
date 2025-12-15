@@ -7,6 +7,8 @@
     public abstract class Enemy extends Entity {
         protected boolean hasContactDamage = true;
         int contactDamage;
+        protected boolean invulnerable = false;
+
         public float intersectTolerance;
 
 

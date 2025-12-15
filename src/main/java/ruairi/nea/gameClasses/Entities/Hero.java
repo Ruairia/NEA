@@ -22,14 +22,21 @@ public class Hero extends Entity {
 
     //Define Constant-like variables
     private static final String SPRITESHEET_PATH = "assets/WizardSpriteSheetNoStaff.png";
-    public static final float JUMP_STRENGTH = 100*ZOOM;
+
+    public static final float JUMP_STRENGTH = 110*ZOOM;
+    public static final float HOLD_JUMP_STRENGTH = 90*ZOOM;
     public static final float MAX_JUMP_DURATION = 0.25f;
     private static final float DOUBLE_JUMP_STRENGTH = 80 * ZOOM;
+    private static final float HOLD_DOUBLE_JUMP_STRENGTH = 60 * ZOOM;
+
     public static final float WALK_SPEED = 60*ZOOM;
+
     public static final int MAX_HEALTH = 100;
+
     public static final int MAX_MANA = 100;
     public static final float MANA_REGENERATION = 30f; //Per second
     private static final int MAX_JUMPS = 2;
+
     public static final float INVINCIBILITY_DURATION = 0.6f;
 
     public enum HeroState {
@@ -53,12 +60,12 @@ public class Hero extends Entity {
     private float currentJumpTime=0;
     float invincibilityPeriodLeft = 0;
 
-    public static final float DASH_SPEED = 200*ZOOM;
-    public static final float MAX_DASH_COOLDOWN = 1f;
-    public static final float DASH_MANA_COST = 30;
-    public static final float HOLD_DASH_MANA_COST = 220;
+    public static final float DASH_SPEED = 250*ZOOM;
+    public static final float MAX_DASH_COOLDOWN = 0.5f;
+    public static final float DASH_MANA_COST = 20;
+    public static final float HOLD_DASH_MANA_COST = 150;
     float dashCurrentCooldown = 0;
-    public static final float DASH_MAX_LENGTH = 0.3f;
+    public static final float MAX_DASH_LENGTH = 0.3f;
     float dashLength = 0;
 
     private static final float KNOCKBACK_TIMER_MAX=0.15f;
@@ -120,29 +127,23 @@ public class Hero extends Entity {
     @Override
     protected void updateVelocity(double delta) {
         move(delta);
-        int playerDirection = 1;
-        if (getCurrentDirection()==Direction.LEFT) playerDirection=-1;
-        if (dashLength < DASH_MAX_LENGTH){
-            holdDash(playerDirection, (float) delta);
-        }
         super.updateVelocity(delta);
     }
 
+
     private void dash(int playerDirection) {
-
-    }
-
-    private void dash() {
         setCurrentState(HeroState.DASH);
         dashCurrentCooldown = MAX_DASH_COOLDOWN;
         mana-=DASH_MANA_COST;
         dashLength = 0;
+        velocityX=playerDirection*DASH_SPEED;
+        inputHandler.vibrateController(100,0.8f);
     }
 
     private void holdDash(int playerDirection, float delta) {
         int manaCost = (int) (HOLD_DASH_MANA_COST * delta);
         if (mana<manaCost) return;
-        velocityX= playerDirection *DASH_SPEED;
+        if (Math.abs(velocityX)<0.8*DASH_SPEED) velocityX= playerDirection * DASH_SPEED*0.8f;
         velocityY*=0.5f;
     }
 
@@ -202,6 +203,7 @@ public class Hero extends Entity {
 
     public void damage(int damage){
         health-=damage;
+        inputHandler.vibrateController(200,0.9f);
     }
 
     public void applyKnockback(Entity entity) {
@@ -232,71 +234,69 @@ public class Hero extends Entity {
         if (currentJumpTime< MAX_JUMP_DURATION) {
             currentJumpTime+= (float) delta;
             if (jumpsRemaining == 1) {
-                if (velocityY < JUMP_STRENGTH *0.8)
-                    velocityY = (float) (JUMP_STRENGTH *0.8);
+                if (velocityY < HOLD_JUMP_STRENGTH)
+                    velocityY = (HOLD_JUMP_STRENGTH);
             }
-            else if (velocityY<DOUBLE_JUMP_STRENGTH*0.8)
-                velocityY = (float) (DOUBLE_JUMP_STRENGTH*0.8);
+            else if (velocityY<HOLD_DOUBLE_JUMP_STRENGTH)
+                velocityY = HOLD_DOUBLE_JUMP_STRENGTH;
         }
     }
 
-    public void move(double delta){
+    public void move(double delta) {
         HeroState previousState = currentState;
 
         ArrayList<String> input = inputHandler.getInputs();
-        if (input.contains("LEFT") && !input.contains("RIGHT")){
-            if (knockbackTimer==0) velocityX= -WALK_SPEED *inputHandler.horizontalAxisStrength;
+        if (input.contains("LEFT") && !input.contains("RIGHT")) {
+            if (knockbackTimer == 0) velocityX = -WALK_SPEED * inputHandler.horizontalAxisStrength;
             if (isOnGround) setCurrentState(HeroState.WALKING);
             setCurrentDirection(Direction.LEFT);
-        }
-        else if (input.contains("RIGHT") && !input.contains("LEFT")){
-            if (knockbackTimer==0) velocityX = WALK_SPEED *inputHandler.horizontalAxisStrength;
+        } else if (input.contains("RIGHT") && !input.contains("LEFT")) {
+            if (knockbackTimer == 0) velocityX = WALK_SPEED * inputHandler.horizontalAxisStrength;
             if (isOnGround) setCurrentState(HeroState.WALKING);
             setCurrentDirection(Direction.RIGHT);
-        }
-        else {
+        } else {
             if (isOnGround) setCurrentState(HeroState.IDLE);
             else setCurrentState(HeroState.IN_AIR);
-            if (knockbackTimer==0) velocityX*=0.5f;
+            if (knockbackTimer == 0) velocityX *= 0.5f;
         }
-        if (input.contains("JUMP")){
+        if (input.contains("JUMP")) {
             jump();
         }
-        if (input.contains("HOLDJUMP")){
+        if (input.contains("HOLD_JUMP")) {
             holdJump(delta);
         } else {
-            currentJumpTime=MAX_JUMP_DURATION;
+            currentJumpTime = MAX_JUMP_DURATION;
         }
-        if (input.contains("ATTACK") && currentStaff.getCooldown()==0) {
-            if (mana>=currentStaff.manaCost) {
-            setCurrentState(HeroState.ATTACKING);
+        if (input.contains("ATTACK") && currentStaff.getCooldown() == 0) {
+            if (mana >= currentStaff.manaCost) {
+                setCurrentState(HeroState.ATTACKING);
 
                 currentStaff.attack();
-                mana-=currentStaff.manaCost;
-                velocityX/=10;
+                mana -= currentStaff.manaCost;
+                velocityX /= 10;
             }
         }
 
         if (!isOnGround) {
-            if (currentState!= HeroState.ATTACKING) setCurrentState(HeroState.IN_AIR);
+            if (currentState != HeroState.ATTACKING) setCurrentState(HeroState.IN_AIR);
         }
         if (input.contains("DASH")) {
             if (dashCurrentCooldown == 0 && mana >= DASH_MANA_COST) {
-                dash();
-            } else {
-                dashLength += delta;
+                dash(getPlayerDirection());
             }
-        }
-        else {
-            if (dashLength!=DASH_MAX_LENGTH) dashCurrentCooldown = MAX_DASH_COOLDOWN;
-            dashLength=DASH_MAX_LENGTH;
-        }
 
-        if (getStoodOnPlatform()!=null){
-            velocityX+=getStoodOnPlatform().getVelocityX();
-        }
+        } else if (input.contains("HOLD_DASH")) {
+            if (dashLength < MAX_DASH_LENGTH) {
+                holdDash(getPlayerDirection(), (float) delta);
+                dashLength += (float) delta;
+            } else {
+                if (dashLength != MAX_DASH_LENGTH) dashCurrentCooldown = MAX_DASH_COOLDOWN;
+                dashLength = MAX_DASH_LENGTH;
+            }
 
-        if (currentState!=previousState) stateTime=0;
+
+            if (currentState != previousState) stateTime = 0;
+        }
     }
 
 
@@ -366,6 +366,11 @@ public class Hero extends Entity {
         super.draw(batch);
         currentStaff.draw(batch);
         batch.setColor(Color.WHITE);
+    }
+
+    public int getPlayerDirection(){
+        if (getCurrentDirection()==Direction.LEFT) return -1;
+        else return 1;
     }
 
     @Override

@@ -18,6 +18,7 @@ public abstract class Entity {
     }
 
     private Platform stoodOnPlatform = null;
+    private Float timeUntilRemoval = null;
 
 
     private Direction currentDirection = Direction.RIGHT;
@@ -46,21 +47,30 @@ public abstract class Entity {
 
     public void update(double delta){
 
+        updateTimers((float) delta);
+        if (timeUntilRemoval!=null) return;
+
         oldX = posX;
         oldY = posY;
 
         applyGravity(delta);
+        updatePosition(delta);
         updateVelocity(delta);
         capVerticalVelocity(delta);
         updateDirection();
-        updateTimers((float) delta);
+
 
         if (!isOnGround){
             setStoodOnPlatform(null);
         }
     }
 
-    protected void updateTimers(float delta) {}
+    protected void updateTimers(float delta) {
+        if (timeUntilRemoval!=null){
+            timeUntilRemoval-=delta;
+            if (timeUntilRemoval<0) timeUntilRemoval=0f;
+        }
+    }
 
     protected void applyGravity(double delta) {
         if  (isAffectedByGravity) velocityY -= (float) (GRAVITY* delta);
@@ -72,9 +82,11 @@ public abstract class Entity {
         }
     }
 
+    protected void updatePosition(double delta) {
+        posX = (float) (oldX + velocityX * delta);
+        posY = (float) (oldY + velocityY * delta);
+    }
     protected void updateVelocity(double delta) {
-        posX += (float) (velocityX * delta);
-        posY += (float) (velocityY * delta);
     }
 
     protected void updateDirection(){
@@ -119,9 +131,13 @@ public abstract class Entity {
     }
 
 
+        public Float getTimeUntilRemoval() {
+            return timeUntilRemoval;
+        }
 
-
-
+        public void setTimeUntilRemoval(Float timeUntilRemoval) {
+            this.timeUntilRemoval = timeUntilRemoval;
+        }
 
     public String toString(){
         return "posX: " + posX + " posY: " + posY + " velocityX: " + velocityX + " velocityY: " + velocityY;

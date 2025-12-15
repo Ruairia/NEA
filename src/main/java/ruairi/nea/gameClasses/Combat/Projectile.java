@@ -65,6 +65,7 @@ public class Projectile extends Entity {
     @Override
     public void draw(Batch batch) {
         if (type == projectileType.FIREMAGE) batch.setColor(1,0.5f,0.5f,1);
+        if (getTimeUntilRemoval()!=null) batch.setColor(0.1f,0.1f,0.1f,0.5f);
 
         batch.draw(
                 getCurrentFrame(),

@@ -1,5 +1,6 @@
 package ruairi.nea.gameClasses.Entities.Enemies;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -61,8 +62,9 @@ public class WillOWisp extends PacingEnemy {
             drawX += drawWidth;
             drawWidth = -1 * drawWidth;
         }
-
+        if (getTimeUntilRemoval()!=null) batch.setColor(0.1f,0.1f,0.1f,0.5f);
         batch.draw(getCurrentFrame(),drawX,drawY,drawWidth,drawHeight);
+        batch.setColor(Color.WHITE);
     }
 
 }

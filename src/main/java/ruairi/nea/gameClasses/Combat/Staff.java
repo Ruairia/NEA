@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Entities.Hero;
 
+import java.util.HashMap;
+
 import static ruairi.nea.gameClasses.Utils.*;
 
 
@@ -27,10 +29,7 @@ public abstract class Staff {
     final Hero hero;
 
     private Texture spriteSheet;
-    private Animation<TextureRegion> idleAnimation;
-    private Animation<TextureRegion> walkAnimation;
-    private Animation<TextureRegion> inAirAnimation;
-    private Animation<TextureRegion> attackAnimation;
+    private HashMap<Hero.HeroState, Animation<TextureRegion>> animations = new HashMap<>();
     Animation<TextureRegion> currentAnimation;
 
     public abstract void attack();
@@ -40,7 +39,7 @@ public abstract class Staff {
         this.requiresMana=requiresMana;
         this.hero = hero;
         this.colour = colour;
-        currentAnimation = idleAnimation;
+        currentAnimation = animations.get(Hero.HeroState.IDLE);
     }
 
     public void  updateCooldownTimer(float delta){
@@ -85,22 +84,22 @@ public abstract class Staff {
         TextureRegion[] attackFrames = parseFrames(0,2*FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, spriteSheet, 1);
         TextureRegion[] inAirFrames = parseFrames(0, 3*FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, spriteSheet, 1);
 
-        idleAnimation = createAnimation(idleFrames, 0.2f, Animation.PlayMode.LOOP);
-        walkAnimation = createAnimation(walkFrames,0.3f, Animation.PlayMode.LOOP);
-        inAirAnimation = createAnimation(inAirFrames, 0.2f, Animation.PlayMode.NORMAL);
-        attackAnimation = createAnimation(attackFrames,0.3f, Animation.PlayMode.NORMAL);
+        Animation<TextureRegion> idleAnimation = createAnimation(idleFrames, 0.2f, Animation.PlayMode.LOOP);
+
+        for (Hero.HeroState heroState : Hero.HeroState.values()){
+            animations.put(heroState,idleAnimation);
+        }
+
+        animations.put(Hero.HeroState.WALKING,createAnimation(walkFrames,0.3f, Animation.PlayMode.LOOP));
+        animations.put(Hero.HeroState.IN_AIR,createAnimation(inAirFrames, 0.2f, Animation.PlayMode.NORMAL));
+        animations.put(Hero.HeroState.ATTACKING,createAnimation(attackFrames,0.3f, Animation.PlayMode.NORMAL));
     }
 
 
 
     public TextureRegion getCurrentFrame(float stateTime, Hero.HeroState currentState){
-        if (stateTime>=currentAnimation.getAnimationDuration() || currentAnimation!=attackAnimation){
-            currentAnimation = switch (currentState) {
-            case IDLE -> idleAnimation;
-            case WALKING -> walkAnimation;
-            case IN_AIR -> inAirAnimation;
-            case ATTACKING -> attackAnimation;
-        };
+        if (stateTime>=currentAnimation.getAnimationDuration() || currentAnimation!=animations.get(Hero.HeroState.ATTACKING)){
+            return animations.get(hero.getCurrentState()).getKeyFrame(stateTime);
         }
         return  currentAnimation.getKeyFrame(stateTime);
     }

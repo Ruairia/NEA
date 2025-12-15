@@ -37,7 +37,8 @@ public class Hero extends Entity {
         IDLE,
         WALKING,
         IN_AIR,
-        ATTACKING
+        ATTACKING,
+        DASH
     }
     private HeroState currentState = HeroState.IDLE;
 
@@ -52,6 +53,9 @@ public class Hero extends Entity {
     private int jumpsRemaining = 2;
     private float currentJumpTime=0;
     float invincibilityPeriodLeft = 0;
+
+    public static final float DASH_SPEED = 200*ZOOM;
+    float timeSinceLastDash=0;
 
     private static final float KNOCKBACK_TIMER_MAX=0.15f;
     private float knockbackTimer = 0;
@@ -94,6 +98,8 @@ public class Hero extends Entity {
         super.updateTimers(delta);
         stateTime+=delta;
 
+        timeSinceLastDash+=delta;
+
         if (knockbackTimer>0) knockbackTimer-= delta;
         else knockbackTimer=0;
 
@@ -109,7 +115,11 @@ public class Hero extends Entity {
     @Override
     protected void updateVelocity(double delta) {
         move(delta);
+        int playerDirection = 1;
+        if (getCurrentDirection()==Direction.LEFT) playerDirection=-1;
+        if (timeSinceLastDash<0.1f) velocityX+=playerDirection*DASH_SPEED;
         super.updateVelocity(delta);
+        if (currentState==HeroState.IDLE&&isOnGround) velocityX*=0.3f;
     }
 
     @Override
@@ -140,7 +150,12 @@ public class Hero extends Entity {
 
         TextureRegion[] inAirFrames = parseFrames(0, 3*frameHeight, frameWidth, frameHeight, spriteSheet, 1);
 
-        animations.put(HeroState.IDLE,createAnimation(idleFrames, 0.1f, Animation.PlayMode.LOOP));
+        Animation<TextureRegion> idleAnimation = createAnimation(idleFrames, 0.1f, Animation.PlayMode.LOOP);
+
+        for (HeroState heroState : HeroState.values()){
+            animations.put(heroState,idleAnimation);
+        }
+
         animations.put(HeroState.WALKING,createAnimation(walkFrames, 0.2f, Animation.PlayMode.LOOP));
         animations.put(HeroState.IN_AIR,createAnimation(inAirFrames, 0.1f, Animation.PlayMode.LOOP));
         animations.put(HeroState.ATTACKING,createAnimation(attackFrames, 0.25f, Animation.PlayMode.NORMAL));
@@ -153,7 +168,7 @@ public class Hero extends Entity {
     public TextureRegion getCurrentFrame(){
         if (stateTime>=currentAnimation.getAnimationDuration() || currentAnimation!=animations.get(HeroState.ATTACKING)) {
         currentAnimation = switch (currentState) {
-            case IDLE,WALKING,IN_AIR -> animations.get(currentState);
+            case IDLE,WALKING,IN_AIR,DASH -> animations.get(currentState);
             case ATTACKING -> {if (isOnGround) yield animations.get(currentState); else yield animations.get(HeroState.IN_AIR);}
         };
         }
@@ -205,21 +220,20 @@ public class Hero extends Entity {
         HeroState previousState = currentState;
 
         ArrayList<String> input = inputHandler.getInputs();
-
         if (input.contains("LEFT") && !input.contains("RIGHT")){
             if (knockbackTimer==0) velocityX= -WALK_SPEED *inputHandler.horizontalAxisStrength;
             if (isOnGround) setCurrentState(HeroState.WALKING);
             setCurrentDirection(Direction.LEFT);
         }
         else if (input.contains("RIGHT") && !input.contains("LEFT")){
-            if (knockbackTimer==0) velocityX= WALK_SPEED *inputHandler.horizontalAxisStrength;
+            if (knockbackTimer==0) velocityX = WALK_SPEED *inputHandler.horizontalAxisStrength;
             if (isOnGround) setCurrentState(HeroState.WALKING);
             setCurrentDirection(Direction.RIGHT);
         }
         else {
             if (isOnGround) setCurrentState(HeroState.IDLE);
             else setCurrentState(HeroState.IN_AIR);
-            if (knockbackTimer==0) velocityX=0;
+            if (knockbackTimer==0) velocityX*=0.5f;
         }
         if (input.contains("JUMP")){
             jump();
@@ -238,10 +252,17 @@ public class Hero extends Entity {
                 velocityX/=10;
             }
         }
+
         if (!isOnGround) {
             if (currentState!= HeroState.ATTACKING) setCurrentState(HeroState.IN_AIR);
         }
+        if (input.contains("DASH")){
+            if (timeSinceLastDash>1){
+                setCurrentState(HeroState.DASH);
+                timeSinceLastDash=0;
 
+            }
+        }
 
         if (getStoodOnPlatform()!=null){
             velocityX+=getStoodOnPlatform().getVelocityX();

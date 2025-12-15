@@ -39,6 +39,7 @@ public class InputHandler {
         if (checkMoveLeft()) inputs.add("LEFT");
         if (checkMoveRight()) inputs.add("RIGHT");
         if (isAttackPressed()) inputs.add("ATTACK");
+        if (isDashPressed()) inputs.add("DASH");
 
         if (horizontalAxisStrength==null) horizontalAxisStrength=1f;
 
@@ -100,6 +101,14 @@ public class InputHandler {
 
         //X button (Xbox)
         if (gamepad != null && gamepad.getButton(2)) return true;
+
+        return false;
+    }
+
+    private boolean isDashPressed() {
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) return true;
+
+        if (gamepad != null && gamepad.getButton(12)) return true;
 
         return false;
     }

@@ -88,6 +88,7 @@ public class GameScreen implements Screen {
         updateEntities(delta); //Move hero and entities
 
         CollisionManager.handleEntityPlatformCollisions(level.mobileEntities, level.platforms);
+        removeDeadEntities(level);
 
         if (hero.getPosY()+hero.getHeight()< OUT_OF_WORLD_THRESHOLD){
             hero.spawn();
@@ -233,11 +234,11 @@ public class GameScreen implements Screen {
             boolean destroyed = false;
 
 
-            destroyed = CollisionManager.handleProjectilePlatformCollisions(level, projectile, projectileIteratorHero, destroyed);
+            destroyed = CollisionManager.handleProjectilePlatformCollisions(level, projectile);
             if (destroyed) continue;
 
 
-            CollisionManager.checkProjectileEnemyCollisions(level, projectile, deadEnemies, projectileIteratorHero);
+            CollisionManager.checkProjectileEnemyCollisions(level, projectile);
 
 
 
@@ -250,23 +251,62 @@ public class GameScreen implements Screen {
 
             boolean destroyed = false;
 
-            destroyed = CollisionManager.handleProjectilePlatformCollisions(level, projectile, projectileIteratorEnemy, destroyed);
+            destroyed = CollisionManager.handleProjectilePlatformCollisions(level, projectile);
             if (destroyed) continue;
 
-            CollisionManager.checkProjectileHeroCollisions(hero, projectile ,projectileIteratorEnemy);
+            CollisionManager.checkProjectileHeroCollisions(hero, projectile);
         }
 
 
-        removeDeadEnemies(level, deadEnemies);
     }
 
-    private static void removeDeadEnemies(Level level, ArrayList<Enemy> deadEnemies) {
-        for (Enemy dead : deadEnemies) {
-            level.enemies.remove(dead);
-            level.mobileEntities.remove(dead);
-            level.allEntities.remove(dead);
+    private static void removeDeadEntities(Level level) {
+        ArrayList<Entity> entitiesToRemove = new ArrayList<>();
+
+        for (Entity entity : level.allEntities) {
+            if (entity.getTimeUntilRemoval() != null && entity.getTimeUntilRemoval() <= 0) {
+                entitiesToRemove.add(entity);
+            }
+        }
+
+        for (Entity entity : entitiesToRemove) {
+            level.allEntities.remove(entity);
+
+            if (entity instanceof Enemy) {
+                level.enemies.remove(entity);
+                level.mobileEntities.remove(entity);
+            }
+            else if (entity instanceof Coin) {
+                level.coins.remove(entity);
+            }
+            else if (entity instanceof Checkpoint) {
+                level.checkpoints.remove(entity);
+            }
+            else if (entity instanceof Platform) {
+                level.platforms.remove(entity);
+            }
+            else if (entity instanceof Hero) {
+                level.mobileEntities.remove(entity);
+            }
+        }
+
+        Iterator<Projectile> playerProjIter = level.playerProjectiles.iterator();
+        while (playerProjIter.hasNext()) {
+            Projectile proj = playerProjIter.next();
+            if (proj.getTimeUntilRemoval() != null && proj.getTimeUntilRemoval() <= 0) {
+                playerProjIter.remove();
+            }
+        }
+
+        Iterator<Projectile> enemyProjIter = level.enemyProjectiles.iterator();
+        while (enemyProjIter.hasNext()) {
+            Projectile proj = enemyProjIter.next();
+            if (proj.getTimeUntilRemoval() != null && proj.getTimeUntilRemoval() <= 0) {
+                enemyProjIter.remove();
+            }
         }
     }
+
 
     public static void checkCoins(Level level){
         ArrayList<Coin> coins = level.coins;

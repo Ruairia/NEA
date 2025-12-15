@@ -1,5 +1,7 @@
     package ruairi.nea.gameClasses.Entities.Enemies;
 
+    import com.badlogic.gdx.graphics.Color;
+    import com.badlogic.gdx.graphics.g2d.Batch;
     import ruairi.nea.gameClasses.Entities.Entity;
 
     public abstract class Enemy extends Entity {
@@ -30,5 +32,18 @@
         }
         public int getHealth() {
             return health;
+        }
+
+        @Override
+        public void draw(Batch batch) {
+            if (getTimeUntilRemoval()!=null) batch.setColor(0.1f,0.1f,0.1f,0.5f);
+            super.draw(batch);
+            batch.setColor(Color.WHITE);
+        }
+
+        @Override
+        public void draw(Batch batch, Color color) {
+            if (getTimeUntilRemoval()!=null) super.draw(batch, new Color(0.1f,0.1f,0.1f,0.5f));
+            else super.draw(batch, color);
         }
     }

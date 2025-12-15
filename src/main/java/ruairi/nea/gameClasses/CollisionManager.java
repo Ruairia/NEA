@@ -8,7 +8,6 @@ import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
 import ruairi.nea.gameClasses.Entities.Enemies.PacingEnemy;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class CollisionManager {
     public static void handleEntityPlatformCollisions(ArrayList<Entity> mobileEntities, ArrayList<Platform> platformsToBeChecked) {
@@ -91,6 +90,8 @@ public class CollisionManager {
 
     public static void handleEnemyHeroCollisions(ArrayList<Enemy> enemies, Hero hero){
         for (Enemy enemy : enemies){
+            if (enemy.getTimeUntilRemoval()!=null) continue;
+
             if (hero.getInvincibilityPeriodLeft()>0) return;
             if (intersectsWithTolerance(enemy,hero,enemy.intersectTolerance)) {
 
@@ -107,9 +108,11 @@ public class CollisionManager {
 
 
 
-    public static void checkProjectileEnemyCollisions(Level level, Projectile projectile, ArrayList<Enemy> deadEnemies, Iterator<Projectile> projectileIterator) {
+    public static void checkProjectileEnemyCollisions(Level level, Projectile projectile) {
         for (Enemy enemy : level.enemies) {
+            if (projectile.getTimeUntilRemoval()!=null) continue;
             if (intersectsWithTolerance(enemy,projectile,projectile.intersectTolerance)) {
+
                 enemy.damageEnemy(projectile.damage);
 
                 if (enemy instanceof Boss) {
@@ -117,36 +120,36 @@ public class CollisionManager {
                     BossAI.punishMoveEverywhere(((Boss) enemy).getCurrentState());
                 }
 
-                if (enemy.getHealth() <= 0) {
-                    deadEnemies.add(enemy);
+                if (enemy.getHealth() <= 0 && enemy.getTimeUntilRemoval()==null) {
+                    enemy.setTimeUntilRemoval(0.2f);
                 }
 
-                projectileIterator.remove();
+                if (projectile.getTimeUntilRemoval()==null) projectile.setTimeUntilRemoval(0.1f);
+
                 break;
             }
         }
     }
 
-    public static void checkProjectileHeroCollisions(Hero hero, Projectile projectile, Iterator<Projectile> projectileIterator) {
-        if (intersectsWithTolerance(hero,projectile,projectile.intersectTolerance)) {
+    public static void checkProjectileHeroCollisions(Hero hero, Projectile projectile) {
+        if (intersectsWithTolerance(hero,projectile,projectile.intersectTolerance)&&projectile.getTimeUntilRemoval()==null) {
             if (hero.getInvincibilityPeriodLeft()==0) {
                 hero.damage(projectile.damage);
                 hero.setInvincibilityPeriodLeft(Hero.INVINCIBILITY_DURATION);
                 hero.applyKnockback(projectile);
             }
-            projectileIterator.remove();
+            if (projectile.getTimeUntilRemoval()==null) projectile.setTimeUntilRemoval(0.1f);
         }
     }
 
-    public static boolean handleProjectilePlatformCollisions(Level level, Projectile projectile, Iterator<Projectile> projectileIterator, boolean destroyed) {
+    public static boolean handleProjectilePlatformCollisions(Level level, Projectile projectile) {
         for (Platform platform : level.platforms) {
             if (projectile.intersect(platform)) {
-                projectileIterator.remove();
-                destroyed = true;
-                break;
+                if (projectile.getTimeUntilRemoval()==null) projectile.setTimeUntilRemoval(0.1f);
+                return true;
             }
         }
-        return destroyed;
+        return false;
     }
 
     public static boolean intersectsWithTolerance(Entity a, Entity b, float intersectTolerance){

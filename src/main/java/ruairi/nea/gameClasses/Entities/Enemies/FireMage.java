@@ -73,6 +73,7 @@ public class FireMage extends PacingEnemy{
 
     @Override
     public void updateTimers(float delta){
+        super.updateTimers(delta);
         stateTime+= delta;
         shootCooldown = Math.max(shootCooldown-delta,0);
     }

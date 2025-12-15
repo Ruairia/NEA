@@ -84,6 +84,7 @@ public class Projectile extends Entity {
 
     @Override
     public void updateTimers(float delta){
+        super.updateTimers(delta);
         stateTime+=delta;
     }
 

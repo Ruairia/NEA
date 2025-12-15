@@ -60,7 +60,7 @@ public class MeleeStaff extends Staff{
     private static final float TEXTURE_OFFSET_Y = 0;
 
     private static final float HITBOX_OFFSET_X = 10 * ZOOM;
-    private static final float HITBOX_OFFSET_Y = 10 * ZOOM;
+    private static final float HITBOX_OFFSET_Y = 0;
 
     private static final float DOWNWARDS_TEXTURE_OFFSET_X = -4*ZOOM;
     private static final float DOWNWARDS_TEXTURE_OFFSET_Y = -8*ZOOM;
@@ -209,9 +209,9 @@ public class MeleeStaff extends Staff{
         if (currentState == Hero.HeroState.ATTACKING_DOWNWARDS) hitboxOffsetX = (int) DOWNWARDS_HITBOX_OFFSET_X;
         else hitboxOffsetX = (int) HITBOX_OFFSET_X;
         if (hero.getCurrentDirection() == Entity.Direction.RIGHT) {
-            return hero.getPosX() + hero.getWidth() + hitboxOffsetX;
+            return hero.getPosX() + hitboxOffsetX;
         } else {
-            return hero.getPosX() - HITBOX_WIDTH - hitboxOffsetX;
+            return hero.getPosX() + hero.getWidth() - HITBOX_WIDTH - hitboxOffsetX;
         }
     }
 
@@ -222,8 +222,17 @@ public class MeleeStaff extends Staff{
         return hero.getPosY() + hitboxOffsetY;
     }
 
+    private void drawHitbox(Batch batch){
+        batch.setColor(1,1,1,0.5f);
+        Texture texture = new Texture("assets/TextureUnknown.png");
+        batch.draw(texture,getHitboxX(),getHitboxY(),HITBOX_WIDTH,HITBOX_HEIGHT);
+        batch.setColor(Color.WHITE);
+    }
+
     @Override
     public void draw(Batch batch) {
+
+
 
         float drawX = hero.getPosX();
         float drawY = hero.getPosY();

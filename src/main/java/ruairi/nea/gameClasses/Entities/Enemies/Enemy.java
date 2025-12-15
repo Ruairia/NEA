@@ -5,6 +5,7 @@
     import ruairi.nea.gameClasses.Entities.Entity;
 
     public abstract class Enemy extends Entity {
+        protected boolean hasContactDamage = true;
         int contactDamage;
         public float intersectTolerance;
 
@@ -45,5 +46,9 @@
         public void draw(Batch batch, Color color) {
             if (getTimeUntilRemoval()!=null) super.draw(batch, new Color(0.1f,0.1f,0.1f,0.5f));
             else super.draw(batch, color);
+        }
+
+        public boolean hasContactDamage() {
+            return hasContactDamage;
         }
     }

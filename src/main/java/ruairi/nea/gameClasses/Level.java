@@ -1,6 +1,6 @@
 package ruairi.nea.gameClasses;
 
-import ruairi.nea.gameClasses.Combat.Projectile;
+import ruairi.nea.gameClasses.Entities.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
 import ruairi.nea.gameClasses.Entities.Enemies.*;
 
@@ -18,8 +18,7 @@ public class Level {
     public ArrayList<Platform> platforms;
     public ArrayList<Enemy> enemies;
     public ArrayList<Entity> mobileEntities;
-    public ArrayList<Projectile> playerProjectiles;
-    public ArrayList<Projectile> enemyProjectiles;
+    public ArrayList<Projectile> projectiles;
     public ArrayList<Checkpoint> checkpoints = new ArrayList<>();
     public ArrayList<Coin> coins = new ArrayList<>();
 
@@ -32,8 +31,8 @@ public class Level {
         platforms = new ArrayList<>();
         enemies = new ArrayList<>();
         mobileEntities = new ArrayList<>();
-        playerProjectiles = new ArrayList<>();
-        enemyProjectiles = new ArrayList<>();
+        projectiles = new ArrayList<>();
+        projectiles = new ArrayList<>();
 
     }
 
@@ -162,7 +161,7 @@ public class Level {
         Enemy enemy;
         switch (elements[3]){
             case "FIREBALL" -> enemy = new Fireball(posX,posY,Float.parseFloat(elements[4])+offsetX,Float.parseFloat(elements[5])+offsetX);
-            case "FIREMAGE" -> enemy = new FireMage(posX,posY,hero,enemyProjectiles,Float.parseFloat(elements[4])+offsetX,Float.parseFloat(elements[5])+offsetX);
+            case "FIREMAGE" -> enemy = new FireMage(posX,posY,hero, projectiles,Float.parseFloat(elements[4])+offsetX,Float.parseFloat(elements[5])+offsetX);
             case "WILLOWISP" -> enemy = new WillOWisp(posX,posY,Float.parseFloat(elements[4])+offsetY,Float.parseFloat(elements[5])+offsetY);
             case "BOSS" -> {
                 enemy = new Boss(posX,posY,this);

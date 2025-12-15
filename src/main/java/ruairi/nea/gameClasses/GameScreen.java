@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import org.lwjgl.opengl.GL20;
 import ruairi.nea.applicationClasses.LevelSelectScreen;
 import ruairi.nea.applicationClasses.Main;
-import ruairi.nea.gameClasses.Combat.Projectile;
+import ruairi.nea.gameClasses.Entities.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
 import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
 import ruairi.nea.gameClasses.UI.HealthBar;
@@ -128,7 +128,8 @@ public class GameScreen implements Screen {
 
         drawLevel();
         drawUI();
-        drawFPS();
+        drawText();
+        drawText();
     }
 
     private static void returnToMenu() {
@@ -146,10 +147,10 @@ public class GameScreen implements Screen {
         for (Entity entity : level.allEntities) {
             entity.draw(game.batch);
         }
-        for (Projectile projectile : level.playerProjectiles){
+        for (Projectile projectile : level.projectiles){
             projectile.draw(game.batch);
         }
-        for (Projectile projectile : level.enemyProjectiles){
+        for (Projectile projectile : level.projectiles){
             projectile.draw(game.batch);
         }
         game.batch.end();
@@ -171,14 +172,12 @@ public class GameScreen implements Screen {
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
-    private void drawFPS() {
+    private void drawText() {
         game.batch.setProjectionMatrix(uiCamera.combined);
         game.batch.begin();
         bitmapFont.setColor(1,1,1,1);
         bitmapFont.draw(game.batch, "FPS: "+Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight()-40);
-        bitmapFont.draw(game.batch, "PosX: "+(int)hero.getPosX(), 10, Gdx.graphics.getHeight()-60);
-        bitmapFont.draw(game.batch, "PosY: "+(int)hero.getPosY(), 10, Gdx.graphics.getHeight()-80);
-        bitmapFont.draw(game.batch, "Score: "+score, 10, Gdx.graphics.getHeight()-100);
+        bitmapFont.draw(game.batch, "Score: "+score, Gdx.graphics.getWidth()-220, Gdx.graphics.getHeight()-20);
         game.batch.end();
     }
 
@@ -223,40 +222,15 @@ public class GameScreen implements Screen {
 
     private static void updateProjectiles(Level level, float delta, Hero hero) {
 
-
-        Iterator<Projectile> projectileIteratorHero = level.playerProjectiles.iterator();
-        ArrayList<Enemy> deadEnemies = new ArrayList<>();
-
-        while (projectileIteratorHero.hasNext()) {
-            Projectile projectile = projectileIteratorHero.next();
+        for (Projectile projectile : level.projectiles) {
             projectile.update(delta);
+            if (CollisionManager.handleProjectilePlatformCollisionsAndCheckIfDestroyed(level,projectile)) continue;
 
-            boolean destroyed = false;
-
-
-            destroyed = CollisionManager.handleProjectilePlatformCollisions(level, projectile);
-            if (destroyed) continue;
-
-
-            CollisionManager.checkProjectileEnemyCollisions(level, projectile);
-
-
-
+            switch (projectile.origin){
+                case PLAYER -> CollisionManager.checkProjectileEnemyCollisions(level,projectile);
+                case BOSS,FIREMAGE -> CollisionManager.checkProjectileHeroCollisions(hero,projectile);
+            }
         }
-
-        Iterator<Projectile> projectileIteratorEnemy = level.enemyProjectiles.iterator();
-        while (projectileIteratorEnemy.hasNext()) {
-            Projectile projectile = projectileIteratorEnemy.next();
-            projectile.update(delta);
-
-            boolean destroyed = false;
-
-            destroyed = CollisionManager.handleProjectilePlatformCollisions(level, projectile);
-            if (destroyed) continue;
-
-            CollisionManager.checkProjectileHeroCollisions(hero, projectile);
-        }
-
 
     }
 
@@ -290,7 +264,7 @@ public class GameScreen implements Screen {
             }
         }
 
-        Iterator<Projectile> playerProjIter = level.playerProjectiles.iterator();
+        Iterator<Projectile> playerProjIter = level.projectiles.iterator();
         while (playerProjIter.hasNext()) {
             Projectile proj = playerProjIter.next();
             if (proj.getTimeUntilRemoval() != null && proj.getTimeUntilRemoval() <= 0) {
@@ -298,7 +272,7 @@ public class GameScreen implements Screen {
             }
         }
 
-        Iterator<Projectile> enemyProjIter = level.enemyProjectiles.iterator();
+        Iterator<Projectile> enemyProjIter = level.projectiles.iterator();
         while (enemyProjIter.hasNext()) {
             Projectile proj = enemyProjIter.next();
             if (proj.getTimeUntilRemoval() != null && proj.getTimeUntilRemoval() <= 0) {
@@ -311,33 +285,25 @@ public class GameScreen implements Screen {
     public static void checkCoins(Level level){
         ArrayList<Coin> coins = level.coins;
         Hero hero = level.getHero();
-        Iterator<Coin> coinIterator = coins.iterator();
-        while (coinIterator.hasNext()){
-            Coin coin = coinIterator.next();
-            if (coin.intersect(hero)){
-                coinIterator.remove();
-                level.coins.remove(coin);
-                level.allEntities.remove(coin);
+
+        for (Coin coin : coins){
+            if (coin.intersect(hero) && coin.getTimeUntilRemoval()==null){
+                coin.setTimeUntilRemoval(0.05f);
                 score+=coin.getValue();
             }
         }
+
 
     }
 
     public static void checkCheckpoints(Level level){
         ArrayList<Checkpoint> checkpoints = level.checkpoints;
         Hero hero = level.getHero();
-        Iterator<Checkpoint> checkpointIterator = checkpoints.iterator();
-        while (checkpointIterator.hasNext()){
-            Checkpoint checkpoint = checkpointIterator.next();
-            if (checkpoint.intersect(hero)){
-                if (checkpoint instanceof Goal){
-                    returnToMenu();
-                }
+
+        for (Checkpoint checkpoint : checkpoints){
+            if (checkpoint.intersect(hero) && checkpoint.getTimeUntilRemoval()==null){
                 checkpoint.collect(hero);
-                checkpointIterator.remove();
-                level.checkpoints.remove(checkpoint);
-                level.allEntities.remove(checkpoint);
+                checkpoint.setTimeUntilRemoval(0.05f);
             }
         }
 

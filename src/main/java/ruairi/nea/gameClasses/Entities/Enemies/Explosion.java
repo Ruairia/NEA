@@ -16,7 +16,8 @@ public class Explosion extends Enemy{
     public static final float INTERSECT_TOLERANCE = 10;
 
     public enum Origin{
-        BOSS
+        BOSS,
+        PLAYER
     }
     private Origin origin;
 
@@ -49,7 +50,10 @@ public class Explosion extends Enemy{
     @Override
     public void update(double delta) {
         super.update(delta);
-        if (lifetime<=0&&getTimeUntilRemoval()==null) setTimeUntilRemoval(0.3f);
+        if (lifetime<=0&&getTimeUntilRemoval()==null) {
+            setTimeUntilRemoval(0.3f);
+            if (origin==Origin.BOSS) BossAI.punishMoveEverywhere(BossAI.BossState.SHOOT_EXPLOSIVE,0.05f);
+        }
     }
 
 

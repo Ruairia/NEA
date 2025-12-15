@@ -1,6 +1,6 @@
 package ruairi.nea.gameClasses;
 
-import ruairi.nea.gameClasses.Combat.Projectile;
+import ruairi.nea.gameClasses.Entities.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
 import ruairi.nea.gameClasses.Entities.Enemies.*;
 
@@ -88,10 +88,10 @@ public class CollisionManager {
     public static void handleEnemyHeroCollisions(ArrayList<Enemy> enemies, Hero hero){
         for (Enemy enemy : enemies){
             if (enemy.getTimeUntilRemoval()!=null) continue;
-
+            if (!enemy.hasContactDamage()) return;
             if (hero.getInvincibilityPeriodLeft()>0) return;
-            if (intersectsWithTolerance(enemy,hero,enemy.intersectTolerance)) {
 
+            if (intersectsWithTolerance(enemy,hero,enemy.intersectTolerance)) {
                 hero.damage(enemy.getContactDamage());
                 hero.setInvincibilityPeriodLeft(Hero.INVINCIBILITY_DURATION);
                 hero.applyKnockback(enemy);
@@ -99,7 +99,10 @@ public class CollisionManager {
                     BossAI.rewardMoveTransition(((Boss) enemy).getPreviousState(),((Boss) enemy).getCurrentState(), 0.1f);
                     BossAI.rewardMoveEverywhere(((Boss) enemy).getCurrentState(), 0.1f);
                 }
-                else if (enemy instanceof Explosion && ((Explosion)enemy).getOrigin()== Explosion.Origin.BOSS) BossAI.rewardMoveEverywhere(BossAI.BossState.SHOOT_EXPLOSIVE,0.2f);
+                else if (enemy instanceof Explosion && ((Explosion)enemy).getOrigin()== Explosion.Origin.BOSS){
+                    BossAI.rewardMoveEverywhere(BossAI.BossState.SHOOT_EXPLOSIVE,0.2f);
+                    enemy.setTimeUntilRemoval(((Explosion) enemy).lifetime+0.3f);
+                }
             }
         }
     }
@@ -143,7 +146,7 @@ public class CollisionManager {
         }
     }
 
-    public static boolean handleProjectilePlatformCollisions(Level level, Projectile projectile) {
+    public static boolean handleProjectilePlatformCollisionsAndCheckIfDestroyed(Level level, Projectile projectile) {
         for (Platform platform : level.platforms) {
             if (projectile.intersect(platform)) {
                 if (projectile.getTimeUntilRemoval()==null) projectile.setTimeUntilRemoval(0.1f);

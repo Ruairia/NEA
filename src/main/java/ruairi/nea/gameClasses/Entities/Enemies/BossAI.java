@@ -9,6 +9,9 @@ public final class BossAI{
     static HashMap<BossState, HashMap<BossState, Float>> allWeights = new HashMap<>();
     static HashMap<BossState, Float> stateLengths = new HashMap<>();
 
+    public static float LOWEST_ALLOWED_PROBABILITY = 0.05f;
+    public static float HIGHEST_ALLOWED_PROBABILITY = 0.8f;
+
     private BossAI(){}
 
     public enum BossState {
@@ -74,7 +77,7 @@ public final class BossAI{
 
     public static void punishMoveTransition(BossState previousState, BossState currentState, float amountToGoDown){
         HashMap<BossState, Float> weights = allWeights.get(previousState);
-        weights.put(currentState, Math.max(01f,weights.get(currentState) - amountToGoDown));
+        weights.put(currentState, Math.max(0.1f,weights.get(currentState) - amountToGoDown));
         capProbabilitiesAndNormalise(weights);
         saveAllWeights();
     }
@@ -92,11 +95,11 @@ public final class BossAI{
 
     public static void capProbabilitiesAndNormalise(HashMap<BossState, Float> weights){
         for (BossState nextState : weights.keySet()){
-            if (weights.get(nextState)>0.8){
-                weights.put(nextState,0.8f);
+            if (weights.get(nextState)>HIGHEST_ALLOWED_PROBABILITY){
+                weights.put(nextState,HIGHEST_ALLOWED_PROBABILITY);
             }
-            if (weights.get(nextState)<0.1&&weights.get(nextState)!=0){
-                weights.put(nextState,0.1f);
+            if (weights.get(nextState)<LOWEST_ALLOWED_PROBABILITY&&weights.get(nextState)!=0){
+                weights.put(nextState,LOWEST_ALLOWED_PROBABILITY);
             }
         }
         normaliseWeights(weights);

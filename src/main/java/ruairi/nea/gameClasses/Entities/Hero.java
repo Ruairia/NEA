@@ -54,9 +54,11 @@ public class Hero extends Entity {
     float invincibilityPeriodLeft = 0;
 
     public static final float DASH_SPEED = 200*ZOOM;
-    public static final float DASH_MAX_COOLDOWN = 1f;
+    public static final float MAX_DASH_COOLDOWN = 1f;
+    public static final float DASH_MANA_COST = 30;
+    public static final float HOLD_DASH_MANA_COST = 220;
     float dashCurrentCooldown = 0;
-    public static final float DASH_MAX_LENGTH = 0.2f;
+    public static final float DASH_MAX_LENGTH = 0.3f;
     float dashLength = 0;
 
     private static final float KNOCKBACK_TIMER_MAX=0.15f;
@@ -77,7 +79,7 @@ public class Hero extends Entity {
 
         loadAnimations();
         currentAnimation = animations.get(HeroState.IDLE);
-        currentStaff = new FireStaff(this,level.playerProjectiles);
+        currentStaff = new FireStaff(this,level.projectiles);
     }
 
     public Hero spawn() {
@@ -121,12 +123,25 @@ public class Hero extends Entity {
         int playerDirection = 1;
         if (getCurrentDirection()==Direction.LEFT) playerDirection=-1;
         if (dashLength < DASH_MAX_LENGTH){
-            holdDash(playerDirection);
+            holdDash(playerDirection, (float) delta);
         }
         super.updateVelocity(delta);
     }
 
-    private void holdDash(int playerDirection) {
+    private void dash(int playerDirection) {
+
+    }
+
+    private void dash() {
+        setCurrentState(HeroState.DASH);
+        dashCurrentCooldown = MAX_DASH_COOLDOWN;
+        mana-=DASH_MANA_COST;
+        dashLength = 0;
+    }
+
+    private void holdDash(int playerDirection, float delta) {
+        int manaCost = (int) (HOLD_DASH_MANA_COST * delta);
+        if (mana<manaCost) return;
         velocityX= playerDirection *DASH_SPEED;
         velocityY*=0.5f;
     }
@@ -266,16 +281,14 @@ public class Hero extends Entity {
             if (currentState!= HeroState.ATTACKING) setCurrentState(HeroState.IN_AIR);
         }
         if (input.contains("DASH")) {
-            if (dashCurrentCooldown == 0) {
-                setCurrentState(HeroState.DASH);
-                dashCurrentCooldown = DASH_MAX_COOLDOWN;
-                dashLength = 0;
+            if (dashCurrentCooldown == 0 && mana >= DASH_MANA_COST) {
+                dash();
             } else {
                 dashLength += delta;
             }
         }
         else {
-            if (dashLength!=DASH_MAX_LENGTH) dashCurrentCooldown = DASH_MAX_COOLDOWN;
+            if (dashLength!=DASH_MAX_LENGTH) dashCurrentCooldown = MAX_DASH_COOLDOWN;
             dashLength=DASH_MAX_LENGTH;
         }
 

@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import ruairi.nea.gameClasses.Combat.Projectile;
+import ruairi.nea.gameClasses.Entities.Projectile;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Level;
 
@@ -29,6 +29,7 @@ public class Boss extends Enemy{
     public static final int PROJECTILE_DAMAGE = 10;
     public static final float PROJECTILE_SPEED = 200*ZOOM;
 
+
     private float stateTime = 0;
 
     private final Level level;
@@ -50,7 +51,7 @@ public class Boss extends Enemy{
 
     public void transitionToState(BossState state){
         stateTime=0;
-
+        hasContactDamage=true;
 
         int directionToPlayer = getDirectionToPlayer();
 
@@ -59,12 +60,10 @@ public class Boss extends Enemy{
             case WALK_TOWARDS -> velocityX=100*directionToPlayer;
             case WALK_AWAY -> velocityX=-100*directionToPlayer;
             case DASH -> velocityX=300*directionToPlayer;
-            case JUMP -> {
-                jump(directionToPlayer);
-            }
+            case JUMP -> jump(directionToPlayer);
             case TELEPORT -> {
                 if (Math.abs(level.getHero().getPosX()-posX)>200) return;
-                teleport(directionToPlayer);
+                teleport();
             }
             case SHOOT -> shootAtHero();
             case SHOOT_EXPLOSIVE -> shootExplosiveAtHero();
@@ -76,12 +75,18 @@ public class Boss extends Enemy{
         return 1;
     }
 
-    private void teleport(int directionToPlayer) {
+    private void teleport() {
+        hasContactDamage=false;
+        int directionToPlayer = getDirectionToPlayer();
         velocityX=0;
         posX=level.getHero().getPosX()+75* directionToPlayer;
         posY=level.getHero().getPosY()+10;
-        if (directionToPlayer ==1) setCurrentDirection(Direction.LEFT);
-        else setCurrentDirection(Direction.RIGHT);
+        facePlayer();
+    }
+
+    private void facePlayer() {
+        if (getDirectionToPlayer() ==1) setCurrentDirection(Direction.RIGHT);
+        else setCurrentDirection(Direction.LEFT);
     }
 
     private void jump(int directionToPlayer) {
@@ -90,24 +95,30 @@ public class Boss extends Enemy{
     }
 
     private void shootExplosiveAtHero(){
+        facePlayer();
         float displacementToHeroX = level.getHero().getPosX()-posX;
         float displacementToHeroY = level.getHero().getPosY()-posY;
         float euclDistanceToHero = (float) Math.sqrt(Math.pow(displacementToHeroX,2)+Math.pow(displacementToHeroY,2));
         float directionX = displacementToHeroX /(euclDistanceToHero);
-        float directionY = 0.75f * displacementToHeroY /(euclDistanceToHero);
+        float directionY = 0.75f * displacementToHeroY / euclDistanceToHero;
+        Projectile projectile = summonExplosiveProjectile(euclDistanceToHero, directionX,directionY);
+        level.projectiles.add(projectile);
+    }
 
+    private Projectile summonExplosiveProjectile(float euclDistanceToHero, float directionX,float directionY) {
         float projectilePosX = posX;
 
-        if (this.getCurrentDirection()== Entity.Direction.LEFT) projectilePosX+=width;
+        if (this.getCurrentDirection()== Direction.LEFT) projectilePosX+=width;
 
         Projectile projectile = new Projectile
                 (projectilePosX,posY+0.5f*height
-                        ,directionX*PROJECTILE_SPEED*0.5f, directionY*PROJECTILE_SPEED*0.5f,
-                        PROJECTILE_DAMAGE,level,Projectile.projectileType.BOSS_EXPLOSIVE);
-        level.enemyProjectiles.add(projectile);
+                        , directionX *PROJECTILE_SPEED*0.5f, directionY*PROJECTILE_SPEED*0.5f,
+                        PROJECTILE_DAMAGE,level,Projectile.projectileType.BOSS_EXPLOSIVE, Projectile.Origin.BOSS);
+        return projectile;
     }
 
     private void shootAtHero(){
+        facePlayer();
         float displacementToHeroX = level.getHero().getPosX()-posX;
         float displacementToHeroY = level.getHero().getPosY()-posY;
         float euclDistanceToHero = (float) Math.sqrt(Math.pow(displacementToHeroX,2)+Math.pow(displacementToHeroY,2));
@@ -121,8 +132,8 @@ public class Boss extends Enemy{
         Projectile projectile = new Projectile
                 (projectilePosX,posY+0.5f*height
                         ,directionX*PROJECTILE_SPEED, directionY*PROJECTILE_SPEED,
-                        PROJECTILE_DAMAGE,Projectile.projectileType.BOSS);
-        level.enemyProjectiles.add(projectile);
+                        PROJECTILE_DAMAGE,Projectile.projectileType.BOSS, Projectile.Origin.BOSS);
+        level.projectiles.add(projectile);
     }
 
     public void loadAnimations(){
@@ -148,7 +159,7 @@ public class Boss extends Enemy{
 
     @Override
     public void update(double delta) {
-        if (posY<0) teleport(getDirectionToPlayer());
+        if (posY<0) teleport();
         if (Math.abs(level.getHero().getPosX())-posX>500) return;
         super.update(delta);
         if (stateTime>stateLengths.get(currentState)){
@@ -159,6 +170,8 @@ public class Boss extends Enemy{
             transitionToState(currentState);
         }
     }
+
+
 
     @Override
     protected void updateVelocity(double delta) {

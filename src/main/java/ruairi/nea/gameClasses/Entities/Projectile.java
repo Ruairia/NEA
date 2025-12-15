@@ -1,4 +1,4 @@
-package ruairi.nea.gameClasses.Combat;
+package ruairi.nea.gameClasses.Entities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.gameClasses.Entities.Enemies.BossAI;
 import ruairi.nea.gameClasses.Entities.Enemies.Explosion;
-import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Level;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
@@ -37,18 +36,25 @@ public class Projectile extends Entity {
     }
     public projectileType type;
 
-    public Projectile(float posX, float posY, float velocityX, float velocityY, int damage, Level level, projectileType type){
-        this(posX,posY,velocityX,velocityY,damage,type);
+    public enum Origin {
+        PLAYER,
+        FIREMAGE,
+        BOSS
+    }
+    public Origin origin;
+
+    public Projectile(float posX, float posY, float velocityX, float velocityY, int damage, Level level, projectileType type, Origin origin){
+        this(posX,posY,velocityX,velocityY,damage,type,origin);
         this.level = level;
     }
 
-    public Projectile(float posX, float posY, float velocityX, float velocityY, int damage, projectileType type){
+    public Projectile(float posX, float posY, float velocityX, float velocityY, int damage, projectileType type, Origin origin){
         super(posX,posY,8*ZOOM,8*ZOOM);
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.damage = damage;
         this.type=type;
-
+        this.origin = origin;
         lifetime = switch (type){
             case BOSS -> 0.5f;
             case BOSS_EXPLOSIVE -> 0.8f;

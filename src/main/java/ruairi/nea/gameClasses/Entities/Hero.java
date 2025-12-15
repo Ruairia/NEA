@@ -11,7 +11,6 @@ import ruairi.nea.gameClasses.InputHandler;
 import ruairi.nea.gameClasses.Combat.Staff;
 import ruairi.nea.gameClasses.Level;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -55,7 +54,10 @@ public class Hero extends Entity {
     float invincibilityPeriodLeft = 0;
 
     public static final float DASH_SPEED = 200*ZOOM;
-    float timeSinceLastDash=0;
+    public static final float DASH_MAX_COOLDOWN = 1f;
+    float dashCurrentCooldown = 0;
+    public static final float DASH_MAX_LENGTH = 0.2f;
+    float dashLength = 0;
 
     private static final float KNOCKBACK_TIMER_MAX=0.15f;
     private float knockbackTimer = 0;
@@ -98,7 +100,8 @@ public class Hero extends Entity {
         super.updateTimers(delta);
         stateTime+=delta;
 
-        timeSinceLastDash+=delta;
+        dashCurrentCooldown -= delta;
+        if (dashCurrentCooldown<0) dashCurrentCooldown=0;
 
         if (knockbackTimer>0) knockbackTimer-= delta;
         else knockbackTimer=0;
@@ -117,9 +120,16 @@ public class Hero extends Entity {
         move(delta);
         int playerDirection = 1;
         if (getCurrentDirection()==Direction.LEFT) playerDirection=-1;
-        if (timeSinceLastDash<0.1f) velocityX+=playerDirection*DASH_SPEED;
+        if (dashLength < DASH_MAX_LENGTH){
+            holdDash(playerDirection);
+        }
         super.updateVelocity(delta);
         if (currentState==HeroState.IDLE&&isOnGround) velocityX*=0.3f;
+    }
+
+    private void holdDash(int playerDirection) {
+        velocityX= playerDirection *DASH_SPEED;
+        velocityY*=0.5f;
     }
 
     @Override
@@ -256,12 +266,18 @@ public class Hero extends Entity {
         if (!isOnGround) {
             if (currentState!= HeroState.ATTACKING) setCurrentState(HeroState.IN_AIR);
         }
-        if (input.contains("DASH")){
-            if (timeSinceLastDash>1){
+        if (input.contains("DASH")) {
+            if (dashCurrentCooldown == 0) {
                 setCurrentState(HeroState.DASH);
-                timeSinceLastDash=0;
-
+                dashCurrentCooldown = DASH_MAX_COOLDOWN;
+                dashLength = 0;
+            } else {
+                dashLength += delta;
             }
+        }
+        else {
+            if (dashLength!=DASH_MAX_LENGTH) dashCurrentCooldown = DASH_MAX_COOLDOWN;
+            dashLength=DASH_MAX_LENGTH;
         }
 
         if (getStoodOnPlatform()!=null){
@@ -271,10 +287,7 @@ public class Hero extends Entity {
         if (currentState!=previousState) stateTime=0;
     }
 
-    public void setCurrentState(HeroState currentState, Direction direction) {
-        this.currentState = currentState;
-        setCurrentDirection(direction);
-    }
+
 
     public HeroState getCurrentState() {
         return currentState;

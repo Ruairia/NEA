@@ -5,7 +5,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.gameClasses.Entities.Enemies.BossAI;
+import ruairi.nea.gameClasses.Entities.Enemies.Explosion;
 import ruairi.nea.gameClasses.Entities.Entity;
+import ruairi.nea.gameClasses.Level;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
@@ -18,14 +21,26 @@ public class Projectile extends Entity {
     public static final String SPRITESHEET_PATH = "assets/ProjectileSpriteSheet.png";
     public Animation<TextureRegion> animation;
     float stateTime = 0;
+    static int FRAME_WIDTH = 8;
+    static int FRAME_HEIGHT = 8;
+
+    public Float lifetime = null;
+    public Level level = null;
 
     public final float intersectTolerance;
 
     public enum projectileType {
         FIREMAGE,
-        FIRESTAFF
+        FIRE_STAFF,
+        BOSS,
+        BOSS_EXPLOSIVE
     }
     public projectileType type;
+
+    public Projectile(float posX, float posY, float velocityX, float velocityY, int damage, Level level, projectileType type){
+        this(posX,posY,velocityX,velocityY,damage,type);
+        this.level = level;
+    }
 
     public Projectile(float posX, float posY, float velocityX, float velocityY, int damage, projectileType type){
         super(posX,posY,8*ZOOM,8*ZOOM);
@@ -34,11 +49,14 @@ public class Projectile extends Entity {
         this.damage = damage;
         this.type=type;
 
-        int frameWidth = 8;
-        int frameHeight = 8;
+        lifetime = switch (type){
+            case BOSS -> 0.5f;
+            case BOSS_EXPLOSIVE -> 0.8f;
+            default -> null;
+        };
 
         loadTextures();
-        TextureRegion[] frames = TextureRegion.split(spriteSheet, frameWidth, frameHeight)[0];
+        TextureRegion[] frames = TextureRegion.split(spriteSheet, FRAME_WIDTH, FRAME_HEIGHT)[0];
 
         animation = new Animation<>(0.15f, frames);
         animation.setPlayMode(Animation.PlayMode.LOOP);
@@ -49,9 +67,11 @@ public class Projectile extends Entity {
 
         switch (type){
             case FIREMAGE -> intersectTolerance = 10;
-            case FIRESTAFF -> intersectTolerance = 1;
+            case FIRE_STAFF -> intersectTolerance = 1;
+            case BOSS -> intersectTolerance = 5;
             default -> intersectTolerance = 0;
         }
+
     }
 
 
@@ -65,6 +85,8 @@ public class Projectile extends Entity {
     @Override
     public void draw(Batch batch) {
         if (type == projectileType.FIREMAGE) batch.setColor(1,0.5f,0.5f,1);
+        if (type == projectileType.BOSS) batch.setColor(0.2f,0.7f,1,1);
+        if (type == projectileType.BOSS_EXPLOSIVE) batch.setColor(1,0.8f,0.2f,1);
         if (getTimeUntilRemoval()!=null) batch.setColor(0.1f,0.1f,0.1f,0.5f);
 
         batch.draw(
@@ -84,9 +106,22 @@ public class Projectile extends Entity {
     }
 
     @Override
+    public void update(double delta) {
+        super.update(delta);
+        if (lifetime!=null && lifetime<=0 && getTimeUntilRemoval()==null){
+            setTimeUntilRemoval(0.1f);
+            if (type == projectileType.BOSS) BossAI.punishMoveEverywhere(BossAI.BossState.SHOOT,0.05f);
+            if (type == projectileType.BOSS_EXPLOSIVE){
+                level.createExplosion(posX-32/2+width/2,posY-32/2+height/2,32,32, Explosion.Origin.BOSS);
+            }
+        }
+    }
+
+    @Override
     public void updateTimers(float delta){
         super.updateTimers(delta);
         stateTime+=delta;
+        if (lifetime!=null) lifetime-=delta;
     }
 
     @Override

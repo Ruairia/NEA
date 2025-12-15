@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.gameClasses.Combat.Projectile;
+import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Level;
 
 import java.util.HashMap;
@@ -24,9 +26,12 @@ public class Boss extends Enemy{
 
     public static final int MAX_HEALTH = 1000;
 
+    public static final int PROJECTILE_DAMAGE = 10;
+    public static final float PROJECTILE_SPEED = 200*ZOOM;
+
     private float stateTime = 0;
 
-    private Level level;
+    private final Level level;
 
     private BossAI.BossState previousState = IDLE;
     private BossAI.BossState currentState = IDLE;
@@ -47,8 +52,7 @@ public class Boss extends Enemy{
         stateTime=0;
 
 
-        int directionToPlayer = 1;
-        if (level.getHero().getPosX()<posX) directionToPlayer=-1;
+        int directionToPlayer = getDirectionToPlayer();
 
         switch (state){
             case IDLE -> velocityX=0;
@@ -56,20 +60,70 @@ public class Boss extends Enemy{
             case WALK_AWAY -> velocityX=-100*directionToPlayer;
             case DASH -> velocityX=300*directionToPlayer;
             case JUMP -> {
-                velocityX=200*directionToPlayer;
-                if (isOnGround()) velocityY=500;
+                jump(directionToPlayer);
             }
             case TELEPORT -> {
                 if (Math.abs(level.getHero().getPosX()-posX)>200) return;
-                velocityX=0;
-                posX=level.getHero().getPosX()+75*directionToPlayer;
-                posY=level.getHero().getPosY()+10;
-                if (directionToPlayer==1) setCurrentDirection(Direction.LEFT);
-                else setCurrentDirection(Direction.RIGHT);
+                teleport(directionToPlayer);
             }
+            case SHOOT -> shootAtHero();
+            case SHOOT_EXPLOSIVE -> shootExplosiveAtHero();
         }
     }
 
+    private int getDirectionToPlayer() {
+        if (level.getHero().getPosX()<posX) return -1;
+        return 1;
+    }
+
+    private void teleport(int directionToPlayer) {
+        velocityX=0;
+        posX=level.getHero().getPosX()+75* directionToPlayer;
+        posY=level.getHero().getPosY()+10;
+        if (directionToPlayer ==1) setCurrentDirection(Direction.LEFT);
+        else setCurrentDirection(Direction.RIGHT);
+    }
+
+    private void jump(int directionToPlayer) {
+        velocityX=200* directionToPlayer;
+        if (isOnGround()) velocityY=500;
+    }
+
+    private void shootExplosiveAtHero(){
+        float displacementToHeroX = level.getHero().getPosX()-posX;
+        float displacementToHeroY = level.getHero().getPosY()-posY;
+        float euclDistanceToHero = (float) Math.sqrt(Math.pow(displacementToHeroX,2)+Math.pow(displacementToHeroY,2));
+        float directionX = displacementToHeroX /(euclDistanceToHero);
+        float directionY = 0.75f * displacementToHeroY /(euclDistanceToHero);
+
+        float projectilePosX = posX;
+
+        if (this.getCurrentDirection()== Entity.Direction.LEFT) projectilePosX+=width;
+
+        Projectile projectile = new Projectile
+                (projectilePosX,posY+0.5f*height
+                        ,directionX*PROJECTILE_SPEED*0.5f, directionY*PROJECTILE_SPEED*0.5f,
+                        PROJECTILE_DAMAGE,level,Projectile.projectileType.BOSS_EXPLOSIVE);
+        level.enemyProjectiles.add(projectile);
+    }
+
+    private void shootAtHero(){
+        float displacementToHeroX = level.getHero().getPosX()-posX;
+        float displacementToHeroY = level.getHero().getPosY()-posY;
+        float euclDistanceToHero = (float) Math.sqrt(Math.pow(displacementToHeroX,2)+Math.pow(displacementToHeroY,2));
+        float directionX = displacementToHeroX /(euclDistanceToHero);
+        float directionY = 0.75f * displacementToHeroY /(euclDistanceToHero);
+
+        float projectilePosX = posX;
+
+        if (this.getCurrentDirection()== Entity.Direction.LEFT) projectilePosX+=width;
+
+        Projectile projectile = new Projectile
+                (projectilePosX,posY+0.5f*height
+                        ,directionX*PROJECTILE_SPEED, directionY*PROJECTILE_SPEED,
+                        PROJECTILE_DAMAGE,Projectile.projectileType.BOSS);
+        level.enemyProjectiles.add(projectile);
+    }
 
     public void loadAnimations(){
         TextureRegion[][] frames = TextureRegion.split(spriteSheet,FRAME_WIDTH,FRAME_HEIGHT);
@@ -94,6 +148,8 @@ public class Boss extends Enemy{
 
     @Override
     public void update(double delta) {
+        if (posY<0) teleport(getDirectionToPlayer());
+        if (Math.abs(level.getHero().getPosX())-posX>500) return;
         super.update(delta);
         if (stateTime>stateLengths.get(currentState)){
             previousState=currentState;

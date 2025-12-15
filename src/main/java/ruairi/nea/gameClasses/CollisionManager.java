@@ -2,10 +2,7 @@ package ruairi.nea.gameClasses;
 
 import ruairi.nea.gameClasses.Combat.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
-import ruairi.nea.gameClasses.Entities.Enemies.Boss;
-import ruairi.nea.gameClasses.Entities.Enemies.BossAI;
-import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
-import ruairi.nea.gameClasses.Entities.Enemies.PacingEnemy;
+import ruairi.nea.gameClasses.Entities.Enemies.*;
 
 import java.util.ArrayList;
 
@@ -99,9 +96,10 @@ public class CollisionManager {
                 hero.setInvincibilityPeriodLeft(Hero.INVINCIBILITY_DURATION);
                 hero.applyKnockback(enemy);
                 if (enemy instanceof Boss) {
-                    BossAI.rewardMoveTransition(((Boss) enemy).getPreviousState(),((Boss) enemy).getCurrentState());
-                    BossAI.rewardMoveEverywhere(((Boss) enemy).getCurrentState());
+                    BossAI.rewardMoveTransition(((Boss) enemy).getPreviousState(),((Boss) enemy).getCurrentState(), 0.1f);
+                    BossAI.rewardMoveEverywhere(((Boss) enemy).getCurrentState(), 0.1f);
                 }
+                else if (enemy instanceof Explosion && ((Explosion)enemy).getOrigin()== Explosion.Origin.BOSS) BossAI.rewardMoveEverywhere(BossAI.BossState.SHOOT_EXPLOSIVE,0.2f);
             }
         }
     }
@@ -110,14 +108,15 @@ public class CollisionManager {
 
     public static void checkProjectileEnemyCollisions(Level level, Projectile projectile) {
         for (Enemy enemy : level.enemies) {
+            if (enemy instanceof Explosion) continue;
             if (projectile.getTimeUntilRemoval()!=null) continue;
             if (intersectsWithTolerance(enemy,projectile,projectile.intersectTolerance)) {
 
                 enemy.damageEnemy(projectile.damage);
 
                 if (enemy instanceof Boss) {
-                    BossAI.punishMoveTransition(((Boss) enemy).getPreviousState(),((Boss) enemy).getCurrentState());
-                    BossAI.punishMoveEverywhere(((Boss) enemy).getCurrentState());
+                    BossAI.punishMoveTransition(((Boss) enemy).getPreviousState(),((Boss) enemy).getCurrentState(), 0.1f);
+                    BossAI.punishMoveEverywhere(((Boss) enemy).getCurrentState(), 0.1f);
                 }
 
                 if (enemy.getHealth() <= 0 && enemy.getTimeUntilRemoval()==null) {
@@ -137,6 +136,8 @@ public class CollisionManager {
                 hero.damage(projectile.damage);
                 hero.setInvincibilityPeriodLeft(Hero.INVINCIBILITY_DURATION);
                 hero.applyKnockback(projectile);
+                if (projectile.type == Projectile.projectileType.BOSS) BossAI.rewardMoveEverywhere(BossAI.BossState.SHOOT, 0.1f);
+                if (projectile.type == Projectile.projectileType.BOSS_EXPLOSIVE) BossAI.rewardMoveEverywhere(BossAI.BossState.SHOOT_EXPLOSIVE,0.1f);
             }
             if (projectile.getTimeUntilRemoval()==null) projectile.setTimeUntilRemoval(0.1f);
         }

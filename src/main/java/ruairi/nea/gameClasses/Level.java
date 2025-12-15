@@ -176,6 +176,12 @@ public class Level {
     }
     private void loadEnemy(String[] elements) {loadEnemy(elements,0,0);}
 
+    public void createExplosion(float posX, float posY, int size, int damage, Explosion.Origin origin){
+        Explosion explosion = new Explosion(posX,posY,size,damage,origin);
+        enemies.add(explosion);
+        allEntities.add(explosion);
+    }
+
     private void setHeroSpawnPoint(String[] elements){
         hero.setSpawnPoint(Float.parseFloat(elements[1]), Float.parseFloat(elements[2]));
         mobileEntities.add(hero);

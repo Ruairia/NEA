@@ -6,7 +6,7 @@
 
     public abstract class Enemy extends Entity {
         int contactDamage;
-        public final float intersectTolerance;
+        public float intersectTolerance;
 
 
 

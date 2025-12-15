@@ -17,7 +17,9 @@ public final class BossAI{
         WALK_TOWARDS,
         DASH,
         JUMP,
-        TELEPORT
+        TELEPORT,
+        SHOOT,
+        SHOOT_EXPLOSIVE
     }
 
     public static BossState getNextState(BossState previousState){
@@ -42,17 +44,15 @@ public final class BossAI{
         return BossState.IDLE;
     }
 
-    public static void rewardMoveEverywhere(BossState state){
-        float amountToGoDown = 0.1f;
+    public static void rewardMoveEverywhere(BossState state,float amountToGoUp){
         for (BossState previousState : BossState.values()){
             if (allWeights.get(previousState).get(state)!=0)
-                allWeights.get(previousState).put(state,allWeights.get(previousState).get(state)+amountToGoDown);
+                allWeights.get(previousState).put(state,allWeights.get(previousState).get(state)+ amountToGoUp);
             capProbabilitiesAndNormalise(allWeights.get(previousState));
         }
     }
 
-    public static void punishMoveEverywhere(BossState state){
-        float amountToGoDown = 0.1f;
+    public static void punishMoveEverywhere(BossState state,float amountToGoDown){
         for (BossState previousState : BossState.values()){
             if (allWeights.get(previousState).get(state)!=0)
                 allWeights.get(previousState).put(state,Math.max(0.1f,allWeights.get(previousState).get(state)-amountToGoDown));
@@ -60,19 +60,20 @@ public final class BossAI{
         }
     }
 
-    public static void rewardMoveTransition(BossState previousState, BossState currentState){
+    public static void rewardMoveTransition(BossState previousState, BossState currentState,float amountToGoUp){
         HashMap<BossState, Float> weights = allWeights.get(previousState);
 
-        float amountToGoUp = 0.1f;
         weights.put(currentState,weights.get(currentState)+amountToGoUp);
 
         capProbabilitiesAndNormalise(weights);
+
+        rewardMoveEverywhere(previousState,0.02f);
+
         saveAllWeights();
     }
 
-    public static void punishMoveTransition(BossState previousState, BossState currentState){
+    public static void punishMoveTransition(BossState previousState, BossState currentState, float amountToGoDown){
         HashMap<BossState, Float> weights = allWeights.get(previousState);
-        float amountToGoDown = 0.1f;
         weights.put(currentState, Math.max(01f,weights.get(currentState) - amountToGoDown));
         capProbabilitiesAndNormalise(weights);
         saveAllWeights();

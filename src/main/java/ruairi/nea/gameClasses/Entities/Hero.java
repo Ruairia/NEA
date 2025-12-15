@@ -124,7 +124,6 @@ public class Hero extends Entity {
             holdDash(playerDirection);
         }
         super.updateVelocity(delta);
-        if (currentState==HeroState.IDLE&&isOnGround) velocityX*=0.3f;
     }
 
     private void holdDash(int playerDirection) {

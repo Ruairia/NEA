@@ -71,6 +71,7 @@ public class WillOWisp extends PacingEnemy {
             drawWidth = -1 * drawWidth;
         }
         if (getTimeUntilRemoval()!=null) batch.setColor(0.1f,0.1f,0.1f,0.5f);
+        if (getAppearDamagedTimer()!=null) batch.setColor(1,0.8f,0.7f,0.95f);
         batch.draw(getCurrentFrame(),drawX,drawY,drawWidth,drawHeight);
         batch.setColor(Color.WHITE);
     }

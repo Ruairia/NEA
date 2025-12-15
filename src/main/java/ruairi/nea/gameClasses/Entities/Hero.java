@@ -239,7 +239,7 @@ public class Hero extends Entity {
 
 
 
-    public void jump(){
+    private void jump(){
         //Handle logic for jumping
         if (jumpsRemaining > 0) {
             velocityY = (jumpsRemaining == MAX_JUMPS) ? JUMP_STRENGTH : DOUBLE_JUMP_STRENGTH;
@@ -252,7 +252,7 @@ public class Hero extends Entity {
         }
     }
 
-    public void holdJump(double delta){
+    private void holdJump(double delta){
         if (currentJumpTime< MAX_JUMP_DURATION) {
             currentJumpTime+= (float) delta;
             if (jumpsRemaining == 1) {
@@ -264,7 +264,7 @@ public class Hero extends Entity {
         }
     }
 
-    public void moveAndUpdateState(double delta) {
+    private void moveAndUpdateState(double delta) {
         HeroState previousState = currentState;
 
         ArrayList<String> input = inputHandler.getInputs();
@@ -345,6 +345,12 @@ public class Hero extends Entity {
         healCooldown=MAX_HEAL_COOLDOWN;
     }
 
+    public void setJumpsRemaining(int jumpsRemaining) {
+        this.jumpsRemaining = jumpsRemaining;
+    }
+    public int getJumpsRemaining() {
+        return jumpsRemaining;
+    }
 
     public HeroState getCurrentState() {
         return currentState;

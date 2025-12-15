@@ -67,8 +67,6 @@ public class MeleeStaff extends Staff{
     private static final float DOWNWARDS_HITBOX_OFFSET_X = -4 * ZOOM;
     private static final float DOWNWARDS_HITBOX_OFFSET_Y = -8 * ZOOM;
 
-    private static final float KNOCKBACK_X = 20 * ZOOM;
-    private static final float KNOCKBACK_Y = 10 * ZOOM;
     private static final float POGO_STRENGTH = 500 * ZOOM;
 
     private HashSet<Enemy> enemiesHit = new HashSet<>();
@@ -196,7 +194,10 @@ public class MeleeStaff extends Staff{
         enemy.damageEnemy(damage);
 
 
-        if (currentState== Hero.HeroState.ATTACKING_DOWNWARDS) hero.setVelocityY(POGO_STRENGTH);
+        if (currentState== Hero.HeroState.ATTACKING_DOWNWARDS) {
+            hero.setVelocityY(POGO_STRENGTH);
+            hero.setJumpsRemaining(1);
+        }
 
         if (enemy.getHealth() <= 0 && enemy.getTimeUntilRemoval() == null) {
             enemy.kill(0.2f);

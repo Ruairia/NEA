@@ -9,9 +9,9 @@ public class Main extends Game {
     public SpriteBatch batch;
     public BitmapFont font;
 
-    public static boolean drawCollisionBoxes = true;
-    public static boolean drawHitboxes = true;
-    public static boolean drawHurtboxes = true;
+    public static boolean drawCollisionBoxes = false;
+    public static boolean drawHitboxes = false;
+    public static boolean drawHurtboxes = false;
 
     @Override
     public void create() {

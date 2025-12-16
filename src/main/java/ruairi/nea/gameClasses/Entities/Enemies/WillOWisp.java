@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.applicationClasses.Main;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
@@ -59,6 +60,25 @@ public class WillOWisp extends PacingEnemy {
 
     @Override
     public void draw(Batch batch) {
+
+        if (timeUntilRemoval==null){
+            if (Main.drawCollisionBoxes) {
+                batch.setColor(0,0,1,0.3f);
+                getCollisionBox().draw(batch);
+                batch.setColor(Color.WHITE);
+            }
+            if (Main.drawHitboxes) {
+                batch.setColor(1,0,0,0.3f);
+                getHitbox().draw(batch);
+                batch.setColor(Color.WHITE);
+            }
+            if (Main.drawHurtboxes) {
+                batch.setColor(0,1,0,0.3f);
+                getHurtbox().draw(batch);
+                batch.setColor(Color.WHITE);
+            }
+        }
+
         float drawX = this.getPosX();
         float drawY = this.getPosY();
         float drawWidth = this.getWidth();

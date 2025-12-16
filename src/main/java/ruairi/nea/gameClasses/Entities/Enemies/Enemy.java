@@ -25,7 +25,7 @@
                     height-2*intersectTolerance,
                     this));
             getHurtbox().setLeftOffsetX(intersectTolerance);
-            getHurtbox().setLeftOffsetY(intersectTolerance);
+            getHurtbox().setBottomOffsetY(intersectTolerance);
             getHurtbox().setRightOffsetX(intersectTolerance);
             getHurtbox().setTopOffsetY(intersectTolerance);
 

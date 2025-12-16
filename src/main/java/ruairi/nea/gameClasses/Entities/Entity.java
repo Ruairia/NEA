@@ -20,7 +20,7 @@ public abstract class Entity {
     }
 
     private Platform stoodOnPlatform = null;
-    private Float timeUntilRemoval = null;
+    protected Float timeUntilRemoval = null;
 
 
     private Direction currentDirection = Direction.RIGHT;
@@ -246,7 +246,7 @@ public abstract class Entity {
 
     public void setPosY(float posY) {
         this.posY = posY;
-        this.collisionBox.setPosY(posY-collisionBox.getLeftOffsetY());
+        this.collisionBox.setPosY(posY-collisionBox.getBottomOffsetY());
     }
 
     public float getVelocityX() {

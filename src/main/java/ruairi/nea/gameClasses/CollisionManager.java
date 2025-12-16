@@ -48,7 +48,7 @@ public class CollisionManager {
                 (entityY <= platformTop)) {
             //Came from above
             if(entity.getVelocityY()<=0){
-                entity.setPosY(platform.getPosY() + platform.getHeight()-entityCollisionBox.getLeftOffsetY());
+                entity.setPosY(platform.getPosY() + platform.getHeight()-entityCollisionBox.getBottomOffsetY());
 
                 if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
                     entity.setVelocityY(-entity.getVelocityY());
@@ -61,7 +61,7 @@ public class CollisionManager {
         else if ((entityOldTop <= platformOldY) &&
                 (entityTop > platformY)) {
             //Came from Below
-            entity.setPosY(platformY- entity.getHeight()-entityCollisionBox.getLeftOffsetY());
+            entity.setPosY(platformY- entity.getHeight()-entityCollisionBox.getBottomOffsetY());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
                 entity.setVelocityY(-entity.getVelocityY());
             else entity.setVelocityY(platform.getVelocityY());

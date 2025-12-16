@@ -284,7 +284,7 @@ public class GameScreen implements Screen {
         Hero hero = level.getHero();
 
         for (Coin coin : coins){
-            if (coin.intersect(hero) && coin.getTimeUntilRemoval()==null){
+            if (coin.getCollisionBox().intersects(hero.getCollisionBox()) && coin.getTimeUntilRemoval()==null){
                 coin.setTimeUntilRemoval(0.05f);
                 score+=coin.getValue();
             }
@@ -298,7 +298,7 @@ public class GameScreen implements Screen {
         Hero hero = level.getHero();
 
         for (Checkpoint checkpoint : checkpoints){
-            if (checkpoint.intersect(hero) && checkpoint.getTimeUntilRemoval()==null){
+            if (checkpoint.getCollisionBox().intersects(hero.getCollisionBox()) && checkpoint.getTimeUntilRemoval()==null){
                 checkpoint.collect(hero);
                 checkpoint.setTimeUntilRemoval(0.05f);
                 if (checkpoint instanceof Goal) returnToMenu();

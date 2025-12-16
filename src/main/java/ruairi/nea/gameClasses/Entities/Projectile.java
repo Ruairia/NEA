@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.applicationClasses.Main;
 import ruairi.nea.gameClasses.Entities.Enemies.Boss;
 import ruairi.nea.gameClasses.Entities.Enemies.BossAI;
 import ruairi.nea.gameClasses.Entities.Enemies.Explosion;
@@ -84,10 +85,12 @@ public class Projectile extends Entity {
 
         setHurtbox(new Hitbox(posX+intersectTolerance,posY+intersectTolerance,width-2*intersectTolerance,height-2*intersectTolerance,this));
         getHurtbox().setLeftOffsetX(intersectTolerance);
-        getHurtbox().setLeftOffsetY(intersectTolerance);
+        getHurtbox().setBottomOffsetY(intersectTolerance);
         getHurtbox().setRightOffsetX(intersectTolerance);
         getHurtbox().setTopOffsetY(intersectTolerance);
 
+
+        if (type==projectileType.BOSS_EXPLOSIVE) setAffectedByGravity(true);
     }
 
 
@@ -100,6 +103,25 @@ public class Projectile extends Entity {
 
     @Override
     public void draw(Batch batch) {
+
+        if (timeUntilRemoval==null){
+            if (Main.drawCollisionBoxes) {
+                batch.setColor(0,0,1,0.3f);
+                getCollisionBox().draw(batch);
+                batch.setColor(Color.WHITE);
+            }
+            if (Main.drawHitboxes) {
+                batch.setColor(1,0,0,0.3f);
+                getHitbox().draw(batch);
+                batch.setColor(Color.WHITE);
+            }
+            if (Main.drawHurtboxes) {
+                batch.setColor(0,1,0,0.3f);
+                getHurtbox().draw(batch);
+                batch.setColor(Color.WHITE);
+            }
+        }
+
         switch (type){
             case FIREMAGE -> batch.setColor(1,0.05f,0.05f,1);
             case BOSS -> batch.setColor(0.2f,1f,0.6f,1);

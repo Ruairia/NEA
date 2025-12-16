@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.applicationClasses.Main;
 import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Entities.Hero;
@@ -53,21 +54,21 @@ public class MeleeStaff extends Staff{
     private static final int DAMAGE = 30;
     private static final float COOLDOWN = 0.5f;
 
-    private static final float HITBOX_WIDTH = 20 * ZOOM;
-    private static final float HITBOX_HEIGHT = 28 * ZOOM;
+    private static final float HURTBOX_WIDTH = 20 * ZOOM;
+    private static final float HURTBOX_HEIGHT = 28 * ZOOM;
 
     private static final float TEXTURE_OFFSET_X = 8 * ZOOM;
     private static final float TEXTURE_OFFSET_Y = 0;
 
-    private static final float HITBOX_OFFSET_X = 10 * ZOOM;
-    private static final float HITBOX_OFFSET_Y = 0;
+    private static final float HURTBOX_OFFSET_X = 10 * ZOOM;
+    private static final float HURTBOX_OFFSET_Y = 0;
 
     private static final float DOWNWARDS_TEXTURE_OFFSET_X = -2*ZOOM;
     private static final float DOWNWARDS_TEXTURE_OFFSET_Y = -10*ZOOM;
-    private static final float DOWNWARDS_HITBOX_OFFSET_X = -2 * ZOOM;
-    private static final float DOWNWARDS_HITBOX_OFFSET_Y = -12 * ZOOM;
+    private static final float DOWNWARDS_HURTBOX_OFFSET_X = 1 * ZOOM;
+    private static final float DOWNWARDS_HURTBOX_OFFSET_Y = -12 * ZOOM;
 
-    private static final float POGO_STRENGTH = 500 * ZOOM;
+    private static final float POGO_STRENGTH = 150 * ZOOM;
 
     private HashSet<Enemy> enemiesHit = new HashSet<>();
 
@@ -88,16 +89,23 @@ public class MeleeStaff extends Staff{
 
         this.level = level;
         this.manaCost=0;
+
         textureOffsetX=TEXTURE_OFFSET_X;
         textureOffsetY=TEXTURE_OFFSET_Y;
+
+        hurtbox.setPosX(hero.getPosX()+ HURTBOX_OFFSET_X);
+        hurtbox.setPosY(hero.getPosY()+ HURTBOX_OFFSET_Y);
+        hurtbox.setWidth(HURTBOX_WIDTH);
+        hurtbox.setHeight(HURTBOX_HEIGHT);
+        hurtbox.setLeftOffsetX(HURTBOX_OFFSET_X);
+        hurtbox.setBottomOffsetY(HURTBOX_OFFSET_Y);
     }
 
     @Override
     public void update(float delta) {
         super.update(delta);
         updateState();
-
-
+        updateHurtbox();
         checkHitboxCollisions();
 
     }
@@ -121,7 +129,12 @@ public class MeleeStaff extends Staff{
         currentState=hero.getCurrentState();
         stateTime=0;
 
+        if (currentState == Hero.HeroState.ATTACKING){
 
+        }
+        else if (currentState == Hero.HeroState.ATTACKING_DOWNWARDS){
+
+        }
 
     }
 
@@ -143,96 +156,84 @@ public class MeleeStaff extends Staff{
         currentState= Hero.HeroState.ATTACKING_DOWNWARDS;
     }
 
+    private void updateHurtbox(){
+
+        float boxOffsetX;
+        float boxOffsetY;
+
+        if (currentState == Hero.HeroState.ATTACKING_DOWNWARDS){
+            boxOffsetX = DOWNWARDS_HURTBOX_OFFSET_X;
+            boxOffsetY = DOWNWARDS_HURTBOX_OFFSET_Y;
+        }
+        else if (currentState == Hero.HeroState.ATTACKING) {
+            boxOffsetX = HURTBOX_OFFSET_X;
+            boxOffsetY = HURTBOX_OFFSET_Y;
+        }
+        else {
+            // Not attacking, so no hurtbox
+            hurtbox.setWidth(0);
+            hurtbox.setHeight(0);
+            return;
+        }
+
+        // 1. Set the dimensions
+        hurtbox.setWidth(HURTBOX_WIDTH);
+        hurtbox.setHeight(HURTBOX_HEIGHT);
+
+        // 2. Adjust the X offset based on direction
+        if (hero.getCurrentDirection() == Entity.Direction.LEFT){
+            // Flip the X offset to place the hurtbox on the left side of the hero
+            // Formula: HeroWidth - OriginalOffsetX - HurtboxWidth
+            boxOffsetX = hero.getWidth() - boxOffsetX - HURTBOX_WIDTH;
+        }
+
+        // 3. Apply the final offsets to the hurtbox object
+        hurtbox.setLeftOffsetX(boxOffsetX);
+        hurtbox.setBottomOffsetY(boxOffsetY);
+
+
+        // 4. Update the position of the hurtbox
+        hurtbox.setPosX(hero.getPosX() + hurtbox.getLeftOffsetX());
+        hurtbox.setPosY(hero.getPosY() + hurtbox.getBottomOffsetY());
+    }
+
     private void checkHitboxCollisions(){
-        if (currentState== Hero.HeroState.ATTACKING) checkAttackCollisions();
-        if (currentState == Hero.HeroState.ATTACKING_DOWNWARDS) checkDownwardAttackCollisions();
-    }
-
-    private void checkAttackCollisions() {
-        float hitboxX = getHitboxX();
-        float hitboxY = getHitboxY();
-
         for (Enemy enemy : level.enemies) {
-            if (enemiesHit.contains(enemy) || enemy.getTimeUntilRemoval() != null) {
-                continue;
-            }
 
-            if (intersectsHitbox(enemy, hitboxX, hitboxY, HITBOX_WIDTH, HITBOX_HEIGHT)) {
-                hitEnemy(enemy, DAMAGE);
+            if (enemiesHit.contains(enemy) || enemy.getTimeUntilRemoval() !=null) continue;
+
+            if (hurtbox.intersects(enemy.getHitbox())){
+                hitEnemy(enemy,DAMAGE);
                 enemiesHit.add(enemy);
             }
+
         }
     }
 
-    private void checkDownwardAttackCollisions() {
-        float hitboxX = hero.getPosX() + (hero.getWidth() - HITBOX_WIDTH) / 2;
-        float hitboxY = hero.getPosY() + DOWNWARDS_HITBOX_OFFSET_Y;
 
-        for (Enemy enemy : level.enemies) {
-            if (enemiesHit.contains(enemy) || enemy.getTimeUntilRemoval() != null) {
-                continue;
-            }
-
-            if (intersectsHitbox(enemy, hitboxX, hitboxY, HITBOX_WIDTH, HITBOX_HEIGHT)) {
-                hitEnemy(enemy, DAMAGE);
-                enemiesHit.add(enemy);
-
-                // Bounce hero upward (pogo effect)
-                hero.setVelocityY(80 * ZOOM);
-            }
-        }
-    }
-
-    private boolean intersectsHitbox(Enemy enemy, float hitboxX, float hitboxY, float width, float height) {
-        return hitboxX < enemy.getPosX() + enemy.getWidth() &&
-                hitboxX + width > enemy.getPosX() &&
-                hitboxY < enemy.getPosY() + enemy.getHeight() &&
-                hitboxY + height > enemy.getPosY();
-    }
 
     private void hitEnemy(Enemy enemy, int damage) {
         enemy.damageEnemy(damage);
 
-
-        if (currentState== Hero.HeroState.ATTACKING_DOWNWARDS) {
+        if (currentState== Hero.HeroState.ATTACKING_DOWNWARDS){
             hero.setVelocityY(POGO_STRENGTH);
             hero.setJumpsRemaining(1);
         }
+
 
         if (enemy.getHealth() <= 0 && enemy.getTimeUntilRemoval() == null) {
             enemy.kill(0.2f);
         }
     }
 
-    private float getHitboxX() {
-        int hitboxOffsetX;
-        if (currentState == Hero.HeroState.ATTACKING_DOWNWARDS) hitboxOffsetX = (int) DOWNWARDS_HITBOX_OFFSET_X;
-        else hitboxOffsetX = (int) HITBOX_OFFSET_X;
-        if (hero.getCurrentDirection() == Entity.Direction.RIGHT) {
-            return hero.getPosX() + hitboxOffsetX;
-        } else {
-            return hero.getPosX() + hero.getWidth() - HITBOX_WIDTH - hitboxOffsetX;
-        }
-    }
 
-    private float getHitboxY() {
-        int hitboxOffsetY;
-        if (currentState == Hero.HeroState.ATTACKING_DOWNWARDS) hitboxOffsetY = (int) DOWNWARDS_HITBOX_OFFSET_Y;
-        else hitboxOffsetY = (int) HITBOX_OFFSET_Y;
-        return hero.getPosY() + hitboxOffsetY;
-    }
 
-    private void drawHitbox(Batch batch){
-        batch.setColor(1,1,1,0.5f);
-        Texture texture = new Texture("assets/TextureUnknown.png");
-        batch.draw(texture,getHitboxX(),getHitboxY(),HITBOX_WIDTH,HITBOX_HEIGHT);
-        batch.setColor(Color.WHITE);
-    }
 
     @Override
     public void draw(Batch batch) {
 
 
+        if (Main.drawHurtboxes) hurtbox.draw(batch);
 
         float drawX = hero.getPosX();
         float drawY = hero.getPosY();

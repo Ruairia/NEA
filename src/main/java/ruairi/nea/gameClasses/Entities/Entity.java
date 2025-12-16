@@ -4,6 +4,8 @@ package ruairi.nea.gameClasses.Entities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.applicationClasses.Main;
+import ruairi.nea.gameClasses.Hitbox;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
@@ -28,6 +30,9 @@ public abstract class Entity {
     boolean isOnGround;
     boolean isAffectedByGravity=true;
 
+    private Hitbox collisionBox;
+    private Hitbox hitbox;
+    private Hitbox hurtbox;
 
     protected float posX, posY;
     protected float oldX, oldY;
@@ -43,6 +48,7 @@ public abstract class Entity {
         this.posY=posY;
         this.width=width;
         this.height=height;
+        hitbox = hurtbox = collisionBox = new Hitbox(posX,posY,width,height,this);
     }
 
     public void update(double delta){
@@ -59,6 +65,8 @@ public abstract class Entity {
         capVerticalVelocity(delta);
         updateDirection();
 
+        hitbox.setWidth(width);
+        hitbox.setHeight(height);
 
         if (!isOnGround){
             setStoodOnPlatform(null);
@@ -85,7 +93,13 @@ public abstract class Entity {
     protected void updatePosition(double delta) {
         posX = (float) (oldX + velocityX * delta);
         posY = (float) (oldY + velocityY * delta);
+        updateHitbox();
     }
+
+    public void updateHitbox() {
+        collisionBox.updatePositions();
+    }
+
     protected void updateVelocity(double delta) {
     }
 
@@ -100,14 +114,7 @@ public abstract class Entity {
     }
 
     public  boolean intersect(Entity other){
-        return
-                        this.posX < other.posX + other.width
-                        &&
-                        this.posX + this.width > other.posX
-                        &&
-                        this.posY < other.posY + other.height
-                        &&
-                        this.posY + this.height > other.posY;
+        return collisionBox.intersects(other.getCollisionBox());
     }
 
 
@@ -115,6 +122,10 @@ public abstract class Entity {
 
 
     public void draw(Batch batch) {
+        if (Main.drawCollisionBoxes) collisionBox.draw(batch);
+        if (Main.drawHitboxes) hitbox.draw(batch);
+        if (Main.drawHurtboxes) hurtbox.draw(batch);
+
         if (this.getCurrentDirection() == Direction.RIGHT)
             batch.draw(this.getCurrentFrame(), this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight());
         else
@@ -122,6 +133,9 @@ public abstract class Entity {
     }
 
     public void draw(Batch batch, Color color){
+        if (Main.drawCollisionBoxes) collisionBox.draw(batch);
+        if (Main.drawHitboxes) hitbox.draw(batch);
+        if (Main.drawHurtboxes) hurtbox.draw(batch);
         batch.setColor(color);
         if (this.getCurrentDirection() == Direction.RIGHT)
             batch.draw(this.getCurrentFrame(), this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight());
@@ -130,14 +144,35 @@ public abstract class Entity {
         batch.setColor(Color.WHITE);
     }
 
+    public void setCollisionBox(Hitbox collisionBox) {
+        this.collisionBox = collisionBox;
+    }
 
-        public Float getTimeUntilRemoval() {
-            return timeUntilRemoval;
-        }
+    public void setHitbox(Hitbox hitbox) {
+        this.hitbox = hitbox;
+    }
 
-        public void setTimeUntilRemoval(Float timeUntilRemoval) {
-            this.timeUntilRemoval = timeUntilRemoval;
-        }
+    public void setHurtbox(Hitbox hurtbox) {
+        this.hurtbox = hurtbox;
+    }
+
+    public Hitbox getCollisionBox() {
+        return collisionBox;
+    }
+    public Hitbox getHitbox() {
+        return hitbox;
+    }
+    public Hitbox getHurtbox() {
+        return hurtbox;
+    }
+
+    public Float getTimeUntilRemoval() {
+        return timeUntilRemoval;
+    }
+
+    public void setTimeUntilRemoval(Float timeUntilRemoval) {
+        this.timeUntilRemoval = timeUntilRemoval;
+    }
 
     public String toString(){
         return "posX: " + posX + " posY: " + posY + " velocityX: " + velocityX + " velocityY: " + velocityY;
@@ -173,6 +208,7 @@ public abstract class Entity {
 
     public void setPosX(float posX) {
         this.posX = posX;
+        this.collisionBox.setPosX(posX- collisionBox.getOffsetX());
     }
 
     public float getPosY() {
@@ -181,6 +217,7 @@ public abstract class Entity {
 
     public void setPosY(float posY) {
         this.posY = posY;
+        this.collisionBox.setPosY(posY-collisionBox.getOffsetY());
     }
 
     public float getVelocityX() {

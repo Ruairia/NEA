@@ -40,7 +40,6 @@ public class Explosion extends Enemy{
         lifetime = MAX_LIFETIME;
         this.contactDamage=damage;
         this.origin=origin;
-        this.intersectTolerance=INTERSECT_TOLERANCE;
         setAffectedByGravity(false);
     }
 

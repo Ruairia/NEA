@@ -3,13 +3,13 @@
     import com.badlogic.gdx.graphics.Color;
     import com.badlogic.gdx.graphics.g2d.Batch;
     import ruairi.nea.gameClasses.Entities.Entity;
+    import ruairi.nea.gameClasses.Hitbox;
 
     public abstract class Enemy extends Entity {
         protected boolean hasContactDamage = true;
         int contactDamage;
         protected boolean invulnerable = false;
 
-        public float intersectTolerance;
 
         int health;
 
@@ -17,7 +17,16 @@
 
         public Enemy(float posX, float posY, float width, float height, float intersectTolerance) {
             super(posX, posY, width, height);
-            this.intersectTolerance = intersectTolerance;
+
+            setHurtbox(new Hitbox(
+                    posX+intersectTolerance,
+                    posY+intersectTolerance,
+                    width-2*intersectTolerance,
+                    height-2*intersectTolerance,
+                    this));
+            getHurtbox().setOffsetX(intersectTolerance);
+            getHurtbox().setOffsetY(intersectTolerance);
+
             health = 100;
         }
 
@@ -37,6 +46,14 @@
         public int getHealth() {
             return health;
         }
+
+
+        @Override
+        public void updateHitbox(){
+            super.updateHitbox();
+            getHurtbox().updatePositions();
+        }
+
 
         @Override
         protected void updateTimers(float delta) {

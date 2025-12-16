@@ -11,7 +11,7 @@ public class CollisionManager {
         for (Entity entity : mobileEntities) {
             boolean hasCollided = false;
             for (Platform platform : platformsToBeChecked) {
-                if (entity.intersect(platform)){
+                if (entity.getCollisionBox().intersects(platform.getCollisionBox())){
                     resolveEntityPlatformCollision(entity, platform);
                     hasCollided=true;
                 }
@@ -22,29 +22,33 @@ public class CollisionManager {
 
     public static void resolveEntityPlatformCollision(Entity entity, Platform platform) {
         if (entity instanceof Platform) return;
-        float platformX = platform.getPosX();
-        float platformY = platform.getPosY();
-        float platformOldX = platform.getOldX();
-        float platformOldY = platform.getOldY();
-        float platformOldRight = platformOldX + platform.getWidth();
-        float platformRight = platform.getPosX() + platform.getWidth();
-        float platformOldTop = platformOldY + platform.getHeight();
-        float platformTop = platform.getPosY() + platform.getHeight();
 
-        float entityX = entity.getPosX();
-        float entityY = entity.getPosY();
-        float entityOldX = entity.getOldX();
-        float entityOldY = entity.getOldY();
-        float entityOldRight = entityOldX + entity.getWidth();
-        float entityRight = entity.getPosX() + entity.getWidth();
-        float entityOldTop = entityOldY + entity.getHeight();
-        float entityTop = entity.getPosY() + entity.getHeight();
+        Hitbox platformCollisionBox = platform.getCollisionBox();
+        Hitbox entityCollisionBox = entity.getCollisionBox();
+
+        float platformX = platformCollisionBox.getPosX();
+        float platformY = platformCollisionBox.getPosY();
+        float platformOldX = platformCollisionBox.getOldX();
+        float platformOldY = platformCollisionBox.getOldY();
+        float platformOldRight = platformOldX + platformCollisionBox.getWidth();
+        float platformRight = platformCollisionBox.getPosX() + platformCollisionBox.getWidth();
+        float platformOldTop = platformOldY + platformCollisionBox.getHeight();
+        float platformTop = platformCollisionBox.getPosY() + platformCollisionBox.getHeight();
+
+        float entityX = entityCollisionBox.getPosX();
+        float entityY = entityCollisionBox.getPosY();
+        float entityOldX = entityCollisionBox.getOldX();
+        float entityOldY = entityCollisionBox.getOldY();
+        float entityOldRight = entityOldX + entityCollisionBox.getWidth();
+        float entityRight = entityCollisionBox.getPosX() + entityCollisionBox.getWidth();
+        float entityOldTop = entityOldY + entityCollisionBox.getHeight();
+        float entityTop = entityCollisionBox.getPosY() + entityCollisionBox.getHeight();
 
         if ((entityOldY >= platformOldTop) &&
                 (entityY <= platformTop)) {
             //Came from above
             if(entity.getVelocityY()<=0){
-                entity.setPosY(platform.getPosY() + platform.getHeight());
+                entity.setPosY(platform.getPosY() + platform.getHeight()-entityCollisionBox.getOffsetY());
 
                 if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
                     entity.setVelocityY(-entity.getVelocityY());
@@ -57,7 +61,7 @@ public class CollisionManager {
         else if ((entityOldTop <= platformOldY) &&
                 (entityTop > platformY)) {
             //Came from Below
-            entity.setPosY(platformY- entity.getHeight());
+            entity.setPosY(platformY- entity.getHeight()-entityCollisionBox.getOffsetY());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
                 entity.setVelocityY(-entity.getVelocityY());
             else entity.setVelocityY(platform.getVelocityY());
@@ -66,7 +70,7 @@ public class CollisionManager {
         else if ((entityOldRight <= platformOldX) &&
                 (entityRight > platformX)) {
             // Came from the left
-            entity.setPosX(platformX - entity.getWidth());
+            entity.setPosX(platformX - entity.getWidth()-entityCollisionBox.getOffsetX());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.HORIZONTAL) entity.setVelocityX(-entity.getVelocityX());
             else entity.setVelocityX(platform.getVelocityX());
 
@@ -75,7 +79,7 @@ public class CollisionManager {
         else if ((entityOldX >= platformOldRight) &&
                 (entityX < platformRight)) {
             // Came from the right
-            entity.setPosX(platformRight);
+            entity.setPosX(platformRight-entityCollisionBox.getOffsetX());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.HORIZONTAL) entity.setVelocityX(-entity.getVelocityX());
             else entity.setVelocityX(platform.getVelocityX());
         }
@@ -91,7 +95,7 @@ public class CollisionManager {
             if (!enemy.hasContactDamage()) return;
             if (hero.getInvincibilityPeriodLeft()>0) return;
 
-            if (intersectsWithTolerance(enemy,hero,enemy.intersectTolerance)) {
+            if (enemy.getHurtbox().intersects(hero.getHitbox())) {
                 hero.damage(enemy.getContactDamage());
                 hero.setInvincibilityPeriodLeft(Hero.INVINCIBILITY_DURATION);
                 hero.applyKnockback(enemy);
@@ -113,7 +117,7 @@ public class CollisionManager {
         for (Enemy enemy : level.enemies) {
             if (enemy instanceof Explosion) continue;
             if (projectile.getTimeUntilRemoval()!=null) continue;
-            if (intersectsWithTolerance(enemy,projectile,projectile.intersectTolerance)) {
+            if (enemy.getHitbox().intersects(projectile.getHurtbox())) {
 
                 enemy.damageEnemy(projectile.damage);
 
@@ -134,7 +138,7 @@ public class CollisionManager {
     }
 
     public static void checkProjectileHeroCollisions(Hero hero, Projectile projectile) {
-        if (intersectsWithTolerance(hero,projectile,projectile.intersectTolerance)&&projectile.getTimeUntilRemoval()==null) {
+        if ((hero.getHitbox().intersects(projectile.getHurtbox()))&&projectile.getTimeUntilRemoval()==null) {
             if (hero.getInvincibilityPeriodLeft()==0) {
                 hero.damage(projectile.damage);
                 hero.setInvincibilityPeriodLeft(Hero.INVINCIBILITY_DURATION);
@@ -148,7 +152,7 @@ public class CollisionManager {
 
     public static boolean handleProjectilePlatformCollisionsAndCheckIfDestroyed(Level level, Projectile projectile) {
         for (Platform platform : level.platforms) {
-            if (projectile.intersect(platform)) {
+            if (projectile.getCollisionBox().intersects(platform.getCollisionBox())) {
                 if (projectile.getTimeUntilRemoval()==null) projectile.kill(0.1f);
                 return true;
             }
@@ -156,15 +160,5 @@ public class CollisionManager {
         return false;
     }
 
-    public static boolean intersectsWithTolerance(Entity a, Entity b, float intersectTolerance){
-        return
-                a.getPosX() + intersectTolerance < b.getPosX() + b.getWidth()
-                        &&
-                        a.getPosX() + a.getWidth() - intersectTolerance > b.getPosX()
-                        &&
-                        a.getPosY() + intersectTolerance < b.getPosY() + b.getHeight()
-                        &&
-                        a.getPosY() + a.getHeight() - intersectTolerance > b.getPosY();
-    }
 
 }

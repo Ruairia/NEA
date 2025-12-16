@@ -21,6 +21,8 @@ public class Checkpoint extends Entity{
         super(posX, posY, TEXTURE_WIDTH*ZOOM, TEXTURE_HEIGHT*ZOOM);
         loadAnimation();
         setAffectedByGravity(false);
+        getCollisionBox().setRightOffsetX(TEXTURE_WIDTH*ZOOM/2);
+        updateHitbox();
     }
 
     private static void loadAnimation(){

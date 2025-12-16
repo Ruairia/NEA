@@ -239,7 +239,7 @@ public class Hero extends Entity {
 
     public void damage(int damage){
         health-=damage;
-        hurtTimer=0.3f;
+        hurtTimer=INVINCIBILITY_DURATION;
         inputHandler.vibrateController(200,0.9f);
     }
 

@@ -53,7 +53,8 @@ public class MeleeStaff extends Staff{
     }
 
 
-    private static final int DAMAGE = 30;
+    private static final int ATTACK_DAMAGE = 60;
+    private static final int DOWNWARD_ATTACK_DAMAGE = 30;
     private static final float COOLDOWN = 0.5f;
 
     private static final float HURTBOX_WIDTH = 16 * ZOOM;
@@ -70,7 +71,7 @@ public class MeleeStaff extends Staff{
     private static final float DOWNWARDS_HURTBOX_OFFSET_X = 1 * ZOOM;
     private static final float DOWNWARDS_HURTBOX_OFFSET_Y = -12 * ZOOM;
 
-    private static final float POGO_STRENGTH = 150 * ZOOM;
+    private static final float POGO_STRENGTH = 100 * ZOOM;
 
     private HashSet<Enemy> enemiesHit = new HashSet<>();
 
@@ -109,7 +110,7 @@ public class MeleeStaff extends Staff{
         updateState();
         updateHurtbox();
         checkHitboxCollisions();
-
+        checkParry();
     }
 
     @Override
@@ -205,21 +206,25 @@ public class MeleeStaff extends Staff{
             if (enemiesHit.contains(enemy) || enemy.getTimeUntilRemoval() !=null) continue;
 
             if (hurtbox.intersects(enemy.getHitbox())){
-                hitEnemy(enemy,DAMAGE);
+                int attackDamage = (currentState== Hero.HeroState.ATTACKING)? 60 : 30;
+                hitEnemy(enemy, attackDamage);
                 enemiesHit.add(enemy);
             }
 
         }
 
+
+    }
+
+    private void checkParry() {
         for (Projectile projectile : level.projectiles) {
             if (projectile.origin==PLAYER || projectile.getTimeUntilRemoval()!=null) continue;
-            if (hurtbox.intersects(projectile.getHitbox())&&stateTime<0.2f){
+            if (hurtbox.intersects(projectile.getHitbox())){
                 projectile.kill(0.3f);
                 hero.setInvincibilityPeriodLeft(0.2f);
             }
         }
     }
-
 
 
     private void hitEnemy(Enemy enemy, int damage) {

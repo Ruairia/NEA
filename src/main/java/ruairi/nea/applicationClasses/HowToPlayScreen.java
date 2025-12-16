@@ -6,10 +6,10 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-public class SettingsScreen implements Screen {
+public class HowToPlayScreen implements Screen {
     private Main game;
 
-    public SettingsScreen(Main game) {
+    public HowToPlayScreen(Main game) {
         this.game = game;
     }
 

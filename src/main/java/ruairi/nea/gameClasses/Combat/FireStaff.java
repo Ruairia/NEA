@@ -14,11 +14,14 @@ public class FireStaff extends Staff {
 
     public static final int MANA_COST = 40;
 
+    Level level;
+
     public FireStaff(Hero hero, Level level) {
         super(hero,true);
         this.projectiles = level.projectiles;
         this.manaCost=MANA_COST;
         colour=Color.ORANGE;
+        this.level = level;
     }
 
     ArrayList<Projectile> projectiles;
@@ -31,7 +34,7 @@ public class FireStaff extends Staff {
         projectiles.add(new Projectile(
                 posX,hero.getPosY() + hero.getHeight()*0.5f,
                 velocityX,0,
-                50, Projectile.projectileType.FIRE_STAFF, Projectile.Origin.PLAYER));
+                50, level, Projectile.projectileType.FIRE_STAFF, Projectile.Origin.PLAYER));
 
         cooldown = 0.4f;
     }
@@ -45,7 +48,7 @@ public class FireStaff extends Staff {
         projectiles.add(new Projectile(
                 posX,hero.getPosY(),
                 velocityX,velocityY,
-                50, Projectile.projectileType.FIRE_STAFF, Projectile.Origin.PLAYER));
+                50, level, Projectile.projectileType.FIRE_STAFF, Projectile.Origin.PLAYER));
 
         cooldown = 0.4f;
     }

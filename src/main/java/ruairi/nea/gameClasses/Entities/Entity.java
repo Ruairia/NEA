@@ -2,6 +2,7 @@ package ruairi.nea.gameClasses.Entities;
 
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.applicationClasses.Main;
@@ -119,6 +120,25 @@ public abstract class Entity {
 
 
 
+    public void drawBright (Batch batch, float flashStrength) {
+        batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        batch.setColor(1f, 1f, 1f, 1f);
+        if (this.getCurrentDirection() == Direction.RIGHT)
+            batch.draw(this.getCurrentFrame(), this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight());
+        else
+            batch.draw(this.getCurrentFrame(), this.getPosX() + this.getWidth(), this.getPosY(), -this.getWidth(), this.getHeight());
+
+        batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+        batch.setColor(1f, 1f, 1f, flashStrength); // 0..1
+        if (this.getCurrentDirection() == Direction.RIGHT)
+            batch.draw(this.getCurrentFrame(), this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight());
+        else
+            batch.draw(this.getCurrentFrame(), this.getPosX() + this.getWidth(), this.getPosY(), -this.getWidth(), this.getHeight());
+
+// Restore
+        batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        batch.setColor(Color.WHITE);
+    }
 
 
     public void draw(Batch batch) {

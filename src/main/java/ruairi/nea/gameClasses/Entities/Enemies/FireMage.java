@@ -103,7 +103,7 @@ public class FireMage extends PacingEnemy{
         Projectile projectile = new Projectile(
                 projectilePosX,posY+0.5f*height
                 ,directionX*PROJECTILE_SPEED,directionY*PROJECTILE_SPEED,
-                DAMAGE,Projectile
+                DAMAGE,null,Projectile
                 .projectileType.FIREMAGE, Projectile.Origin.FIREMAGE);
         projectiles.add(projectile);
 

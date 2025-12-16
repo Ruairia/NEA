@@ -16,7 +16,6 @@ public class CollisionManager {
                     hasCollided=true;
                 }
             }
-            if (entity.isOnGround()) entity.setVelocityY(0);
             if (!hasCollided) entity.setOnGround(false);
         }
     }
@@ -57,6 +56,7 @@ public class CollisionManager {
 
                 if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
                     entity.setVelocityY(-entity.getVelocityY());
+                else entity.setVelocityY(platform.getVelocityY());
 
 
                 entity.setPosX(entity.getPosX()+platformX-platformOldX);

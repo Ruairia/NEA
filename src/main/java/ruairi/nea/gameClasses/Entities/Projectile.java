@@ -47,11 +47,6 @@ public class Projectile extends Entity {
     public Origin origin;
 
     public Projectile(float posX, float posY, float velocityX, float velocityY, int damage, Level level, projectileType type, Origin origin){
-        this(posX,posY,velocityX,velocityY,damage,type,origin);
-        this.level = level;
-    }
-
-    public Projectile(float posX, float posY, float velocityX, float velocityY, int damage, projectileType type, Origin origin){
         super(posX,posY,8*ZOOM,8*ZOOM);
         this.velocityX = velocityX;
         this.velocityY = velocityY;
@@ -90,8 +85,10 @@ public class Projectile extends Entity {
         getHurtbox().setTopOffsetY(intersectTolerance);
 
 
-        if (type==projectileType.BOSS_EXPLOSIVE) setAffectedByGravity(true);
+        this.level = level;
     }
+
+
 
 
 

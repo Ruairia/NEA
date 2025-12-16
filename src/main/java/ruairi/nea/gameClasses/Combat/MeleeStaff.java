@@ -214,7 +214,8 @@ public class MeleeStaff extends Staff{
         for (Projectile projectile : level.projectiles) {
             if (projectile.origin==PLAYER || projectile.getTimeUntilRemoval()!=null) continue;
             if (hurtbox.intersects(projectile.getHitbox())&&stateTime<0.2f){
-                projectile.kill(0.1f);
+                projectile.kill(0.3f);
+                hero.setInvincibilityPeriodLeft(0.2f);
             }
         }
     }

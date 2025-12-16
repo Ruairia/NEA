@@ -53,6 +53,7 @@ public class Hero extends Entity {
     private int jumpsRemaining = 2;
     private float currentJumpTime=0;
     float invincibilityPeriodLeft = 0;
+    float hurtTimer = 0;
 
     public static final float DASH_SPEED = 250*ZOOM;
     public static final float MAX_DASH_COOLDOWN = 0.5f;
@@ -149,6 +150,10 @@ public class Hero extends Entity {
         if (invincibilityPeriodLeft>0) invincibilityPeriodLeft-= delta;
         else invincibilityPeriodLeft=0;
 
+        hurtTimer-=delta;
+        if (hurtTimer<0) hurtTimer=0;
+
+
         if (mana<MAX_MANA) mana += (delta*MANA_REGENERATION);
         else mana=MAX_MANA;
 
@@ -234,6 +239,7 @@ public class Hero extends Entity {
 
     public void damage(int damage){
         health-=damage;
+        hurtTimer=0.3f;
         inputHandler.vibrateController(200,0.9f);
     }
 
@@ -422,7 +428,12 @@ public class Hero extends Entity {
 
     @Override
     public void draw(Batch batch){
-        if (invincibilityPeriodLeft>0) batch.setColor(Color.SALMON);
+        if (invincibilityPeriodLeft>0 && hurtTimer<=0) {
+            drawBright(batch, 0.5f);
+            currentStaff.draw(batch);
+            return;
+        }
+        if (hurtTimer>0) batch.setColor(Color.SALMON);
         super.draw(batch);
         currentStaff.draw(batch);
         batch.setColor(Color.WHITE);

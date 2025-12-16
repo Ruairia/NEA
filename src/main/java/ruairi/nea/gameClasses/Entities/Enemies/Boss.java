@@ -1,5 +1,7 @@
 package ruairi.nea.gameClasses.Entities.Enemies;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -68,7 +70,7 @@ public class Boss extends Enemy{
             case DASH -> velocityX=300*directionToPlayer;
             case JUMP -> jump(directionToPlayer);
             case TELEPORT -> {
-                if (Math.abs(level.getHero().getPosX()-posX)>200) return;
+                if (Math.abs(level.getHero().getPosX()-posX)>300) return;
                 teleport();
             }
             case SHOOT -> shootAtHero();
@@ -81,7 +83,7 @@ public class Boss extends Enemy{
         return 1;
     }
 
-    private void teleport() {
+    public void teleport() {
         float oldX = posX;
         float oldY = posY;
 
@@ -89,12 +91,14 @@ public class Boss extends Enemy{
         invulnerable=true;
         int directionToPlayer = getDirectionToPlayer();
         velocityX=0;
-        posX=level.getHero().getPosX()+75* -directionToPlayer;
+        posX=level.getHero().getPosX()+75* directionToPlayer;
         posY=level.getHero().getPosY()+10;
         facePlayer();
 
+        updateHitbox();
+
         for (Platform platform : level.platforms){
-            if (platform.intersect(this)){
+            if (platform.getCollisionBox().intersects(this.getCollisionBox())){
                 posX=oldX;
                 posY=oldY;
             }
@@ -150,7 +154,7 @@ public class Boss extends Enemy{
         Projectile projectile = new Projectile
                 (projectilePosX,posY+0.5f*height
                         ,directionX*PROJECTILE_SPEED, directionY*PROJECTILE_SPEED,
-                        PROJECTILE_DAMAGE,Projectile.projectileType.BOSS, Projectile.Origin.BOSS);
+                        PROJECTILE_DAMAGE, level, Projectile.projectileType.BOSS, Projectile.Origin.BOSS);
         level.projectiles.add(projectile);
     }
 
@@ -181,12 +185,12 @@ public class Boss extends Enemy{
             teleport();
         }
         super.update(delta);
-        if (Math.abs(level.getHero().getPosX())-posX>500) return;
+        if (Math.abs(level.getHero().getPosX()-posX)>500) return;
 
         if (stateTime>stateLengths.get(currentState)){
             previousState=currentState;
 
-            if (currentState!=JUMP||!isOnGround()) currentState = getNextState(previousState);
+            if (currentState!=JUMP||isOnGround()) currentState = getNextState(previousState);
 
             transitionToState(currentState);
         }
@@ -232,5 +236,9 @@ public class Boss extends Enemy{
 
     public BossState getCurrentState() {
         return currentState;
+    }
+
+    public void setCurrentState(BossState state){
+        currentState=state;
     }
 }

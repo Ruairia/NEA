@@ -108,7 +108,9 @@ public class Boss extends Enemy{
 
     private void jump(int directionToPlayer) {
         velocityX=200* directionToPlayer;
-        if (isOnGround()) velocityY=500;
+        if (isOnGround()) {
+            velocityY=500;
+        }
     }
 
     private void shootExplosiveAtHero(){
@@ -175,9 +177,12 @@ public class Boss extends Enemy{
 
     @Override
     public void update(double delta) {
-        if (posY<0) teleport();
-        if (Math.abs(level.getHero().getPosX())-posX>500) return;
+        if (posY<0) {
+            teleport();
+        }
         super.update(delta);
+        if (Math.abs(level.getHero().getPosX())-posX>500) return;
+
         if (stateTime>stateLengths.get(currentState)){
             previousState=currentState;
 

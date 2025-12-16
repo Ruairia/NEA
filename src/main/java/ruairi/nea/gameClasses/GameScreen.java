@@ -113,6 +113,9 @@ public class GameScreen implements Screen {
             returnToMenu();
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) Main.enemiesUpdate = !Main.enemiesUpdate;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F2)) Main.canFly = !Main.canFly;
+
 
         perFrameLogic(delta);
 
@@ -213,6 +216,7 @@ public class GameScreen implements Screen {
 
     private void updateEntities(float delta) {
         for (Entity entity : level.allEntities) {
+            if (entity instanceof Enemy && !Main.enemiesUpdate) continue;
             entity.update(delta);
         }
     }

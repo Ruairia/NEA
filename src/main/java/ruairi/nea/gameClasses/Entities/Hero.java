@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ruairi.nea.applicationClasses.Main;
 import ruairi.nea.gameClasses.Combat.FireStaff;
 import ruairi.nea.gameClasses.Combat.MeleeStaff;
 import ruairi.nea.gameClasses.Hitbox;
@@ -105,7 +106,7 @@ public class Hero extends Entity {
 
         currentStaff=meleeStaff;
 
-        Hitbox hitbox = new Hitbox(posX,posY,width,height,this);
+//        Hitbox hitbox = new Hitbox(posX,posY,width,height,this);
         hitbox.setLeftOffsetX(2*ZOOM);
         hitbox.setRightOffsetX(4*ZOOM);
         hitbox.setTopOffsetY(2*ZOOM);
@@ -261,7 +262,7 @@ public class Hero extends Entity {
     }
 
     private void holdJump(double delta){
-        if (currentJumpTime< MAX_JUMP_DURATION) {
+        if (currentJumpTime< MAX_JUMP_DURATION || Main.canFly) {
             currentJumpTime+= (float) delta;
             if (jumpsRemaining == 1) {
                 if (velocityY < HOLD_JUMP_STRENGTH)

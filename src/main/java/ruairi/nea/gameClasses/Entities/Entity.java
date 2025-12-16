@@ -30,9 +30,9 @@ public abstract class Entity {
     boolean isOnGround;
     boolean isAffectedByGravity=true;
 
-    private Hitbox collisionBox;
-    private Hitbox hitbox;
-    private Hitbox hurtbox;
+    protected Hitbox collisionBox;
+    protected Hitbox hitbox;
+    protected Hitbox hurtbox;
 
     protected float posX, posY;
     protected float oldX, oldY;

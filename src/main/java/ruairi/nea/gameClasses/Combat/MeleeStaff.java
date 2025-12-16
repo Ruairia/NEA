@@ -9,19 +9,21 @@ import ruairi.nea.applicationClasses.Main;
 import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Entities.Hero;
+import ruairi.nea.gameClasses.Entities.Projectile;
 import ruairi.nea.gameClasses.Level;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import static ruairi.nea.gameClasses.Entities.Projectile.Origin.PLAYER;
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
 public class MeleeStaff extends Staff{
     public static final String SPRITESHEET_PATH = "assets/SwordSpriteSheet.png";
     public static Texture spriteSheet = new Texture(SPRITESHEET_PATH);
-    public static final int TEXTURE_WIDTH = 26;
-    public static final int TEXTURE_HEIGHT = 28;
+    public static final int TEXTURE_WIDTH = 20;
+    public static final int TEXTURE_HEIGHT = 22;
 
     private static HashMap<Hero.HeroState, Animation<TextureRegion>> animations = new HashMap<>();
     private static void loadAnimations(){
@@ -54,8 +56,8 @@ public class MeleeStaff extends Staff{
     private static final int DAMAGE = 30;
     private static final float COOLDOWN = 0.5f;
 
-    private static final float HURTBOX_WIDTH = 20 * ZOOM;
-    private static final float HURTBOX_HEIGHT = 28 * ZOOM;
+    private static final float HURTBOX_WIDTH = 16 * ZOOM;
+    private static final float HURTBOX_HEIGHT = 22 * ZOOM;
 
     private static final float TEXTURE_OFFSET_X = 8 * ZOOM;
     private static final float TEXTURE_OFFSET_Y = 0;
@@ -207,6 +209,13 @@ public class MeleeStaff extends Staff{
                 enemiesHit.add(enemy);
             }
 
+        }
+
+        for (Projectile projectile : level.projectiles) {
+            if (projectile.origin==PLAYER || projectile.getTimeUntilRemoval()!=null) continue;
+            if (hurtbox.intersects(projectile.getHitbox())&&stateTime<0.2f){
+                projectile.kill(0.1f);
+            }
         }
     }
 

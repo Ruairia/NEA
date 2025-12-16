@@ -16,6 +16,7 @@ public class CollisionManager {
                     hasCollided=true;
                 }
             }
+            if (entity.isOnGround()) entity.setVelocityY(0);
             if (!hasCollided) entity.setOnGround(false);
         }
     }
@@ -44,15 +45,21 @@ public class CollisionManager {
         float entityOldTop = entityOldY + entityCollisionBox.getHeight();
         float entityTop = entityCollisionBox.getPosY() + entityCollisionBox.getHeight();
 
+
+
         if ((entityOldY >= platformOldTop) &&
                 (entityY <= platformTop)) {
+            if (platform instanceof Wall && ((Wall) platform).type!= Wall.WallType.topWall) return;
             //Came from above
             if(entity.getVelocityY()<=0){
-                entity.setPosY(platform.getPosY() + platform.getHeight()-entityCollisionBox.getBottomOffsetY());
+                entity.setPosY(platformTop - entityCollisionBox.getBottomOffsetY());
+
 
                 if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
                     entity.setVelocityY(-entity.getVelocityY());
-                else entity.setVelocityY(platform.getVelocityY());
+
+
+                entity.setPosX(entity.getPosX()+platformX-platformOldX);
 
                 entity.setOnGround(true);
                 entity.setStoodOnPlatform(platform);
@@ -61,30 +68,31 @@ public class CollisionManager {
         else if ((entityOldTop <= platformOldY) &&
                 (entityTop > platformY)) {
             //Came from Below
-            entity.setPosY(platformY- entity.getHeight()-entityCollisionBox.getBottomOffsetY());
+            entity.setPosY(platformY - entityCollisionBox.getBottomOffsetY() - entityCollisionBox.getHeight());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
                 entity.setVelocityY(-entity.getVelocityY());
-            else entity.setVelocityY(platform.getVelocityY());
         }
 
         else if ((entityOldRight <= platformOldX) &&
                 (entityRight > platformX)) {
             // Came from the left
-            entity.setPosX(platformX - entity.getWidth()-entityCollisionBox.getLeftOffsetX());
+            entity.setPosX(platformX - entityCollisionBox.getLeftOffsetX() - entityCollisionBox.getWidth());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.HORIZONTAL) entity.setVelocityX(-entity.getVelocityX());
-            else entity.setVelocityX(platform.getVelocityX());
+            entity.setOnGround(false);
 
         }
 
         else if ((entityOldX >= platformOldRight) &&
                 (entityX < platformRight)) {
             // Came from the right
-            entity.setPosX(platformRight-entityCollisionBox.getLeftOffsetX());
+            entity.setPosX(platformRight - entityCollisionBox.getLeftOffsetX());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.HORIZONTAL) entity.setVelocityX(-entity.getVelocityX());
-            else entity.setVelocityX(platform.getVelocityX());
+            entity.setOnGround(false);
         }
 
         else entity.setPosY(platformTop);
+        entity.updateHitbox();
+
     }
 
 

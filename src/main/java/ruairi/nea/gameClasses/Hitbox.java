@@ -22,7 +22,10 @@ public class Hitbox {
     private float bottomOffsetY =0;
     private float rightOffsetX =0;
     private float topOffsetY =0;
-
+    private float initialisiationLeftOffsetX =0;
+    private float initialisiationBottomOffsetY =0;
+    private float initialisiationRightOffsetX =0;
+    private float initialisiationTopOffsetY =0;
 
     public Hitbox(float posX, float posY, float width, float height, Entity entityOwner){
         this.posX=posX;
@@ -49,6 +52,14 @@ public class Hitbox {
 
     public void update(){
         if (entityOwner==null) return;
+
+        if (entityOwner.getCurrentDirection()== Entity.Direction.LEFT){
+
+            leftOffsetX = rightOffsetX;
+
+            rightOffsetX = initialisiationLeftOffsetX;
+        }
+
         setPosX(entityOwner.getPosX() + leftOffsetX);
         setPosY(entityOwner.getPosY() + bottomOffsetY);
         setWidth(entityOwner.getWidth()-(leftOffsetX+rightOffsetX));
@@ -83,6 +94,7 @@ public class Hitbox {
 
     public void setRightOffsetX(float rightOffsetX) {
         this.rightOffsetX = rightOffsetX;
+        initialisiationRightOffsetX = rightOffsetX;
     }
 
     public float getTopOffsetY() {
@@ -91,6 +103,7 @@ public class Hitbox {
 
     public void setTopOffsetY(float topOffsetY) {
         this.topOffsetY = topOffsetY;
+        initialisiationTopOffsetY = topOffsetY;
     }
 
     public float getBottomOffsetY() {
@@ -99,6 +112,7 @@ public class Hitbox {
 
     public void setBottomOffsetY(float bottomOffsetY) {
         this.bottomOffsetY = bottomOffsetY;
+        initialisiationBottomOffsetY = bottomOffsetY;
     }
 
     public float getLeftOffsetX() {
@@ -107,6 +121,7 @@ public class Hitbox {
 
     public void setLeftOffsetX(float leftOffsetX) {
         this.leftOffsetX = leftOffsetX;
+        initialisiationLeftOffsetX = leftOffsetX;
     }
 
     public float getOldX() {

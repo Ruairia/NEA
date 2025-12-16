@@ -30,12 +30,12 @@ public final class BossAI{
         HashMap<BossState, Float> weights = allWeights.get(previousState);
         ArrayList<BossState> states = new ArrayList<>(weights.keySet());
 
-        currentState=(pickWeightsAtRandom(states, weights));
+        currentState=(determineNextState(states, weights));
 
         return currentState;
     }
 
-    private static BossState pickWeightsAtRandom(ArrayList<BossState> states, HashMap<BossState, Float> weights) {
+    private static BossState determineNextState(ArrayList<BossState> states, HashMap<BossState, Float> weights) {
         double randomValue = Math.random();
         double threshold = 0;
         for (BossState state : states){

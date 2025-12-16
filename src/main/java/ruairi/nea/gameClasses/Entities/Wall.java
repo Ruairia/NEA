@@ -19,6 +19,7 @@ public class Wall extends Platform {
         middleWall,
         topWall
     }
+    public WallType type;
 
     public Wall(float posX, float posY, WallType type) {
         this.posX = posX;
@@ -26,6 +27,8 @@ public class Wall extends Platform {
         width = tileWidth*ZOOM;
         height = tileHeight*ZOOM;
         isAffectedByGravity = false;
+
+        this.type = type;
 
         loadTextures();
 

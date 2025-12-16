@@ -1,15 +1,16 @@
 package ruairi.nea.gameClasses;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import ruairi.nea.gameClasses.Combat.Staff;
 import ruairi.nea.gameClasses.Entities.Entity;
 
 public class Hitbox {
 
     static Texture texture = new Texture("assets/TextureUnknown.png");
 
-    public final Entity owner;
+    private Entity entityOwner = null;
+    private Staff staffOwner = null;
 
     private float posX;
     private float posY;
@@ -17,31 +18,50 @@ public class Hitbox {
     private float height;
     private float oldX;
     private float oldY;
-    private float offsetX=0;
-    private float offsetY=0;
+    private float leftOffsetX =0;
+    private float leftOffsetY =0;
+    private float rightOffsetX =0;
+    private float topOffsetY =0;
 
 
-    public Hitbox(float posX, float posY, float width, float height, Entity owner){
+    public Hitbox(float posX, float posY, float width, float height, Entity entityOwner){
         this.posX=posX;
         this.posY=posY;
         oldX=posX;
         oldY=posY;
         this.width=width;
         this.height=height;
-        this.owner = owner;
+        this.entityOwner = entityOwner;
+    }
+    public Hitbox(float posX, float posY, float width, float height, Staff staffOwner){
+        this.posX=posX;
+        this.posY=posY;
+        oldX=posX;
+        oldY=posY;
+        this.width=width;
+        this.height=height;
+        this.staffOwner=staffOwner;
     }
 
     public void draw(Batch batch){
-        batch.setColor(1,1,1,0.3f);
         batch.draw(texture,posX,posY,width,height);
-        batch.setColor(Color.WHITE);
     }
 
-    public void updatePositions(){
-        setPosX(owner.getPosX() + offsetX);
-        setPosY(owner.getPosY() + offsetY);
-        setOldX(owner.getOldX());
-        setOldY(owner.getOldY());
+    public void update(){
+        setPosX(entityOwner.getPosX() + leftOffsetX);
+        setPosY(entityOwner.getPosY() + leftOffsetY);
+        setWidth(entityOwner.getWidth()-(leftOffsetX+rightOffsetX));
+        setHeight(entityOwner.getHeight()-(leftOffsetY+ topOffsetY));
+        setOldX(entityOwner.getOldX()+leftOffsetX);
+        setOldY(entityOwner.getOldY()+leftOffsetY);
+    }
+
+    public Entity getEntityOwner() {
+        return entityOwner;
+    }
+
+    public Staff getStaffOwner() {
+        return staffOwner;
     }
 
     public static boolean staticIntersects(Hitbox a, Hitbox b){
@@ -56,20 +76,36 @@ public class Hitbox {
         return staticIntersects(this,other);
     }
 
-    public float getOffsetY() {
-        return offsetY;
+    public float getRightOffsetX() {
+        return rightOffsetX;
     }
 
-    public void setOffsetY(float offsetY) {
-        this.offsetY = offsetY;
+    public void setRightOffsetX(float rightOffsetX) {
+        this.rightOffsetX = rightOffsetX;
     }
 
-    public float getOffsetX() {
-        return offsetX;
+    public float getTopOffsetY() {
+        return topOffsetY;
     }
 
-    public void setOffsetX(float offsetX) {
-        this.offsetX = offsetX;
+    public void setTopOffsetY(float topOffsetY) {
+        this.topOffsetY = topOffsetY;
+    }
+
+    public float getLeftOffsetY() {
+        return leftOffsetY;
+    }
+
+    public void setLeftOffsetY(float leftOffsetY) {
+        this.leftOffsetY = leftOffsetY;
+    }
+
+    public float getLeftOffsetX() {
+        return leftOffsetX;
+    }
+
+    public void setLeftOffsetX(float leftOffsetX) {
+        this.leftOffsetX = leftOffsetX;
     }
 
     public float getOldX() {

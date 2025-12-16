@@ -62,10 +62,10 @@ public class MeleeStaff extends Staff{
     private static final float HITBOX_OFFSET_X = 10 * ZOOM;
     private static final float HITBOX_OFFSET_Y = 0;
 
-    private static final float DOWNWARDS_TEXTURE_OFFSET_X = -4*ZOOM;
-    private static final float DOWNWARDS_TEXTURE_OFFSET_Y = -8*ZOOM;
-    private static final float DOWNWARDS_HITBOX_OFFSET_X = -4 * ZOOM;
-    private static final float DOWNWARDS_HITBOX_OFFSET_Y = -8 * ZOOM;
+    private static final float DOWNWARDS_TEXTURE_OFFSET_X = -2*ZOOM;
+    private static final float DOWNWARDS_TEXTURE_OFFSET_Y = -10*ZOOM;
+    private static final float DOWNWARDS_HITBOX_OFFSET_X = -2 * ZOOM;
+    private static final float DOWNWARDS_HITBOX_OFFSET_Y = -12 * ZOOM;
 
     private static final float POGO_STRENGTH = 500 * ZOOM;
 

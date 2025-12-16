@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Entities.Hero;
+import ruairi.nea.gameClasses.Hitbox;
 
 import java.util.HashMap;
 
@@ -36,6 +37,8 @@ public abstract class Staff {
 
     public abstract void attack();
     public abstract void attackDownwards();
+
+    Hitbox hurtbox = new Hitbox(0,0,0,0,this);
 
     public Staff(Hero hero, boolean requiresMana){
         loadAnimations();

@@ -24,8 +24,10 @@
                     width-2*intersectTolerance,
                     height-2*intersectTolerance,
                     this));
-            getHurtbox().setOffsetX(intersectTolerance);
-            getHurtbox().setOffsetY(intersectTolerance);
+            getHurtbox().setLeftOffsetX(intersectTolerance);
+            getHurtbox().setLeftOffsetY(intersectTolerance);
+            getHurtbox().setRightOffsetX(intersectTolerance);
+            getHurtbox().setTopOffsetY(intersectTolerance);
 
             health = 100;
         }
@@ -48,11 +50,7 @@
         }
 
 
-        @Override
-        public void updateHitbox(){
-            super.updateHitbox();
-            getHurtbox().updatePositions();
-        }
+
 
 
         @Override

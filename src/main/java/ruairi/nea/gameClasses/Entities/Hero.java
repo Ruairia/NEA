@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.gameClasses.Combat.FireStaff;
 import ruairi.nea.gameClasses.Combat.MeleeStaff;
+import ruairi.nea.gameClasses.Hitbox;
 import ruairi.nea.gameClasses.InputHandler;
 import ruairi.nea.gameClasses.Combat.Staff;
 import ruairi.nea.gameClasses.Level;
@@ -103,6 +104,13 @@ public class Hero extends Entity {
         meleeStaff = new MeleeStaff(this,level);
 
         currentStaff=meleeStaff;
+
+        Hitbox hitbox = new Hitbox(posX,posY,width,height,this);
+        hitbox.setLeftOffsetX(2*ZOOM);
+        hitbox.setRightOffsetX(4*ZOOM);
+        hitbox.setTopOffsetY(2*ZOOM);
+        this.setHitbox(hitbox);
+
     }
 
     public Hero spawn() {

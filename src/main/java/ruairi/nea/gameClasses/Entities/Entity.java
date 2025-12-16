@@ -64,9 +64,7 @@ public abstract class Entity {
         updateVelocity(delta);
         capVerticalVelocity(delta);
         updateDirection();
-
-        hitbox.setWidth(width);
-        hitbox.setHeight(height);
+        updateHitbox();
 
         if (!isOnGround){
             setStoodOnPlatform(null);
@@ -93,11 +91,13 @@ public abstract class Entity {
     protected void updatePosition(double delta) {
         posX = (float) (oldX + velocityX * delta);
         posY = (float) (oldY + velocityY * delta);
-        updateHitbox();
+
     }
 
     public void updateHitbox() {
-        collisionBox.updatePositions();
+        collisionBox.update();
+        hitbox.update();
+        hurtbox.update();
     }
 
     protected void updateVelocity(double delta) {
@@ -122,9 +122,24 @@ public abstract class Entity {
 
 
     public void draw(Batch batch) {
-        if (Main.drawCollisionBoxes) collisionBox.draw(batch);
-        if (Main.drawHitboxes) hitbox.draw(batch);
-        if (Main.drawHurtboxes) hurtbox.draw(batch);
+        if (timeUntilRemoval==null){
+            if (Main.drawCollisionBoxes) {
+                batch.setColor(0,0,1,0.3f);
+                collisionBox.draw(batch);
+                batch.setColor(Color.WHITE);
+            }
+            if (Main.drawHitboxes) {
+                batch.setColor(1,0,0,0.3f);
+                hitbox.draw(batch);
+                batch.setColor(Color.WHITE);
+            }
+            if (Main.drawHurtboxes) {
+                batch.setColor(0,1,0,0.3f);
+                hurtbox.draw(batch);
+                batch.setColor(Color.WHITE);
+            }
+        }
+
 
         if (this.getCurrentDirection() == Direction.RIGHT)
             batch.draw(this.getCurrentFrame(), this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight());
@@ -133,9 +148,23 @@ public abstract class Entity {
     }
 
     public void draw(Batch batch, Color color){
-        if (Main.drawCollisionBoxes) collisionBox.draw(batch);
-        if (Main.drawHitboxes) hitbox.draw(batch);
-        if (Main.drawHurtboxes) hurtbox.draw(batch);
+        if (timeUntilRemoval==null){
+            if (Main.drawCollisionBoxes) {
+                batch.setColor(0,0,1,0.3f);
+                collisionBox.draw(batch);
+                batch.setColor(Color.WHITE);
+            }
+            if (Main.drawHitboxes) {
+                batch.setColor(1,0,0,0.3f);
+                hitbox.draw(batch);
+                batch.setColor(Color.WHITE);
+            }
+            if (Main.drawHurtboxes) {
+                batch.setColor(0,1,0,0.3f);
+                hurtbox.draw(batch);
+                batch.setColor(Color.WHITE);
+            }
+        }
         batch.setColor(color);
         if (this.getCurrentDirection() == Direction.RIGHT)
             batch.draw(this.getCurrentFrame(), this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight());
@@ -208,7 +237,7 @@ public abstract class Entity {
 
     public void setPosX(float posX) {
         this.posX = posX;
-        this.collisionBox.setPosX(posX- collisionBox.getOffsetX());
+        this.collisionBox.setPosX(posX- collisionBox.getLeftOffsetX());
     }
 
     public float getPosY() {
@@ -217,7 +246,7 @@ public abstract class Entity {
 
     public void setPosY(float posY) {
         this.posY = posY;
-        this.collisionBox.setPosY(posY-collisionBox.getOffsetY());
+        this.collisionBox.setPosY(posY-collisionBox.getLeftOffsetY());
     }
 
     public float getVelocityX() {

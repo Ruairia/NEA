@@ -48,7 +48,7 @@ public class CollisionManager {
                 (entityY <= platformTop)) {
             //Came from above
             if(entity.getVelocityY()<=0){
-                entity.setPosY(platform.getPosY() + platform.getHeight()-entityCollisionBox.getOffsetY());
+                entity.setPosY(platform.getPosY() + platform.getHeight()-entityCollisionBox.getLeftOffsetY());
 
                 if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
                     entity.setVelocityY(-entity.getVelocityY());
@@ -61,7 +61,7 @@ public class CollisionManager {
         else if ((entityOldTop <= platformOldY) &&
                 (entityTop > platformY)) {
             //Came from Below
-            entity.setPosY(platformY- entity.getHeight()-entityCollisionBox.getOffsetY());
+            entity.setPosY(platformY- entity.getHeight()-entityCollisionBox.getLeftOffsetY());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
                 entity.setVelocityY(-entity.getVelocityY());
             else entity.setVelocityY(platform.getVelocityY());
@@ -70,7 +70,7 @@ public class CollisionManager {
         else if ((entityOldRight <= platformOldX) &&
                 (entityRight > platformX)) {
             // Came from the left
-            entity.setPosX(platformX - entity.getWidth()-entityCollisionBox.getOffsetX());
+            entity.setPosX(platformX - entity.getWidth()-entityCollisionBox.getLeftOffsetX());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.HORIZONTAL) entity.setVelocityX(-entity.getVelocityX());
             else entity.setVelocityX(platform.getVelocityX());
 
@@ -79,7 +79,7 @@ public class CollisionManager {
         else if ((entityOldX >= platformOldRight) &&
                 (entityX < platformRight)) {
             // Came from the right
-            entity.setPosX(platformRight-entityCollisionBox.getOffsetX());
+            entity.setPosX(platformRight-entityCollisionBox.getLeftOffsetX());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.HORIZONTAL) entity.setVelocityX(-entity.getVelocityX());
             else entity.setVelocityX(platform.getVelocityX());
         }

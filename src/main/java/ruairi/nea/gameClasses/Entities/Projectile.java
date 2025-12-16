@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.gameClasses.Entities.Enemies.Boss;
 import ruairi.nea.gameClasses.Entities.Enemies.BossAI;
 import ruairi.nea.gameClasses.Entities.Enemies.Explosion;
+import ruairi.nea.gameClasses.Hitbox;
 import ruairi.nea.gameClasses.Level;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
@@ -27,7 +28,7 @@ public class Projectile extends Entity {
     public Float lifetime = null;
     public Level level = null;
 
-    public final float intersectTolerance;
+
 
     public enum projectileType {
         FIREMAGE,
@@ -72,12 +73,20 @@ public class Projectile extends Entity {
 
         angleDeg = (int) Math.toDegrees(Math.atan2(velocityY, velocityX));
 
+        int intersectTolerance;
+
         switch (type){
             case FIREMAGE -> intersectTolerance = 10;
             case FIRE_STAFF -> intersectTolerance = 1;
             case BOSS -> intersectTolerance = 5;
             default -> intersectTolerance = 0;
         }
+
+        setHurtbox(new Hitbox(posX+intersectTolerance,posY+intersectTolerance,width-2*intersectTolerance,height-2*intersectTolerance,this));
+        getHurtbox().setLeftOffsetX(intersectTolerance);
+        getHurtbox().setLeftOffsetY(intersectTolerance);
+        getHurtbox().setRightOffsetX(intersectTolerance);
+        getHurtbox().setTopOffsetY(intersectTolerance);
 
     }
 
@@ -130,6 +139,7 @@ public class Projectile extends Entity {
             kill(0.1f);
         }
     }
+
 
     @Override
     public void updateTimers(float delta){

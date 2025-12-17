@@ -3,40 +3,89 @@ package ruairi.nea.applicationClasses;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class HowToPlayScreen implements Screen {
-    private Main game;
+
+    private final Main game;
+    private OrthographicCamera camera;
+    private Viewport viewport;
+    private BitmapFont font;
+    private GlyphLayout layout;
+
+    private Controller gamepad;
+
+    private static final String TEXT =
+            "HOW TO PLAY\n\n" +
+                    "Move: W A S D / Left Stick\n\n" +
+                    "Attack: Shift / X\n\n" +
+                    "Attack Downwards: Shift + S / X + Left Stick Down\n\n" +
+                    "Heal: H / D-Pad Down\n\n" +
+                    "Dash: Space / RT\n\n" +
+                    "Press ESC or B to return";
 
     public HowToPlayScreen(Main game) {
         this.game = game;
+    }
+    @Override
+    public void show() {
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(Main.UI_WIDTH, Main.UI_HEIGHT, camera);
+        viewport.apply();
+        camera.position.set(Main.UI_WIDTH / 2f, Main.UI_HEIGHT / 2f, 0);
+        camera.update();
+
+        if (Controllers.getControllers().size > 0) {
+            gamepad = Controllers.getControllers().first();
+        }
+
+        FreeTypeFontGenerator gen =
+                new FreeTypeFontGenerator(Gdx.files.internal("assets/font.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter p =
+                new FreeTypeFontGenerator.FreeTypeFontParameter();
+        p.size = 84;
+        p.color = Color.WHITE;
+
+        font = gen.generateFont(p);
+        gen.dispose();
+
+        font.getData().setScale(0.33f);
+
+        layout = new GlyphLayout();
+        layout.setText(font, TEXT);
     }
 
     @Override
     public void render(float delta) {
         ScreenUtils.clear(Color.CORAL);
 
-        float SCREENHEIGHT = Gdx.graphics.getHeight();
-        float SCREENWIDTH = Gdx.graphics.getWidth();
-        
+        viewport.apply();
+        game.batch.setProjectionMatrix(camera.combined);
+
+        float x = (Main.UI_WIDTH - layout.width) / 2f;
+        float y = (Main.UI_HEIGHT + layout.height) / 2f;
+
         game.batch.begin();
-        game.font.draw(game.batch, "SETTINGS", SCREENWIDTH / 2 - 40, SCREENHEIGHT / 2 + 100);
-        game.font.draw(game.batch, "Controls:", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2 + 50);
-        game.font.draw(game.batch, "WASD - Move", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2);
-        game.font.draw(game.batch, "SHIFT - Attack", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2 - 25);
-        game.font.draw(game.batch, "Press ESC to go back", SCREENWIDTH / 2 - 80, SCREENHEIGHT / 2 - 100);
+        font.draw(game.batch, layout, x, y);
         game.batch.end();
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) || gamepad!=null && gamepad.getButton(1)) {
             game.setScreen(new MainMenuScreen(game));
         }
     }
 
-    @Override public void show() {}
+    @Override public void resize(int w, int h) { viewport.update(w, h, true); }
     @Override public void hide() {}
-    @Override public void resize(int width, int height) {}
     @Override public void pause() {}
     @Override public void resume() {}
-    @Override public void dispose() {}
+    @Override public void dispose() { font.dispose(); }
 }

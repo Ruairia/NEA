@@ -6,84 +6,134 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import ruairi.nea.gameClasses.GameScreen;
 
 public class LevelSelectScreen implements Screen {
-    private Main game;
+
+    private final Main game;
     private Controller gamepad;
 
-    Button selectedButton;
-    Button levelOneButton;
-    Button levelTwoButton;
-    Button levelThreeButton;
-    Button levelFourButton;
+    private OrthographicCamera camera;
+    private Viewport viewport;
+    private BitmapFont font;
 
-    float lastMovedButton = 0;
-    boolean wasButtonPressed = true;
+    private Button selectedButton;
+    private Button levelOneButton;
+    private Button levelTwoButton;
+    private Button levelThreeButton;
+    private Button levelFourButton;
+
+    private float lastMovedButton = 0;
+    private boolean wasAButtonPressed = true;
 
     public LevelSelectScreen(Main game) {
         this.game = game;
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
-                Gdx.files.internal("assets/font.ttf")
-        );
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 40;
-        parameter.color = Color.WHITE;
-
-        font = generator.generateFont(parameter);
-        generator.dispose();
     }
 
-    BitmapFont font;
+    @Override
+    public void show() {
+        if (Controllers.getControllers().size > 0) {
+            gamepad = Controllers.getControllers().first();
+        }
+
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(Main.UI_WIDTH, Main.UI_HEIGHT, camera);
+        viewport.apply();
+        camera.position.set(Main.UI_WIDTH / 2f, Main.UI_HEIGHT / 2f, 0);
+        camera.update();
+
+        FreeTypeFontGenerator gen =
+                new FreeTypeFontGenerator(Gdx.files.internal("assets/font.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter p =
+                new FreeTypeFontGenerator.FreeTypeFontParameter();
+        p.size = 120;
+        p.color = Color.WHITE;
+        font = gen.generateFont(p);
+        gen.dispose();
+
+        font.getData().setScale(0.33f);
+
+        float cx = Main.UI_WIDTH / 2f;
+        float cy = Main.UI_HEIGHT / 2f;
+        float size = 128;
+
+        levelOneButton   = new Button(cx / 2f,           cy + size / 2f, size, size, Button.ButtonType.LevelSelect);
+        levelTwoButton   = new Button(cx * 1.5f - size,  cy + size / 2f, size, size, Button.ButtonType.LevelSelect);
+        levelThreeButton = new Button(cx / 2f,           cy - size * 1.5f, size, size, Button.ButtonType.LevelSelect);
+        levelFourButton  = new Button(cx * 1.5f - size,  cy - size * 1.5f, size, size, Button.ButtonType.LevelSelect);
+
+        levelOneButton.text = "1";
+        levelTwoButton.text = "2";
+        levelThreeButton.text = "3";
+        levelFourButton.text = "4";
+
+        levelOneButton.rightButton = levelTwoButton;
+        levelOneButton.downButton  = levelThreeButton;
+
+        levelTwoButton.leftButton  = levelOneButton;
+        levelTwoButton.downButton  = levelFourButton;
+
+        levelThreeButton.upButton  = levelOneButton;
+        levelThreeButton.rightButton = levelFourButton;
+
+        levelFourButton.upButton   = levelTwoButton;
+        levelFourButton.leftButton = levelThreeButton;
+
+        levelOneButton.isSelected = true;
+        selectedButton = levelOneButton;
+    }
 
     @Override
     public void render(float delta) {
         lastMovedButton += delta;
+        ScreenUtils.clear(0.3f, 0.2f, 0.05f, 1);
 
-        ScreenUtils.clear(0.3f,0.2f,0.05f,1f);
+        viewport.apply();
+        game.batch.setProjectionMatrix(camera.combined);
 
-        float mouseX = Gdx.input.getX();
-        float mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
+        Vector2 mouse = viewport.unproject(
+                new Vector2(Gdx.input.getX(), Gdx.input.getY())
+        );
 
-        levelOneButton.isHovered = levelOneButton.isUnderMouse(mouseX, mouseY);
-        levelTwoButton.isHovered = levelTwoButton.isUnderMouse(mouseX, mouseY);
-        levelThreeButton.isHovered = levelThreeButton.isUnderMouse(mouseX, mouseY);
-        levelFourButton.isHovered = levelFourButton.isUnderMouse(mouseX, mouseY);
+        levelOneButton.isHovered   = levelOneButton.isUnderMouse(mouse.x, mouse.y);
+        levelTwoButton.isHovered   = levelTwoButton.isUnderMouse(mouse.x, mouse.y);
+        levelThreeButton.isHovered = levelThreeButton.isUnderMouse(mouse.x, mouse.y);
+        levelFourButton.isHovered  = levelFourButton.isUnderMouse(mouse.x, mouse.y);
 
         game.batch.begin();
-
-        levelOneButton.draw(game.batch,font);
-        levelTwoButton.draw(game.batch,font);
-        levelThreeButton.draw(game.batch,font);
-        levelFourButton.draw(game.batch,font);
-
+        levelOneButton.draw(game.batch, font);
+        levelTwoButton.draw(game.batch, font);
+        levelThreeButton.draw(game.batch, font);
+        levelFourButton.draw(game.batch, font);
         game.batch.end();
 
         // Mouse input
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            if (levelOneButton.isUnderMouse(mouseX, mouseY)) game.setScreen(new GameScreen(game, 1));
-            if (levelTwoButton.isUnderMouse(mouseX, mouseY)) game.setScreen(new GameScreen(game, 2));
-            if (levelThreeButton.isUnderMouse(mouseX, mouseY)) game.setScreen(new GameScreen(game, 3));
-            if (levelFourButton.isUnderMouse(mouseX, mouseY)) game.setScreen(new GameScreen(game, 4));
+            if (levelOneButton.isHovered)   game.setScreen(new GameScreen(game, 1));
+            if (levelTwoButton.isHovered)   game.setScreen(new GameScreen(game, 2));
+            if (levelThreeButton.isHovered) game.setScreen(new GameScreen(game, 3));
+            if (levelFourButton.isHovered)  game.setScreen(new GameScreen(game, 4));
         }
 
-        // Controller/Keyboard input for selecting level
-        boolean isButtonPressed = gamepad != null && gamepad.getButton(0);
-
-        if (isButtonPressed && !wasButtonPressed) {
-            if (levelOneButton.isSelected) game.setScreen(new GameScreen(game, 1));
-            if (levelTwoButton.isSelected) game.setScreen(new GameScreen(game, 2));
+        // Controller confirm
+        boolean isAButtonPressed = gamepad != null && gamepad.getButton(0);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || (isAButtonPressed && !wasAButtonPressed)) {
+            if (levelOneButton.isSelected)   game.setScreen(new GameScreen(game, 1));
+            if (levelTwoButton.isSelected)   game.setScreen(new GameScreen(game, 2));
             if (levelThreeButton.isSelected) game.setScreen(new GameScreen(game, 3));
-            if (levelFourButton.isSelected) game.setScreen(new GameScreen(game, 4));
+            if (levelFourButton.isSelected)  game.setScreen(new GameScreen(game, 4));
         }
-
-        wasButtonPressed = isButtonPressed;
+        wasAButtonPressed = isAButtonPressed;
 
         // Keyboard shortcuts
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) || gamepad != null && gamepad.getButton(1)) {
             game.setScreen(new MainMenuScreen(game));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
             game.setScreen(new GameScreen(game, 1));
@@ -97,86 +147,51 @@ public class LevelSelectScreen implements Screen {
             game.setScreen(new GameScreen(game, 10));
         }
 
-        // Controller/Keyboard navigation
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP) || gamepad != null && gamepad.getAxis(1) < -0.3f && lastMovedButton > 0.1f) {
+        // Navigation
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)
+                || gamepad != null && gamepad.getAxis(1) < -0.3f && lastMovedButton > 0.1f) {
             if (selectedButton.upButton != null) {
                 selectedButton.isSelected = false;
-                selectedButton.upButton.isSelected = true;
                 selectedButton = selectedButton.upButton;
+                selectedButton.isSelected = true;
                 lastMovedButton = 0;
             }
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || gamepad != null && gamepad.getAxis(1) > 0.3f && lastMovedButton > 0.1f) {
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)
+                || gamepad != null && gamepad.getAxis(1) > 0.3f && lastMovedButton > 0.1f) {
             if (selectedButton.downButton != null) {
                 selectedButton.isSelected = false;
-                selectedButton.downButton.isSelected = true;
                 selectedButton = selectedButton.downButton;
+                selectedButton.isSelected = true;
                 lastMovedButton = 0;
             }
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT) || gamepad != null && gamepad.getAxis(0) < -0.3f && lastMovedButton > 0.1f) {
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)
+                || gamepad != null && gamepad.getAxis(0) < -0.3f && lastMovedButton > 0.1f) {
             if (selectedButton.leftButton != null) {
                 selectedButton.isSelected = false;
-                selectedButton.leftButton.isSelected = true;
                 selectedButton = selectedButton.leftButton;
+                selectedButton.isSelected = true;
                 lastMovedButton = 0;
             }
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) || gamepad != null && gamepad.getAxis(0) > 0.3f && lastMovedButton > 0.1f) {
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)
+                || gamepad != null && gamepad.getAxis(0) > 0.3f && lastMovedButton > 0.1f) {
             if (selectedButton.rightButton != null) {
                 selectedButton.isSelected = false;
-                selectedButton.rightButton.isSelected = true;
                 selectedButton = selectedButton.rightButton;
+                selectedButton.isSelected = true;
                 lastMovedButton = 0;
             }
         }
     }
 
-    @Override public void show() {
-        // Initialize controller
-        if (Controllers.getControllers().size > 0) {
-            gamepad = Controllers.getControllers().first();
-        }
-
-        game.batch.getProjectionMatrix().idt();
-        game.batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-        float centreX = Gdx.graphics.getWidth() / 2;
-        float centreY = Gdx.graphics.getHeight() / 2;
-
-        float buttonSize = 128;
-
-        levelOneButton = new Button(centreX/2, centreY+buttonSize/2, buttonSize, buttonSize, Button.ButtonType.LevelSelect);
-        levelTwoButton = new Button(centreX*1.5f-buttonSize, centreY+buttonSize/2, buttonSize, buttonSize, Button.ButtonType.LevelSelect);
-        levelThreeButton = new Button(centreX/2, centreY-buttonSize*1.5f, buttonSize, buttonSize, Button.ButtonType.LevelSelect);
-        levelFourButton = new Button(centreX*1.5f-buttonSize, centreY-buttonSize*1.5f, buttonSize, buttonSize, Button.ButtonType.LevelSelect);
-
-        levelOneButton.text = "1";
-        levelTwoButton.text = "2";
-        levelThreeButton.text = "3";
-        levelFourButton.text = "4";
-
-        // Set up button navigation (2x2 grid layout)
-        levelOneButton.rightButton = levelTwoButton;
-        levelOneButton.downButton = levelThreeButton;
-
-        levelTwoButton.leftButton = levelOneButton;
-        levelTwoButton.downButton = levelFourButton;
-
-        levelThreeButton.upButton = levelOneButton;
-        levelThreeButton.rightButton = levelFourButton;
-
-        levelFourButton.upButton = levelTwoButton;
-        levelFourButton.leftButton = levelThreeButton;
-
-        // Set initial selection
-        levelOneButton.isSelected = true;
-        selectedButton = levelOneButton;
-    }
-
+    @Override public void resize(int w, int h) { viewport.update(w, h, true); }
     @Override public void hide() {}
-    @Override public void resize(int width, int height) {}
     @Override public void pause() {}
     @Override public void resume() {}
-    @Override public void dispose() {}
+    @Override public void dispose() { font.dispose(); }
 }

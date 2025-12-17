@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import org.lwjgl.opengl.GL20;
 import ruairi.nea.applicationClasses.LevelSelectScreen;
 import ruairi.nea.applicationClasses.Main;
@@ -24,6 +26,12 @@ public class GameScreen implements Screen {
     private static Main game;
     private final int levelNumber;
     private Level level;
+
+    public static final float V_WIDTH = Main.UI_WIDTH;
+    public static final float V_HEIGHT = Main.UI_HEIGHT;
+
+    private Viewport viewport;
+    private Viewport uiViewport;
 
     //UI&Background
     public HealthBar healthBar;
@@ -68,14 +76,16 @@ public class GameScreen implements Screen {
                 Gdx.files.internal("assets/font.ttf")
         );
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 15; // Font size
+        parameter.size = 45; // Font size
         parameter.color = Color.WHITE;
 
         font = generator.generateFont(parameter);
         generator.dispose();
 
-        healthBar = new HealthBar(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        manaBar = new ManaBar(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        font.getData().setScale(0.33f);
+
+        healthBar = new HealthBar(V_WIDTH,V_HEIGHT);
+        manaBar = new ManaBar(V_WIDTH,V_HEIGHT);
 
         level = new Level();
         level.loadLevel(this.levelNumber);
@@ -84,10 +94,12 @@ public class GameScreen implements Screen {
 
 
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        viewport = new FitViewport(V_WIDTH, V_HEIGHT, camera);
+        camera.setToOrtho(false, viewport.getScreenWidth(), viewport.getScreenHeight());
 
         uiCamera = new OrthographicCamera();
-        uiCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        uiViewport = new FitViewport(V_WIDTH, V_HEIGHT, uiCamera);
+        uiCamera.setToOrtho(false, uiViewport.getScreenWidth(), uiViewport.getScreenHeight());
         uiCamera.position.set(uiCamera.viewportWidth/2, uiCamera.viewportHeight/2,0);
 
     }
@@ -139,10 +151,13 @@ public class GameScreen implements Screen {
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
 
+        viewport.apply();
         drawLevel();
+
+        uiViewport.apply();
         drawUI();
         drawText();
-        drawText();
+
     }
 
     private static void returnToMenu() {
@@ -186,9 +201,9 @@ public class GameScreen implements Screen {
         game.batch.setProjectionMatrix(uiCamera.combined);
         game.batch.begin();
         font.setColor(1,1,1,1);
-        font.draw(game.batch, "FPS: "+Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight()-40);
-        font.draw(game.batch, "Score: "+score, Gdx.graphics.getWidth()-220, Gdx.graphics.getHeight()-20);
-        font.draw(game.batch, "Boss state: "+level.boss.getCurrentState(),10,Gdx.graphics.getHeight()-80);
+        font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, V_HEIGHT - 10);
+        font.draw(game.batch, "Score: " + score, V_WIDTH - 220, V_HEIGHT - 10);
+        font.draw(game.batch, "Boss state: " + level.boss.getCurrentState(), 10, V_HEIGHT - 50);
         game.batch.end();
     }
 
@@ -326,7 +341,11 @@ public class GameScreen implements Screen {
 
 
     @Override
-    public void resize(int width, int height) {}
+    public void resize(int width, int height) {
+
+        viewport.update(width, height, true);
+        uiViewport.update(width, height, true);
+    }
 
     @Override
     public void pause() {}

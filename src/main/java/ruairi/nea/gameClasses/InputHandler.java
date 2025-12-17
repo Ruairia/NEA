@@ -19,6 +19,7 @@ public class InputHandler {
 
     private boolean jumpWasPressed = false;
     private boolean dashWasPressed = false;
+    private boolean attackWasPressed = false;
 
     public InputHandler() {
         if (Controllers.getControllers().size > 0) {
@@ -129,10 +130,12 @@ public class InputHandler {
     }
 
     private boolean isAttackPressed() {
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) return true;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)) return true;
 
-        //X button (Xbox)
-        if (gamepad != null && gamepad.getButton(2)) return true;
+        if (gamepad != null && gamepad.getButton(2)){
+            if (!attackWasPressed){
+                return true;}
+        }
 
         return false;
     }

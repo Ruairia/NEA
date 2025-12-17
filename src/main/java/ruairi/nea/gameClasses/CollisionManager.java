@@ -79,7 +79,7 @@ public class CollisionManager {
             // Came from the left
             entity.setPosX(platformX - entityCollisionBox.getLeftOffsetX() - entityCollisionBox.getWidth());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.HORIZONTAL) entity.setVelocityX(-entity.getVelocityX());
-            entity.setOnGround(false);
+
 
         }
 
@@ -88,7 +88,7 @@ public class CollisionManager {
             // Came from the right
             entity.setPosX(platformRight - entityCollisionBox.getLeftOffsetX());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.HORIZONTAL) entity.setVelocityX(-entity.getVelocityX());
-            entity.setOnGround(false);
+
         }
 
         else entity.setPosY(platformTop);

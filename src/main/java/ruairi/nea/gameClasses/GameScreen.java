@@ -3,8 +3,10 @@ package ruairi.nea.gameClasses;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import org.lwjgl.opengl.GL20;
 import ruairi.nea.applicationClasses.LevelSelectScreen;
@@ -50,7 +52,7 @@ public class GameScreen implements Screen {
     private OrthographicCamera camera;
     private OrthographicCamera uiCamera;
     private ShapeRenderer shapeRenderer;
-    private BitmapFont bitmapFont;
+    private BitmapFont font;
 
 
 
@@ -62,7 +64,15 @@ public class GameScreen implements Screen {
     @Override
     public void show() { //Run Once when the screen is shown
         shapeRenderer = new ShapeRenderer();
-        bitmapFont = new BitmapFont();
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
+                Gdx.files.internal("assets/font.ttf")
+        );
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 15; // Font size
+        parameter.color = Color.WHITE;
+
+        font = generator.generateFont(parameter);
+        generator.dispose();
 
         healthBar = new HealthBar(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         manaBar = new ManaBar(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
@@ -175,9 +185,10 @@ public class GameScreen implements Screen {
     private void drawText() {
         game.batch.setProjectionMatrix(uiCamera.combined);
         game.batch.begin();
-        bitmapFont.setColor(1,1,1,1);
-        bitmapFont.draw(game.batch, "FPS: "+Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight()-40);
-        bitmapFont.draw(game.batch, "Score: "+score, Gdx.graphics.getWidth()-220, Gdx.graphics.getHeight()-20);
+        font.setColor(1,1,1,1);
+        font.draw(game.batch, "FPS: "+Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight()-40);
+        font.draw(game.batch, "Score: "+score, Gdx.graphics.getWidth()-220, Gdx.graphics.getHeight()-20);
+        font.draw(game.batch, "Boss state: "+level.boss.getCurrentState(),10,Gdx.graphics.getHeight()-80);
         game.batch.end();
     }
 
@@ -334,6 +345,6 @@ public class GameScreen implements Screen {
         Projectile.disposeTextures();
         shapeRenderer.dispose();
         background.dispose();
-        bitmapFont.dispose();
+        font.dispose();
     }
 }

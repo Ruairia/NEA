@@ -55,12 +55,12 @@ public class Boss extends Enemy{
 
         hitbox.setLeftOffsetX(64*ZOOM);
         hitbox.setRightOffsetX(64*ZOOM);
-        hitbox.setTopOffsetY(64*ZOOM);
+        hitbox.setTopOffsetY(74*ZOOM);
         hitbox.setBottomOffsetY(12*ZOOM);
 
         hurtbox.setLeftOffsetX(74*ZOOM);
         hurtbox.setRightOffsetX(74*ZOOM);
-        hurtbox.setTopOffsetY(64*ZOOM);
+        hurtbox.setTopOffsetY(74*ZOOM);
         hurtbox.setBottomOffsetY(12*ZOOM);
 
         collisionBox.setLeftOffsetX(64*ZOOM);
@@ -85,7 +85,7 @@ public class Boss extends Enemy{
         if (previousState==SHOOT_EXPLOSIVE) shootExplosiveAtHero();
 
         switch (state){
-            case IDLE -> velocityX=0;
+            case IDLE, SHOOT, SHOOT_EXPLOSIVE -> velocityX=0;
             case WALK_TOWARDS -> velocityX=100*directionToPlayer;
             case WALK_AWAY -> velocityX=-100*directionToPlayer;
             case DASH -> velocityX=300*directionToPlayer;
@@ -203,6 +203,10 @@ public class Boss extends Enemy{
         Animation<TextureRegion> shootAnimation = new Animation<>(0.05f, Arrays.copyOfRange(frames[2],0,12));
         animations.put(SHOOT,shootAnimation);
         animations.put(SHOOT_EXPLOSIVE,shootAnimation);
+
+        Animation<TextureRegion> dashAnimation = new Animation<>(0.05f, frames[4]);
+        dashAnimation.setPlayMode(Animation.PlayMode.LOOP);
+        animations.put(DASH,dashAnimation);
     }
 
     public void setStateLengths(){
@@ -210,7 +214,6 @@ public class Boss extends Enemy{
             stateLengths.put(state,animations.get(state).getAnimationDuration());
         }
         stateLengths.put(DASH,0.3f);
-        stateLengths.put(JUMP,0.5f);
         stateLengths.put(TELEPORT,0.5f);
     }
 
@@ -226,8 +229,9 @@ public class Boss extends Enemy{
         if (stateTime>stateLengths.get(currentState)){
             previousState=currentState;
 
-            if (currentState!=JUMP||isOnGround()) currentState = getNextState(previousState);
+            if (currentState==JUMP&&!isOnGround()) return;
 
+            currentState = getNextState(previousState);
             transitionToState(currentState);
         }
     }

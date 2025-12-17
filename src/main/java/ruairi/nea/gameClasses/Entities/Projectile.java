@@ -54,9 +54,10 @@ public class Projectile extends Entity {
         this.damage = damage;
         this.type=type;
         this.origin = origin;
+
         lifetime = switch (type){
-            case BOSS -> 0.5f;
-            case BOSS_EXPLOSIVE -> 0.8f;
+            case BOSS -> 1f;
+            case BOSS_EXPLOSIVE -> 1.2f;
             default -> null;
         };
 

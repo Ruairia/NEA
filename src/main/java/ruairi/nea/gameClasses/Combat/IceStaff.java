@@ -12,7 +12,7 @@ import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
 public class IceStaff extends Staff {
 
-    public static final int MANA_COST = 40;
+    public static final int MANA_COST = 90;
 
     Level level;
 

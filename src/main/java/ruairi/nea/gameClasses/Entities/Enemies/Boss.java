@@ -1,7 +1,5 @@
 package ruairi.nea.gameClasses.Entities.Enemies;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -11,8 +9,10 @@ import ruairi.nea.gameClasses.Entities.Goal;
 import ruairi.nea.gameClasses.Entities.Platform;
 import ruairi.nea.gameClasses.Entities.Projectile;
 import ruairi.nea.gameClasses.Entities.Entity;
+import ruairi.nea.gameClasses.Hitbox;
 import ruairi.nea.gameClasses.Level;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import static ruairi.nea.gameClasses.Entities.Enemies.BossAI.*;
@@ -21,12 +21,12 @@ import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
 public class Boss extends Enemy{
 
-    public static final String SPRITESHEET_PATH = "assets/WizardSpriteSheetNoStaff.png";
+    public static final String SPRITESHEET_PATH = "assets/BossSpriteSheet.png";
     public static final Texture spriteSheet = new Texture(SPRITESHEET_PATH);
 
     HashMap<BossState, Animation<TextureRegion>> animations = new HashMap<>();
-    public static final int FRAME_WIDTH = 16;
-    public static final int FRAME_HEIGHT = 16;
+    public static final int FRAME_WIDTH = 160;
+    public static final int FRAME_HEIGHT = 128;
 
     public static final int MAX_HEALTH = 1000;
 
@@ -49,7 +49,25 @@ public class Boss extends Enemy{
         this.level = level;
 
         health = MAX_HEALTH;
-        contactDamage = 10;
+        contactDamage = 10;;
+
+        setHitbox(new Hitbox(posX,posY,FRAME_WIDTH*ZOOM,FRAME_HEIGHT*ZOOM,this));
+
+        hitbox.setLeftOffsetX(64*ZOOM);
+        hitbox.setRightOffsetX(64*ZOOM);
+        hitbox.setTopOffsetY(64*ZOOM);
+        hitbox.setBottomOffsetY(12*ZOOM);
+
+        hurtbox.setLeftOffsetX(74*ZOOM);
+        hurtbox.setRightOffsetX(74*ZOOM);
+        hurtbox.setTopOffsetY(64*ZOOM);
+        hurtbox.setBottomOffsetY(12*ZOOM);
+
+        collisionBox.setLeftOffsetX(64*ZOOM);
+        collisionBox.setRightOffsetX(64*ZOOM);
+        collisionBox.setTopOffsetY(64*ZOOM);
+        collisionBox.setBottomOffsetY(12*ZOOM);
+
 
         loadAllWeights();
         loadAnimations();
@@ -63,6 +81,9 @@ public class Boss extends Enemy{
 
         int directionToPlayer = getDirectionToPlayer();
 
+        if (previousState==SHOOT) shootAtHero();
+        if (previousState==SHOOT_EXPLOSIVE) shootExplosiveAtHero();
+
         switch (state){
             case IDLE -> velocityX=0;
             case WALK_TOWARDS -> velocityX=100*directionToPlayer;
@@ -73,13 +94,11 @@ public class Boss extends Enemy{
                 if (Math.abs(level.getHero().getPosX()-posX)>300) return;
                 teleport();
             }
-            case SHOOT -> shootAtHero();
-            case SHOOT_EXPLOSIVE -> shootExplosiveAtHero();
         }
     }
 
-    private int getDirectionToPlayer() {
-        if (level.getHero().getPosX()<posX) return -1;
+    public int getDirectionToPlayer() {
+        if (level.getHero().getPosX()<posX+width/2) return -1;
         return 1;
     }
 
@@ -91,8 +110,8 @@ public class Boss extends Enemy{
         invulnerable=true;
         int directionToPlayer = getDirectionToPlayer();
         velocityX=0;
-        posX=level.getHero().getPosX()+75* directionToPlayer;
-        posY=level.getHero().getPosY()+10;
+        posX=level.getHero().getPosX()+75* directionToPlayer - width/2;
+        posY=level.getHero().getPosY()+16;
         facePlayer();
 
         updateHitbox();
@@ -110,69 +129,85 @@ public class Boss extends Enemy{
         else setCurrentDirection(Direction.LEFT);
     }
 
-    private void jump(int directionToPlayer) {
+    public void jump(int directionToPlayer) {
         velocityX=200* directionToPlayer;
         if (isOnGround()) {
             velocityY=500;
         }
     }
 
-    private void shootExplosiveAtHero(){
+    public void shootExplosiveAtHero(){
         facePlayer();
-        float displacementToHeroX = level.getHero().getPosX()-posX;
-        float displacementToHeroY = level.getHero().getPosY()-posY;
+        float displacementToHeroX = level.getHero().getPosX()+level.getHero().getWidth()/2-posX-width/2;
+        float displacementToHeroY = level.getHero().getPosY()+level.getHero().getHeight()/2-posY-height/2;
         float euclDistanceToHero = (float) Math.sqrt(Math.pow(displacementToHeroX,2)+Math.pow(displacementToHeroY,2));
-        float directionX = displacementToHeroX /(euclDistanceToHero);
-        float directionY = 0.75f * displacementToHeroY / euclDistanceToHero;
-        Projectile projectile = summonExplosiveProjectile(directionX,directionY);
-        level.projectiles.add(projectile);
-    }
 
-    private Projectile summonExplosiveProjectile(float directionX,float directionY) {
-        float projectilePosX = posX;
-
-        if (this.getCurrentDirection()== Direction.LEFT) projectilePosX+=width;
-
-        return new Projectile
-                (projectilePosX,posY+0.5f*height
-                        , directionX *PROJECTILE_SPEED*0.5f, directionY*EXPLOSIVE_PROJECTILE_SPEED,
-                        EXPLOSIVE_PROJECTILE_DAMAGE,level,Projectile.projectileType.BOSS_EXPLOSIVE, Projectile.Origin.BOSS);
-    }
-
-    private void shootAtHero(){
-        facePlayer();
-        float displacementToHeroX = level.getHero().getPosX()-posX;
-        float displacementToHeroY = level.getHero().getPosY()-posY;
-        float euclDistanceToHero = (float) Math.sqrt(Math.pow(displacementToHeroX,2)+Math.pow(displacementToHeroY,2));
         float directionX = displacementToHeroX /(euclDistanceToHero);
         float directionY = 0.75f * displacementToHeroY /(euclDistanceToHero);
 
-        float projectilePosX = posX;
+        float projectilePosX = posX+width/2;
+        float projectilePosY = posY+height/2;
 
-        if (this.getCurrentDirection()== Entity.Direction.LEFT) projectilePosX+=width;
 
-        Projectile projectile = new Projectile
-                (projectilePosX,posY+0.5f*height
-                        ,directionX*PROJECTILE_SPEED, directionY*PROJECTILE_SPEED,
-                        PROJECTILE_DAMAGE, level, Projectile.projectileType.BOSS, Projectile.Origin.BOSS);
+
+        Projectile projectile =  new Projectile
+                (projectilePosX,projectilePosY
+                        , directionX *PROJECTILE_SPEED*0.5f, directionY*EXPLOSIVE_PROJECTILE_SPEED,
+                        EXPLOSIVE_PROJECTILE_DAMAGE,level,Projectile.projectileType.BOSS_EXPLOSIVE, Projectile.Origin.BOSS);
+
         level.projectiles.add(projectile);
     }
 
+
+
+    public void shootAtHero(){
+        facePlayer();
+        float displacementToHeroX = level.getHero().getPosX()+level.getHero().getWidth()/2-posX-width/2;
+        float displacementToHeroY = level.getHero().getPosY()+level.getHero().getHeight()/2-posY-height/2;
+        float euclDistanceToHero = (float) Math.sqrt(Math.pow(displacementToHeroX,2)+Math.pow(displacementToHeroY,2));
+
+        float directionX = displacementToHeroX /(euclDistanceToHero);
+        float directionY = 0.75f * displacementToHeroY /(euclDistanceToHero);
+
+        float projectilePosX = posX+width/2;
+        float projectilePosY = posY+height/2;
+
+        Projectile projectile;
+
+
+        projectile = new Projectile
+                (projectilePosX,projectilePosY
+                        ,directionX*PROJECTILE_SPEED, directionY*PROJECTILE_SPEED,
+                        PROJECTILE_DAMAGE, level, Projectile.projectileType.BOSS, Projectile.Origin.BOSS);
+        level.projectiles.add(projectile);
+
+
+
+    }
+
+
+
     public void loadAnimations(){
         TextureRegion[][] frames = TextureRegion.split(spriteSheet,FRAME_WIDTH,FRAME_HEIGHT);
+
+        Animation<TextureRegion> basicAnimation = new Animation<>(0.1f,Arrays.copyOfRange(frames[0],0,7));
+
         for (BossState state : BossState.values()){
-            Animation<TextureRegion> animation = new Animation<>(1,frames[0]);
-            animations.put(state,animation);
+            animations.put(state, basicAnimation);
         }
-        Animation<TextureRegion> walkAnimation = new Animation<>(0.1f,frames[1]);
+        Animation<TextureRegion> walkAnimation = new Animation<>(0.1f, Arrays.copyOfRange(frames[0],0,7));
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
         animations.put(WALK_TOWARDS,walkAnimation);
         animations.put(WALK_AWAY,walkAnimation);
+
+        Animation<TextureRegion> shootAnimation = new Animation<>(0.05f, Arrays.copyOfRange(frames[2],0,12));
+        animations.put(SHOOT,shootAnimation);
+        animations.put(SHOOT_EXPLOSIVE,shootAnimation);
     }
 
     public void setStateLengths(){
-        for (int i = 0; i < values().length; i++) {
-            stateLengths.put(values()[i],1f);
+        for (BossState state : BossState.values()){
+            stateLengths.put(state,animations.get(state).getAnimationDuration());
         }
         stateLengths.put(DASH,0.3f);
         stateLengths.put(JUMP,0.5f);
@@ -185,7 +220,8 @@ public class Boss extends Enemy{
             teleport();
         }
         super.update(delta);
-        if (Math.abs(level.getHero().getPosX()-posX)>500) return;
+        if (Math.abs(level.getHero().getPosX()-posX-width/2)>500) return;
+        if (frozenTimer>0) return;
 
         if (stateTime>stateLengths.get(currentState)){
             previousState=currentState;
@@ -203,20 +239,20 @@ public class Boss extends Enemy{
     }
 
     private void spawnGoal(){
-        Goal goal = new Goal(posX,posY);
+        Goal goal = new Goal(posX+width/2,posY+getCollisionBox().getBottomOffsetY());
         level.checkpoints.add(goal);
         level.allEntities.add(goal);
     }
 
     @Override
     protected void updateVelocity(double delta) {
-        super.updateVelocity(delta);
+        if (frozenTimer<=0) super.updateVelocity(delta);
     }
 
     @Override
     protected void updateTimers(float delta) {
         super.updateTimers(delta);
-        stateTime+=delta;
+        if (frozenTimer<=0) stateTime+=delta;
     }
 
     @Override
@@ -227,7 +263,7 @@ public class Boss extends Enemy{
     @Override
     public void draw(Batch batch){
         if (invulnerable) super.draw(batch, new Color(0.2f,0.05f,0.05f,0.5f));
-        else super.draw(batch, Color.RED);
+        else super.draw(batch);
     }
 
     public BossState getPreviousState() {

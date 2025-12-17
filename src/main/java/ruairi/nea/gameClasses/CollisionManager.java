@@ -67,6 +67,7 @@ public class CollisionManager {
         }
         else if ((entityOldTop <= platformOldY) &&
                 (entityTop > platformY)) {
+            if (platform instanceof Wall && ((Wall) platform).type!= Wall.WallType.bottomWall) return;
             //Came from Below
             entity.setPosY(platformY - entityCollisionBox.getBottomOffsetY() - entityCollisionBox.getHeight());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
@@ -128,7 +129,7 @@ public class CollisionManager {
             if (enemy.getHitbox().intersects(projectile.getHurtbox())) {
 
                 enemy.damageEnemy(projectile.damage);
-                if (projectile.type== Projectile.projectileType.ICE_STAFF) enemy.freeze(2f);
+                if (projectile.type== Projectile.projectileType.ICE_STAFF) enemy.freeze(1.5f);
 
                 if (enemy instanceof Boss) {
                     BossAI.punishMoveTransition(((Boss) enemy).getPreviousState(),((Boss) enemy).getCurrentState(), 0.02f);

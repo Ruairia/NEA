@@ -89,7 +89,7 @@ public class Hero extends Entity {
     int weaponsIndex;
 
     float swapCooldown=0;
-    public static final float MAX_SWAP_COOLDOWN = 0.5f;
+    public static final float MAX_SWAP_COOLDOWN = 0.25f;
 
     float spawnPointX = 100;
     float spawnPointY = 100;

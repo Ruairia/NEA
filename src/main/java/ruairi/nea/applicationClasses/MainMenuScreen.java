@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -18,14 +20,24 @@ public class MainMenuScreen implements Screen{
         this.game = game;
     }
 
+    private Controller gamepad;
+
     BitmapFont font = new BitmapFont();
+
+    Button selectedButton;
 
     Button levelSelectButton;
     Button howToPlayButton;
     Button exitButton;
 
+    float lastMovedButton = 0;
+
     @Override
     public void show() {
+
+        if (Controllers.getControllers().size > 0) {
+            gamepad = Controllers.getControllers().first();
+        }
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
                 Gdx.files.internal("assets/font.ttf")
@@ -47,6 +59,17 @@ public class MainMenuScreen implements Screen{
         howToPlayButton = new Button(centreX-buttonWidth/2,centreY-buttonHeight,buttonWidth,buttonHeight, MainMenu);
         exitButton = new Button(centreX-buttonWidth/2,centreY-buttonHeight*2.5f,buttonWidth,buttonHeight, MainMenu);
 
+
+        levelSelectButton.isSelected=true;
+        selectedButton = levelSelectButton;
+
+        levelSelectButton.downButton=howToPlayButton;
+        howToPlayButton.downButton=exitButton;
+        exitButton.downButton=levelSelectButton;
+        levelSelectButton.upButton=exitButton;
+        howToPlayButton.upButton=levelSelectButton;
+        exitButton.upButton=howToPlayButton;
+
         levelSelectButton.text = "Level Select";
         howToPlayButton.text = "How to Play";
         exitButton.text = "Exit";
@@ -54,6 +77,8 @@ public class MainMenuScreen implements Screen{
 
     @Override
     public void render(float delta) {
+        lastMovedButton+=delta;
+
         ScreenUtils.clear(0.3f,0.1f,0.1f,1);
 
         float mouseX = Gdx.input.getX();
@@ -84,9 +109,36 @@ public class MainMenuScreen implements Screen{
                 Gdx.app.exit();
             }
         }
+
+        if (gamepad != null && gamepad.getButton(0)){
+            if (levelSelectButton.isSelected){
+                game.setScreen(new LevelSelectScreen(game));
+            }
+            if (howToPlayButton.isSelected){
+                game.setScreen(new HowToPlayScreen(game));
+            }
+            if (exitButton.isSelected){
+                Gdx.app.exit();
+            }
+        }
+
         else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
             Gdx.app.exit();
         }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)|| gamepad != null && gamepad.getAxis(1)<-0.3f && lastMovedButton>0.1f){
+            selectedButton.isSelected=false;
+            selectedButton.upButton.isSelected=true;
+            selectedButton = selectedButton.upButton;
+            lastMovedButton=0;
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN) || gamepad != null && gamepad.getAxis(1)>0.3f && lastMovedButton>0.1f){
+            selectedButton.isSelected=false;
+            selectedButton.downButton.isSelected=true;
+            selectedButton = selectedButton.downButton;
+            lastMovedButton=0;
+        }
+
     }
 
 

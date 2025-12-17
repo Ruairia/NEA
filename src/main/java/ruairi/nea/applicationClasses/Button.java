@@ -18,6 +18,12 @@ public class Button {
     private GlyphLayout layout = new GlyphLayout();
 
     public boolean isHovered = false;
+    public boolean isSelected = false;
+
+    public Button leftButton = null;
+    public Button rightButton = null;
+    public Button upButton = null;
+    public Button downButton = null;
 
     public enum ButtonType {
         MainMenu,
@@ -59,9 +65,9 @@ public class Button {
 
     public TextureRegion getTexture(){
         if (type == ButtonType.MainMenu)
-        return isHovered ? mainMenuHoverTexture : mainMenuRegularTexture;
+        return isHovered||isSelected ? mainMenuHoverTexture : mainMenuRegularTexture;
         if (type == ButtonType.LevelSelect)
-            return isHovered ? levelSelectHoverTexture : levelSelectRegularTexture;
+            return isHovered||isSelected ? levelSelectHoverTexture : levelSelectRegularTexture;
         return null;
     }
 

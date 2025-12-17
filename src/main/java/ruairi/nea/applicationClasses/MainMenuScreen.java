@@ -66,8 +66,8 @@ public class MainMenuScreen implements Screen {
         float buttonHeight = 80;
 
         levelSelectButton = new Button(centreX - buttonWidth / 2, centreY + buttonHeight/2, buttonWidth, buttonHeight, MainMenu);
-        howToPlayButton   = new Button(centreX - buttonWidth / 2, centreY-buttonHeight/2, buttonWidth, buttonHeight, MainMenu);
-        exitButton        = new Button(centreX - buttonWidth / 2, centreY - buttonHeight*1.5f, buttonWidth, buttonHeight, MainMenu);
+        howToPlayButton   = new Button(centreX - buttonWidth / 2, centreY-buttonHeight, buttonWidth, buttonHeight, MainMenu);
+        exitButton        = new Button(centreX - buttonWidth / 2, centreY - buttonHeight*2.5f, buttonWidth, buttonHeight, MainMenu);
 
         levelSelectButton.text = "Level Select";
         howToPlayButton.text   = "How to Play";

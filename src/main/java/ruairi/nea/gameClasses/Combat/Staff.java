@@ -11,7 +11,6 @@ import ruairi.nea.gameClasses.Hitbox;
 
 import java.util.HashMap;
 
-import static ruairi.nea.gameClasses.Utils.*;
 
 
 public abstract class Staff {
@@ -90,20 +89,23 @@ public abstract class Staff {
     private void loadAnimations(){
         spriteSheet = new Texture(SPRITESHEET_PATH);
 
-        TextureRegion[] idleFrames = parseFrames(0,0, FRAME_WIDTH, FRAME_HEIGHT, spriteSheet, 1);
-        TextureRegion[] walkFrames = parseFrames(0,1*FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, spriteSheet, 2);
-        TextureRegion[] attackFrames = parseFrames(0,2*FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, spriteSheet, 1);
-        TextureRegion[] inAirFrames = parseFrames(0, 3*FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT, spriteSheet, 1);
+        TextureRegion[][] frames = TextureRegion.split(spriteSheet, FRAME_WIDTH, FRAME_HEIGHT);
 
-        Animation<TextureRegion> idleAnimation = createAnimation(idleFrames, 0.2f, Animation.PlayMode.LOOP);
+        TextureRegion[] idleFrames = frames[0];
+        TextureRegion[] walkFrames = frames[1];
+        TextureRegion[] attackFrames = frames[2];
+        TextureRegion[] inAirFrames = frames[3];
+
+        Animation<TextureRegion> idleAnimation = new Animation<>(0.2f, idleFrames[0]);
 
         for (Hero.HeroState heroState : Hero.HeroState.values()){
             animations.put(heroState,idleAnimation);
         }
 
-        animations.put(Hero.HeroState.WALKING,createAnimation(walkFrames,0.3f, Animation.PlayMode.LOOP));
-        animations.put(Hero.HeroState.IN_AIR,createAnimation(inAirFrames, 0.2f, Animation.PlayMode.NORMAL));
-        animations.put(Hero.HeroState.ATTACKING,createAnimation(attackFrames,0.3f, Animation.PlayMode.NORMAL));
+        animations.put(Hero.HeroState.WALKING, new Animation<>(0.3f,walkFrames));
+        animations.get(Hero.HeroState.WALKING).setPlayMode(Animation.PlayMode.LOOP);
+        animations.put(Hero.HeroState.IN_AIR, new Animation<>(0.1f,inAirFrames[0]));
+        animations.put(Hero.HeroState.ATTACKING, new Animation<>(0.3f, attackFrames[0]));
     }
 
 

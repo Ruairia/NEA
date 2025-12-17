@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
-import static ruairi.nea.gameClasses.Utils.*;
 
 public class Hero extends Entity {
     private final InputHandler inputHandler = new InputHandler();
@@ -202,26 +201,24 @@ public class Hero extends Entity {
         int frameWidth = 16;
         int frameHeight = 16;
 
-        TextureRegion[] idleFrames = parseFrames(0,0, frameWidth, frameHeight, spriteSheet, 1);
+        TextureRegion[][] frames = TextureRegion.split(spriteSheet, frameWidth, frameHeight);
 
+        TextureRegion[] idleFrames = frames[0];
+        TextureRegion[] walkFrames = frames[1];
+        TextureRegion[] attackFrames = frames[2];
+        TextureRegion[] inAirFrames = frames[3];
 
-        TextureRegion[] walkFrames = parseFrames(0,1*frameHeight, frameWidth, frameHeight, spriteSheet, 2);
-
-
-        TextureRegion[] attackFrames = parseFrames(0,2*frameHeight, frameWidth, frameHeight, spriteSheet, 1);
-
-
-        TextureRegion[] inAirFrames = parseFrames(0, 3*frameHeight, frameWidth, frameHeight, spriteSheet, 1);
-
-        Animation<TextureRegion> idleAnimation = createAnimation(idleFrames, 0.1f, Animation.PlayMode.LOOP);
+        Animation<TextureRegion> idleAnimation = new Animation<>(0.1f, idleFrames[0]);
+        idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         for (HeroState heroState : HeroState.values()){
             animations.put(heroState,idleAnimation);
         }
 
-        animations.put(HeroState.WALKING,createAnimation(walkFrames, 0.2f, Animation.PlayMode.LOOP));
-        animations.put(HeroState.IN_AIR,createAnimation(inAirFrames, 0.1f, Animation.PlayMode.LOOP));
-        animations.put(HeroState.ATTACKING,createAnimation(attackFrames, 0.25f, Animation.PlayMode.NORMAL));
+        animations.put(HeroState.WALKING, new Animation<>(0.2f,walkFrames));
+        animations.get(HeroState.WALKING).setPlayMode(Animation.PlayMode.LOOP);
+        animations.put(HeroState.IN_AIR, new Animation<>(0.1f,inAirFrames[0]));
+        animations.put(HeroState.ATTACKING, new Animation<>(0.25f, attackFrames[0]));
     }
 
 

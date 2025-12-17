@@ -29,6 +29,9 @@ public class FireStaff extends Staff {
     @Override
     public void attack() {
         if (cooldown>0) return;
+
+        currentAnimation=animations.get(Hero.HeroState.ATTACKING);
+
         float posX = hero.getPosX() + hero.getWidth() * (hero.getCurrentDirection()== Entity.Direction.RIGHT? 1 : 0);
         float velocityX = 200 * ZOOM * (hero.getCurrentDirection()== Entity.Direction.RIGHT? 1 : -1);
         projectiles.add(new Projectile(
@@ -42,6 +45,9 @@ public class FireStaff extends Staff {
     @Override
     public void attackDownwards() {
         if (cooldown>0) return;
+
+        currentAnimation=animations.get(Hero.HeroState.ATTACKING_DOWNWARDS);
+
         float posX = hero.getPosX() + hero.getWidth() * (hero.getCurrentDirection()== Entity.Direction.RIGHT? 1 : 0);
         float velocityX = 100 * ZOOM * hero.getPlayerDirection();
         float velocityY = -100 * ZOOM;

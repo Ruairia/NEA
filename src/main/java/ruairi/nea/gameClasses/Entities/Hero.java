@@ -219,6 +219,7 @@ public class Hero extends Entity {
         animations.get(HeroState.WALKING).setPlayMode(Animation.PlayMode.LOOP);
         animations.put(HeroState.IN_AIR, new Animation<>(0.1f,inAirFrames[0]));
         animations.put(HeroState.ATTACKING, new Animation<>(0.25f, attackFrames[0]));
+        animations.get(HeroState.ATTACKING).setPlayMode(Animation.PlayMode.LOOP);
     }
 
 
@@ -226,11 +227,16 @@ public class Hero extends Entity {
 
     @Override
     public TextureRegion getCurrentFrame(){
-        if (stateTime>=currentAnimation.getAnimationDuration() || currentAnimation!=animations.get(HeroState.ATTACKING)) {
-        currentAnimation = switch (currentState) {
-            case IDLE,WALKING,IN_AIR,DASH -> animations.get(currentState);
-            case ATTACKING,ATTACKING_DOWNWARDS -> {if (isOnGround) yield animations.get(currentState); else yield animations.get(HeroState.IN_AIR);}
-        };
+        Animation<TextureRegion> previousAnimation = currentAnimation;
+        if (stateTime >= currentAnimation.getAnimationDuration() || currentAnimation != animations.get(HeroState.ATTACKING)) {
+            currentAnimation = switch (currentState) {
+                case IDLE,WALKING,IN_AIR,DASH -> animations.get(currentState);
+                case ATTACKING,ATTACKING_DOWNWARDS -> {
+                    if (isOnGround) yield animations.get(currentState);
+                    else yield animations.get(HeroState.IN_AIR);
+                }
+            };
+            if (currentAnimation!=previousAnimation) stateTime = 0;
         }
         return  currentAnimation.getKeyFrame(stateTime);
     }
@@ -349,7 +355,6 @@ public class Hero extends Entity {
             }
 
 
-            if (currentState != previousState) stateTime = 0;
         }
     }
 

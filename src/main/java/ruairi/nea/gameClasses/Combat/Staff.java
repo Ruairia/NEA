@@ -26,12 +26,13 @@ public abstract class Staff {
     int ammoReserves;
     public boolean requiresMana;
     public int manaCost = 0;
+    float stateTime = 0;
 
     Color colour = Color.WHITE;
     final Hero hero;
 
     private Texture spriteSheet;
-    private HashMap<Hero.HeroState, Animation<TextureRegion>> animations = new HashMap<>();
+    protected HashMap<Hero.HeroState, Animation<TextureRegion>> animations = new HashMap<>();
     Animation<TextureRegion> currentAnimation;
 
     public abstract void attack();
@@ -48,11 +49,26 @@ public abstract class Staff {
 
     public void update(float delta){
         updateTimers(delta);
+
+        Animation<TextureRegion> previousAnimation = currentAnimation;
+
+        if (animations.get(hero.getCurrentState())==currentAnimation) return;
+        if (stateTime<animations.get(Hero.HeroState.ATTACKING).getAnimationDuration() && (hero.getCurrentState()== Hero.HeroState.ATTACKING)) return;
+
+        if (stateTime>=currentAnimation.getAnimationDuration() || currentAnimation!=animations.get(Hero.HeroState.ATTACKING)){
+            currentAnimation = animations.get(hero.getCurrentState());
+        }
+
+
+        if (currentAnimation!=previousAnimation) stateTime=0;
+
+
     }
 
     public void updateTimers(float delta){
         if (cooldown>0) cooldown-=delta;
         else cooldown=0;
+        stateTime+=delta;
     }
 
     public void draw(Batch batch){
@@ -62,7 +78,7 @@ public abstract class Staff {
 
         float width = hero.getWidth();
         float height = hero.getHeight();
-        float stateTime = hero.getStateTime();
+
 
         batch.setColor(colour);
 
@@ -73,7 +89,7 @@ public abstract class Staff {
             width = -1 * width;
         }
 
-        batch.draw(getCurrentFrame(stateTime,hero.getCurrentState()),posX,posY,width,height);
+        batch.draw(getCurrentFrame(),posX,posY,width,height);
         batch.setColor(Color.WHITE);
     }
 
@@ -105,15 +121,13 @@ public abstract class Staff {
         animations.put(Hero.HeroState.WALKING, new Animation<>(0.3f,walkFrames));
         animations.get(Hero.HeroState.WALKING).setPlayMode(Animation.PlayMode.LOOP);
         animations.put(Hero.HeroState.IN_AIR, new Animation<>(0.1f,inAirFrames[0]));
-        animations.put(Hero.HeroState.ATTACKING, new Animation<>(0.3f, attackFrames[0]));
+        animations.put(Hero.HeroState.ATTACKING, new Animation<>(1f, attackFrames[0]));
+        animations.get(Hero.HeroState.ATTACKING).setPlayMode(Animation.PlayMode.LOOP);
     }
 
 
 
-    public TextureRegion getCurrentFrame(float stateTime, Hero.HeroState currentState){
-        if (stateTime>=currentAnimation.getAnimationDuration() || currentAnimation!=animations.get(Hero.HeroState.ATTACKING)){
-            return animations.get(hero.getCurrentState()).getKeyFrame(stateTime);
-        }
+    public TextureRegion getCurrentFrame(){
         return  currentAnimation.getKeyFrame(stateTime);
     }
 

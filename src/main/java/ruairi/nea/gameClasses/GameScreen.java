@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import org.lwjgl.opengl.GL20;
 import ruairi.nea.applicationClasses.LevelSelectScreen;
 import ruairi.nea.applicationClasses.Main;
-import ruairi.nea.gameClasses.Entities.Enemies.Boss;
 import ruairi.nea.gameClasses.Entities.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
 import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
@@ -18,8 +17,6 @@ import ruairi.nea.gameClasses.UI.ManaBar;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import static ruairi.nea.gameClasses.Entities.Enemies.BossAI.BossState.TELEPORT;
 
 public class GameScreen implements Screen {
     private static Main game;
@@ -233,7 +230,7 @@ public class GameScreen implements Screen {
 
             switch (projectile.origin){
                 case PLAYER -> CollisionManager.checkProjectileEnemyCollisions(level,projectile);
-                case BOSS,FIREMAGE -> CollisionManager.checkProjectileHeroCollisions(hero,projectile);
+                case BOSS, FIRE_MAGE -> CollisionManager.checkProjectileHeroCollisions(hero,projectile);
             }
         }
 

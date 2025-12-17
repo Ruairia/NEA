@@ -32,8 +32,9 @@ public class Projectile extends Entity {
 
 
     public enum projectileType {
-        FIREMAGE,
+        FIRE_MAGE,
         FIRE_STAFF,
+        ICE_STAFF,
         BOSS,
         BOSS_EXPLOSIVE
     }
@@ -41,7 +42,7 @@ public class Projectile extends Entity {
 
     public enum Origin {
         PLAYER,
-        FIREMAGE,
+        FIRE_MAGE,
         BOSS
     }
     public Origin origin;
@@ -72,7 +73,7 @@ public class Projectile extends Entity {
         int intersectTolerance;
 
         switch (type){
-            case FIREMAGE -> intersectTolerance = 10;
+            case FIRE_MAGE -> intersectTolerance = 10;
             case FIRE_STAFF -> intersectTolerance = 1;
             case BOSS -> intersectTolerance = 5;
             default -> intersectTolerance = 0;
@@ -120,10 +121,11 @@ public class Projectile extends Entity {
         }
 
         switch (type){
-            case FIREMAGE -> batch.setColor(1,0.05f,0.05f,1);
+            case FIRE_MAGE -> batch.setColor(1,0.05f,0.05f,1);
             case BOSS -> batch.setColor(0.2f,1f,0.6f,1);
             case BOSS_EXPLOSIVE -> batch.setColor(1,0.8f,0.2f,1);
             case FIRE_STAFF -> batch.setColor(1,0.5f,0.1f,1);
+            case ICE_STAFF -> batch.setColor(0.2f,0.8f,1f,1);
         }
         if (getTimeUntilRemoval()!=null) batch.setColor(0.1f,0.1f,0.1f,0.5f);
 

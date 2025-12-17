@@ -14,6 +14,10 @@
         int health;
 
         protected Float appearDamagedTimer = null;
+        protected float frozenTimer = 0;
+
+        private float velocityXBeforeFrozen;
+        private float velocityYBeforeFrozen;
 
         public Enemy(float posX, float posY, float width, float height, float intersectTolerance) {
             super(posX, posY, width, height);
@@ -49,7 +53,18 @@
             return health;
         }
 
+        public void freeze(float time){
+            frozenTimer=time;
+            velocityXBeforeFrozen=getVelocityX();
+            velocityYBeforeFrozen=getVelocityY();
+            setVelocityX(0);
+            setVelocityY(0);
+        }
 
+        public void unfreeze(){
+            setVelocityX(velocityXBeforeFrozen);
+            setVelocityY(velocityYBeforeFrozen);
+        }
 
 
 
@@ -60,20 +75,35 @@
                 appearDamagedTimer-=delta;
                 if (appearDamagedTimer<0) appearDamagedTimer=null;
             }
+            if (frozenTimer>0) {
+                frozenTimer-=delta;
+                if (frozenTimer<=0) {
+                    frozenTimer=0;
+                    unfreeze();
+                }
+            }
+        }
+
+        @Override
+        protected void updateVelocity(double delta) {
+            if (frozenTimer<=0) super.updateVelocity(delta);
         }
 
         @Override
         public void draw(Batch batch) {
             if (appearDamagedTimer!=null) batch.setColor(1,0.8f,0.7f,0.95f);
+            if (frozenTimer>0) batch.setColor(0.5f,0.8f,1f,0.95f);
             if (getTimeUntilRemoval()!=null) batch.setColor(0.1f,0.1f,0.1f,0.5f);
             super.draw(batch);
             batch.setColor(Color.WHITE);
         }
 
         @Override
-        public void draw(Batch batch, Color color) {
+        public void draw(Batch batch, Color colour) {
+            if (appearDamagedTimer!=null) colour = new Color(1,0.8f,0.7f,0.95f);
+            if (frozenTimer>0) colour = new Color(0.5f,0.8f,1f,0.95f);
             if (getTimeUntilRemoval()!=null) super.draw(batch, new Color(0.1f,0.1f,0.1f,0.5f));
-            else super.draw(batch, color);
+            else super.draw(batch, colour);
         }
 
         public boolean hasContactDamage() {

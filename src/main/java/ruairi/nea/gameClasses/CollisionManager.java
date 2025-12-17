@@ -128,6 +128,7 @@ public class CollisionManager {
             if (enemy.getHitbox().intersects(projectile.getHurtbox())) {
 
                 enemy.damageEnemy(projectile.damage);
+                if (projectile.type== Projectile.projectileType.ICE_STAFF) enemy.freeze(2f);
 
                 if (enemy instanceof Boss) {
                     BossAI.punishMoveTransition(((Boss) enemy).getPreviousState(),((Boss) enemy).getCurrentState(), 0.02f);

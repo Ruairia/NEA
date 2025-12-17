@@ -16,7 +16,7 @@ import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 public class FireMage extends PacingEnemy{
 
     private final Hero hero;
-    private static final String SPRITESHEET_PATH = "assets/FireballSpriteSheet.png";
+    private static final String SPRITESHEET_PATH = "assets/FireMageSpriteSheet.png";
     public static final Color COLOUR = new Color(1,0.5f,0.5f,1);
 
     private static final float SPEED = 50*ZOOM;
@@ -47,21 +47,20 @@ public class FireMage extends PacingEnemy{
 
 
     public FireMage(float posX, float posY, Hero hero, ArrayList<Projectile> projectiles, float leftBound, float rightBound) {
-        super(posX, posY, 16*ZOOM, 20*ZOOM, leftBound, rightBound, SPEED,INTERSECT_TOLERANCE,PaceDirection.HORIZONTAL);
+        super(posX, posY, 32*ZOOM, 48*ZOOM, leftBound, rightBound, SPEED,INTERSECT_TOLERANCE,PaceDirection.HORIZONTAL);
 
         this.hero = hero;
         contactDamage = DAMAGE;
 
-        int frameWidth = 16;
-        int frameHeight = 20;
+        int frameWidth = 32;
+        int frameHeight = 48;
 
         loadTextures();
 
-        TextureRegion[] frames = new TextureRegion[2];
-        frames[0] = new TextureRegion(spriteSheet, 0, 0, frameWidth, frameHeight);
-        frames[1] = new TextureRegion(spriteSheet, frameWidth, 0, frameWidth, frameHeight);
+        TextureRegion[][] frames = TextureRegion.split(spriteSheet, frameWidth, frameHeight);
 
-        animation = new Animation<>(0.3f, frames);
+        animation = new Animation<>(0.1f, frames[0]);
+
         animation.setPlayMode(Animation.PlayMode.LOOP);
 
 
@@ -104,7 +103,7 @@ public class FireMage extends PacingEnemy{
                 projectilePosX,posY+0.5f*height
                 ,directionX*PROJECTILE_SPEED,directionY*PROJECTILE_SPEED,
                 DAMAGE,null,Projectile
-                .projectileType.FIREMAGE, Projectile.Origin.FIREMAGE);
+                .projectileType.FIRE_MAGE, Projectile.Origin.FIRE_MAGE);
         projectiles.add(projectile);
 
         shootCooldown=SHOOT_COOLDOWN;
@@ -115,10 +114,6 @@ public class FireMage extends PacingEnemy{
         return animation.getKeyFrame(stateTime);
     }
 
-    @Override
-    public void draw(Batch batch){
-        super.draw(batch, COLOUR);
-    }
 
     public void dispose(){
         if (spriteSheet!=null) spriteSheet.dispose();

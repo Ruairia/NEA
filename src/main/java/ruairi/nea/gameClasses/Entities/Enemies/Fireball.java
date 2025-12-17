@@ -21,19 +21,17 @@ public class Fireball extends PacingEnemy{
     final float targetPosY;
 
     public Fireball(float posX, float posY, float leftBound, float rightBound) {
-        super(posX, posY, 16* ZOOM, 20* ZOOM, leftBound, rightBound, SPEED,INTERSECT_TOLERANCE,PaceDirection.HORIZONTAL);
+        super(posX, posY, 32* ZOOM, 32* ZOOM, leftBound, rightBound, SPEED,INTERSECT_TOLERANCE,PaceDirection.HORIZONTAL);
         targetPosY = posY;
 
         spriteSheet = new Texture(SPRITESHEET_PATH);
 
-        int frameWidth = 16;
-        int frameHeight = 20;
+        int frameWidth = 32;
+        int frameHeight = 32;
 
-        TextureRegion[] frames = new TextureRegion[2];
-        frames[0] = new TextureRegion(spriteSheet, 0, 0, frameWidth, frameHeight);
-        frames[1] = new TextureRegion(spriteSheet, frameWidth, 0, frameWidth, frameHeight);
+        TextureRegion[][] frames = TextureRegion.split(spriteSheet, frameWidth, frameHeight);
 
-        animation = new Animation<>(0.3f, frames);
+        animation = new Animation<>(0.3f, frames[0]);
         animation.setPlayMode(Animation.PlayMode.LOOP);
 
         contactDamage = DAMAGE;

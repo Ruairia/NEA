@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.applicationClasses.Main;
 import ruairi.nea.gameClasses.Combat.FireStaff;
+import ruairi.nea.gameClasses.Combat.IceStaff;
 import ruairi.nea.gameClasses.Combat.MeleeStaff;
 import ruairi.nea.gameClasses.Hitbox;
 import ruairi.nea.gameClasses.InputHandler;
@@ -83,9 +84,9 @@ public class Hero extends Entity {
     private float stateTime = 0;
     Animation<TextureRegion> currentAnimation;
 
+    ArrayList<Staff> weapons = new ArrayList<>();
     Staff currentStaff;
-    FireStaff fireStaff;
-    MeleeStaff meleeStaff;
+    int weaponsIndex;
 
     float swapCooldown=0;
     public static final float MAX_SWAP_COOLDOWN = 0.5f;
@@ -102,12 +103,13 @@ public class Hero extends Entity {
         loadAnimations();
         currentAnimation = animations.get(HeroState.IDLE);
 
-        fireStaff = new FireStaff(this,level);
-        meleeStaff = new MeleeStaff(this,level);
+        weapons.add(new FireStaff(this,level));
+        weapons.add(new MeleeStaff(this,level));
+        weapons.add(new IceStaff(this,level));
 
-        currentStaff=meleeStaff;
+        weaponsIndex=0;
+        currentStaff=weapons.get(weaponsIndex);
 
-//        Hitbox hitbox = new Hitbox(posX,posY,width,height,this);
         hitbox.setLeftOffsetX(2*ZOOM);
         hitbox.setRightOffsetX(4*ZOOM);
         hitbox.setTopOffsetY(2*ZOOM);
@@ -322,8 +324,8 @@ public class Hero extends Entity {
             }
         }
         if (input.contains("SWAP")&&swapCooldown<=0){
-            if (currentStaff instanceof MeleeStaff) currentStaff=fireStaff;
-            else currentStaff=meleeStaff;
+            weaponsIndex=(weaponsIndex+1)%weapons.size();
+            currentStaff=weapons.get(weaponsIndex);
             swapCooldown=MAX_SWAP_COOLDOWN;
         }
 

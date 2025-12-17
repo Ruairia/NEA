@@ -19,6 +19,10 @@
         private float velocityXBeforeFrozen;
         private float velocityYBeforeFrozen;
 
+        protected float knockbackTimer = 0;
+        protected float knockbackVelocityX = 0;
+        protected float knockbackVelocityY = 0;
+
         public Enemy(float posX, float posY, float width, float height, float intersectTolerance) {
             super(posX, posY, width, height);
 
@@ -49,8 +53,15 @@
             health-=amount;
             appearDamaged(0.3f);
         }
-        public int getHealth() {
-            return health;
+
+        public void applyKnockback(float knockbackX, float knockbackY, float duration) {
+            this.knockbackVelocityX = knockbackX;
+            this.knockbackVelocityY = knockbackY;
+            this.knockbackTimer = duration;
+        }
+
+        public boolean isInKnockback() {
+            return knockbackTimer > 0;
         }
 
         public void freeze(float time){
@@ -82,12 +93,34 @@
                     unfreeze();
                 }
             }
+            if (knockbackTimer > 0) {
+                knockbackTimer -= delta;
+                if (knockbackTimer <= 0) {
+                    knockbackTimer = 0;
+                    // Knockback ended - subclasses can resume normal behaviour
+                }
+            }
         }
 
         @Override
         protected void updateVelocity(double delta) {
             if (frozenTimer<=0) super.updateVelocity(delta);
         }
+
+        @Override
+        public void updatePosition(double delta) {
+            // During knockback, use knockback velocity instead of normal velocity
+            if (isInKnockback()) {
+                posX = (float) (oldX + knockbackVelocityX * delta);
+                posY = (float) (oldY + knockbackVelocityY * delta);
+
+                // Apply decay to knockback velocity
+                knockbackVelocityX *= 0.92f;
+                knockbackVelocityY *= 0.92f;
+            } else {
+                // Normal position update
+                super.updatePosition(delta);
+            } }
 
         @Override
         public void draw(Batch batch) {
@@ -104,6 +137,10 @@
             if (frozenTimer>0) colour = new Color(0.5f,0.8f,1f,0.95f);
             if (getTimeUntilRemoval()!=null) super.draw(batch, new Color(0.1f,0.1f,0.1f,0.5f));
             else super.draw(batch, colour);
+        }
+
+        public int getHealth() {
+            return health;
         }
 
         public boolean hasContactDamage() {

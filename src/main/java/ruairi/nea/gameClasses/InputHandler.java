@@ -46,7 +46,7 @@ public class InputHandler {
         if (checkMoveLeft()) inputs.add("LEFT");
         if (checkMoveRight()) inputs.add("RIGHT");
         if (checkDownPressed()) inputs.add("DOWN");
-        if (isAttackPressed()) inputs.add("ATTACK");
+        if (isAttackJustPressed()) inputs.add("ATTACK");
         if (isDashJustPressed()) inputs.add("DASH");
         if (isDashPressed()) inputs.add("HOLD_DASH");
         if (isHealPressed()) inputs.add("HEAL");
@@ -129,14 +129,15 @@ public class InputHandler {
         return false;
     }
 
-    private boolean isAttackPressed() {
+    private boolean isAttackJustPressed() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)) return true;
 
         if (gamepad != null && gamepad.getButton(2)){
             if (!attackWasPressed){
+                attackWasPressed=true;
                 return true;}
         }
-
+        else attackWasPressed=false;
         return false;
     }
 

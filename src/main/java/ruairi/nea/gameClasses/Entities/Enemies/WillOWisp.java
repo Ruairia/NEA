@@ -19,6 +19,8 @@ public class WillOWisp extends PacingEnemy {
     public static final float INTERSECT_TOLERANCE = 10;
     public static final int DAMAGE = 20;
 
+    private static final float RETURN_TO_TARGET_SPEED = 25*ZOOM;
+
     public float stateTime = 0;
 
     final float targetPosX;
@@ -47,6 +49,17 @@ public class WillOWisp extends PacingEnemy {
     @Override
     public void updateVelocity(double delta) {
         super.updateVelocity(delta);
+        if (!isInKnockback() && Math.abs(posX - targetPosX) > 2) {
+            if (posX < targetPosX) {
+                velocityX = RETURN_TO_TARGET_SPEED;
+            } else {
+                velocityX = -RETURN_TO_TARGET_SPEED;
+            }
+        } else if (!isInKnockback()) {
+            // Close enough to target, lock to target and stop horizontal movement
+            posX = targetPosX;
+            velocityX = 0;
+        }
     }
 
     @Override

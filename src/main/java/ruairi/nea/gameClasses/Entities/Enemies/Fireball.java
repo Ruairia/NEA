@@ -13,6 +13,8 @@ public class Fireball extends PacingEnemy{
     final static int DAMAGE = 30;
     final static float INTERSECT_TOLERANCE = 10;
 
+    private static final float RETURN_TO_TARGET_SPEED = 25*ZOOM;
+
     Texture spriteSheet;
     Animation<TextureRegion> animation;
     float stateTime = 0;
@@ -52,6 +54,17 @@ public class Fireball extends PacingEnemy{
     @Override
     public void updateVelocity(double delta) {
         super.updateVelocity(delta);
+        if (!isInKnockback() && Math.abs(posY - targetPosY) > 2) {
+            if (posY < targetPosY) {
+                velocityY = RETURN_TO_TARGET_SPEED;
+            } else {
+                velocityY = -RETURN_TO_TARGET_SPEED;
+            }
+        } else if (!isInKnockback()) {
+            // Close enough to target, lock to target and stop vertical movement
+            posY = targetPosY;
+            velocityY = 0;
+        }
     }
 
     @Override

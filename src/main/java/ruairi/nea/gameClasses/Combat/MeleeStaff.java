@@ -73,6 +73,10 @@ public class MeleeStaff extends Staff{
 
     private static final float POGO_STRENGTH = 100 * ZOOM;
 
+    private static final float KNOCKBACK_STRENGTH = 150 * ZOOM;
+    private static final float KNOCKBACK_DURATION = 0.15f;
+    private static final float KNOCKBACK_UPWARD_COMPONENT = 80 * ZOOM;
+
     private HashSet<Enemy> enemiesHit = new HashSet<>();
 
     private final Level level;
@@ -230,16 +234,30 @@ public class MeleeStaff extends Staff{
     private void hitEnemy(Enemy enemy, int damage) {
         enemy.damageEnemy(damage);
 
-        if (currentState== Hero.HeroState.ATTACKING_DOWNWARDS){
+        // Calculate knockback direction based on hero's facing direction
+        float knockbackX = (hero.getCurrentDirection() == Entity.Direction.RIGHT) ?
+                KNOCKBACK_STRENGTH : -KNOCKBACK_STRENGTH;
+
+        float knockbackY = KNOCKBACK_UPWARD_COMPONENT;
+
+        // For downward attacks, apply stronger downward knockback instead
+        if (currentState == Hero.HeroState.ATTACKING_DOWNWARDS) {
             hero.setVelocityY(POGO_STRENGTH);
             hero.setJumpsRemaining(1);
+
+            // Downward attack has less horizontal knockback, more downward
+            knockbackX *= 0.5f;
+            knockbackY = -120 * ZOOM;
         }
 
+        // Apply knockback to the enemy
+        enemy.applyKnockback(knockbackX, knockbackY, KNOCKBACK_DURATION);
 
         if (enemy.getHealth() <= 0 && enemy.getTimeUntilRemoval() == null) {
             enemy.kill(0.2f);
         }
     }
+
 
 
 

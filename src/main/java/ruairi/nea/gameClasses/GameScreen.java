@@ -87,7 +87,7 @@ public class GameScreen implements Screen {
         healthBar = new HealthBar(V_WIDTH,V_HEIGHT);
         manaBar = new ManaBar(V_WIDTH,V_HEIGHT);
 
-        level = new Level();
+        level = new Level(levelNumber);
         level.loadLevel(this.levelNumber);
         hero = level.getHero().spawn();
 
@@ -170,7 +170,7 @@ public class GameScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
 
-        level.background.drawBackground(camera,game);
+        level.background.drawBackgroundBehindCamera(camera,game);
 
         for (Entity entity : level.allEntities) {
             if (! (entity instanceof Hero)) entity.draw(game.batch);

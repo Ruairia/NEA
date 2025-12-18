@@ -30,7 +30,6 @@ public class Wall extends Platform {
 
         this.type = type;
 
-        loadTextures();
 
         switch (type){
             case singleWall -> setFrame(singleWallTile);
@@ -40,17 +39,36 @@ public class Wall extends Platform {
         }
     }
 
-    public static void loadTextures(){
+    public static void clearTextures(){
+        singleWallTile=null;
+        topWallTile=null;
+        middleWallTile=null;
+        bottomWallTile=null;
+    }
+
+    public static void loadTextures(String levelType){
         if (tileSet==null)
             tileSet = new Texture("assets/tileset.png");
-        if (singleWallTile ==null)
-            singleWallTile = new TextureRegion(tileSet, tileWidth*10, 0, tileWidth, tileHeight);
+
+        if (levelType=="CAVE"){
+            if (topWallTile == null)
+                topWallTile = new TextureRegion(tileSet, tileWidth*10,tileHeight*2,tileWidth,tileHeight);
+            if (singleWallTile == null)
+                singleWallTile = new TextureRegion(tileSet, tileWidth*12, 0, tileWidth, tileHeight);
+        }
+        else{
+            if (topWallTile ==null)
+                topWallTile = new TextureRegion(tileSet, tileWidth*6, tileHeight*2, tileWidth, tileHeight);
+            if (singleWallTile ==null)
+                singleWallTile = new TextureRegion(tileSet, tileWidth*10, 0, tileWidth, tileHeight);
+        }
+
+
         if (bottomWallTile ==null)
             bottomWallTile = new TextureRegion(tileSet, tileWidth*6, tileHeight*5, tileWidth, tileHeight);
         if (middleWallTile ==null)
             middleWallTile = new TextureRegion(tileSet, tileWidth*6, tileHeight*4, tileWidth, tileHeight);
-        if (topWallTile ==null)
-            topWallTile = new TextureRegion(tileSet, tileWidth*6, tileHeight*2, tileWidth, tileHeight);
+
     }
 
 }

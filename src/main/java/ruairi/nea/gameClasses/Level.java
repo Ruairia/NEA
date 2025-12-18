@@ -26,14 +26,27 @@ public class Level {
     public Boss boss;
     public Background background;
 
-    public Level() {
+    private final int levelNumber;
+
+    public Level(int levelNumber) {
+        Platform.clearTextures();
+        Wall.clearTextures();
+
+        String textureType = switch (levelNumber){
+            case 3,4 -> "CAVE";
+            default -> "OAK";
+        };
+
+        Platform.loadTextures(textureType);
+        Wall.loadTextures(textureType);
+
         allEntities = new ArrayList<>();
         platforms = new ArrayList<>();
         enemies = new ArrayList<>();
         mobileEntities = new ArrayList<>();
         projectiles = new ArrayList<>();
         projectiles = new ArrayList<>();
-
+        this.levelNumber = levelNumber;
     }
 
     public void loadLevel(int level) {

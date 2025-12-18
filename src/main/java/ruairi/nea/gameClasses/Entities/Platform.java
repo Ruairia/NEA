@@ -23,23 +23,42 @@ public class Platform extends Entity {
 
     protected static Texture tileSet;
 
-    private static void loadTextures() {
+    public static void loadTextures(String levelType) {
         if (tileSet==null)
             tileSet = new Texture("assets/tileset.png");
-        if (singlePlatformTile ==null)
-            singlePlatformTile = new TextureRegion(tileSet, tileWidth*10, 0, tileWidth, tileHeight);
-        if (leftPlatformTile ==null)
-            leftPlatformTile = new TextureRegion(tileSet, tileWidth*5, tileHeight*3, tileWidth, tileHeight);
-        if (middlePlatformTile ==null)
-            middlePlatformTile = new TextureRegion(tileSet, tileWidth*6, tileHeight*3, tileWidth, tileHeight);
-        if (rightPlatformTile ==null)
-            rightPlatformTile = new TextureRegion(tileSet, tileWidth*7, tileHeight*3, tileWidth, tileHeight);
+
+        if (levelType == "CAVE"){
+            if (singlePlatformTile == null)
+                singlePlatformTile = new TextureRegion(tileSet, tileWidth * 12, 0, tileWidth, tileHeight);
+            if (leftPlatformTile == null)
+                leftPlatformTile = new TextureRegion(tileSet, tileWidth * 9, tileHeight * 3, tileWidth, tileHeight);
+            if (middlePlatformTile == null)
+                middlePlatformTile = new TextureRegion(tileSet, tileWidth * 12, tileHeight * 10, tileWidth, tileHeight);
+            if (rightPlatformTile == null)
+                rightPlatformTile = new TextureRegion(tileSet, tileWidth * 11, tileHeight * 3, tileWidth, tileHeight);
+        }
+
+        else {
+            if (singlePlatformTile ==null)
+                singlePlatformTile = new TextureRegion(tileSet, tileWidth*10, 0, tileWidth, tileHeight);
+            if (leftPlatformTile ==null)
+                leftPlatformTile = new TextureRegion(tileSet, tileWidth*5, tileHeight*3, tileWidth, tileHeight);
+            if (middlePlatformTile ==null)
+                middlePlatformTile = new TextureRegion(tileSet, tileWidth*6, tileHeight*3, tileWidth, tileHeight);
+            if (rightPlatformTile ==null)
+                rightPlatformTile = new TextureRegion(tileSet, tileWidth*7, tileHeight*3, tileWidth, tileHeight);
+        }
+    }
+
+    public static void clearTextures(){
+        singlePlatformTile = null;
+        leftPlatformTile = null;
+        middlePlatformTile = null;
+        rightPlatformTile = null;
     }
 
     public Platform(float posX, float posY, PlatformType type){
         super(posX, posY, 0,0);
-
-        loadTextures();
 
         isAffectedByGravity = false;
         width = tileWidth*ZOOM;

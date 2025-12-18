@@ -203,7 +203,6 @@ public class GameScreen implements Screen {
         font.setColor(1,1,1,1);
         font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, V_HEIGHT - 10);
         font.draw(game.batch, "Score: " + score, V_WIDTH - 220, V_HEIGHT - 10);
-        font.draw(game.batch, "Boss state: " + level.boss.getCurrentState(), 10, V_HEIGHT - 50);
         game.batch.end();
     }
 

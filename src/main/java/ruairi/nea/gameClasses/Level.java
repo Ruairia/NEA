@@ -129,7 +129,7 @@ public class Level {
 
     private static BufferedReader getLevelReader(int level) throws FileNotFoundException {
         String levelPlatformsFile = switch (level) {
-            case 1 -> "assets/level1.csv";
+            case 1 -> "assets/prefab25.csv";
             case 2 -> "assets/level2.csv";
             case 3 -> "assets/level3.csv";
             case 4 -> "assets/level4.csv";

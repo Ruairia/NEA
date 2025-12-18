@@ -109,6 +109,7 @@ public class Hero extends Entity {
         weaponsIndex=0;
         currentStaff=weapons.get(weaponsIndex);
 
+        Hitbox hitbox = new Hitbox(posX,posY,width,height,this);
         hitbox.setLeftOffsetX(2*ZOOM);
         hitbox.setRightOffsetX(4*ZOOM);
         hitbox.setTopOffsetY(2*ZOOM);

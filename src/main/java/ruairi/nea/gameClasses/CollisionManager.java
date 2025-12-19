@@ -3,6 +3,7 @@ package ruairi.nea.gameClasses;
 import ruairi.nea.gameClasses.Entities.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
 import ruairi.nea.gameClasses.Entities.Enemies.*;
+import ruairi.nea.gameClasses.Level.Level;
 
 import java.util.ArrayList;
 

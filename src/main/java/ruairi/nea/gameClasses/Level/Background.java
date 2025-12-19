@@ -1,4 +1,4 @@
-package ruairi.nea.gameClasses;
+package ruairi.nea.gameClasses.Level;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;

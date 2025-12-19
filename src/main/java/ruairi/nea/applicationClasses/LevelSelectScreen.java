@@ -144,7 +144,7 @@ public class LevelSelectScreen implements Screen {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
             game.setScreen(new GameScreen(game, 4));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
-            game.setScreen(new GameScreen(game, 10));
+            game.setScreen(new GameScreen(game, 5));
         }
 
         // Navigation

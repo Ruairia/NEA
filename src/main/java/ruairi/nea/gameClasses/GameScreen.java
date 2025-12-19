@@ -16,9 +16,12 @@ import ruairi.nea.applicationClasses.Main;
 import ruairi.nea.gameClasses.Entities.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
 import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
+import ruairi.nea.gameClasses.Level.Background;
+import ruairi.nea.gameClasses.Level.Level;
 import ruairi.nea.gameClasses.UI.HealthBar;
 import ruairi.nea.gameClasses.UI.ManaBar;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -88,7 +91,11 @@ public class GameScreen implements Screen {
         manaBar = new ManaBar(V_WIDTH,V_HEIGHT);
 
         level = new Level(levelNumber);
-        level.loadLevel(this.levelNumber);
+        try {
+            level.loadLevel(this.levelNumber);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         hero = level.getHero().spawn();
 
 

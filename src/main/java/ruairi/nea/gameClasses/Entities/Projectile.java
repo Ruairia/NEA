@@ -10,7 +10,7 @@ import ruairi.nea.gameClasses.Entities.Enemies.Boss;
 import ruairi.nea.gameClasses.Entities.Enemies.BossAI;
 import ruairi.nea.gameClasses.Entities.Enemies.Explosion;
 import ruairi.nea.gameClasses.Hitbox;
-import ruairi.nea.gameClasses.Level;
+import ruairi.nea.gameClasses.Level.Level;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 

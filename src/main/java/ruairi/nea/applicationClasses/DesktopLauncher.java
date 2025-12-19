@@ -7,7 +7,7 @@ public class DesktopLauncher {
     public static void main(String[] args) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.useVsync(true);
-        config.setForegroundFPS(100);
+        config.setForegroundFPS(120);
         config.setWindowedMode(800, 450);
         config.setTitle("2D Platformer");
         config.setWindowIcon("assets/icon.png");

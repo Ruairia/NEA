@@ -1,4 +1,4 @@
-package ruairi.nea.gameClasses;
+package ruairi.nea.gameClasses.Level;
 
 import ruairi.nea.gameClasses.Entities.Projectile;
 import ruairi.nea.gameClasses.Entities.*;
@@ -9,10 +9,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
 public class Level {
+
+    LevelGenerator levelGenerator;
 
     public ArrayList<Entity> allEntities;
     public ArrayList<Platform> platforms;
@@ -45,14 +48,27 @@ public class Level {
         enemies = new ArrayList<>();
         mobileEntities = new ArrayList<>();
         projectiles = new ArrayList<>();
-        projectiles = new ArrayList<>();
         this.levelNumber = levelNumber;
     }
 
-    public void loadLevel(int level) {
+    public void loadPrefabLevel() throws IOException {
+        setHeroSpawnPoint(new String[]{"SPAWNPOINT","0","1000"});
+        levelGenerator = new LevelGenerator(this, 111);
+        levelGenerator.generateLevel(5000f);
+
+    }
+
+    public void loadLevel(int level) throws IOException {
 
         background = new Background(level);
         hero = new Hero(this);
+
+
+
+        if (level==5) {
+            loadPrefabLevel();
+            return;
+        }
 
         try {
 
@@ -129,13 +145,12 @@ public class Level {
 
     private static BufferedReader getLevelReader(int level) throws FileNotFoundException {
         String levelPlatformsFile = switch (level) {
-            case 1 -> "assets/prefab25.csv";
+            case 1 -> "assets/level1.csv";
             case 2 -> "assets/level2.csv";
             case 3 -> "assets/level3.csv";
             case 4 -> "assets/level4.csv";
-            case 10 -> "assets/bossArena.csv";
 
-            default -> throw new IllegalStateException("Unexpected value: " + level);
+            default -> "assets/prefab"+level+".csv";
         };
 
         return new BufferedReader(new FileReader(levelPlatformsFile));

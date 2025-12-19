@@ -13,7 +13,7 @@ import ruairi.nea.gameClasses.Combat.MeleeStaff;
 import ruairi.nea.gameClasses.Hitbox;
 import ruairi.nea.gameClasses.InputHandler;
 import ruairi.nea.gameClasses.Combat.Staff;
-import ruairi.nea.gameClasses.Level;
+import ruairi.nea.gameClasses.Level.Level;
 
 import java.util.ArrayList;
 import java.util.HashMap;

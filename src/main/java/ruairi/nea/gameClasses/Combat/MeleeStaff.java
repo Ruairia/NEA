@@ -10,7 +10,7 @@ import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Entities.Hero;
 import ruairi.nea.gameClasses.Entities.Projectile;
-import ruairi.nea.gameClasses.Level;
+import ruairi.nea.gameClasses.Level.Level;
 
 import java.util.Arrays;
 import java.util.HashMap;

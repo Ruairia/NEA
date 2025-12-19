@@ -8,9 +8,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.gameClasses.Entities.Goal;
 import ruairi.nea.gameClasses.Entities.Platform;
 import ruairi.nea.gameClasses.Entities.Projectile;
-import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Hitbox;
-import ruairi.nea.gameClasses.Level;
+import ruairi.nea.gameClasses.Level.Level;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,7 +48,7 @@ public class Boss extends Enemy{
         this.level = level;
 
         health = MAX_HEALTH;
-        contactDamage = 10;;
+        contactDamage = 10;
 
         setHitbox(new Hitbox(posX,posY,FRAME_WIDTH*ZOOM,FRAME_HEIGHT*ZOOM,this));
 
@@ -213,7 +212,7 @@ public class Boss extends Enemy{
         for (BossState state : BossState.values()){
             stateLengths.put(state,animations.get(state).getAnimationDuration());
         }
-        stateLengths.put(DASH,0.3f);
+        stateLengths.put(DASH,0.8f);
         stateLengths.put(TELEPORT,0.5f);
     }
 

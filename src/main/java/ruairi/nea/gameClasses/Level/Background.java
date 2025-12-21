@@ -29,10 +29,10 @@ public class Background {
 
     final String backgroundType;
 
-    public Background(int level) {
+    public Background(String textureType) {
 
-        switch (level){
-            case 3,4:
+        switch (textureType){
+            case "CAVE":
                 addLayer(("assets/CaveBackgroundFar.png"),0.05f, false);
                 addLayer(("assets/CaveBackgroundMid.png"),0.1f, false);
                 addLayer(("assets/CaveBackgroundNearA.png"),0.2f, false);

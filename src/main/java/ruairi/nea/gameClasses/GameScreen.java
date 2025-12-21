@@ -24,6 +24,7 @@ import ruairi.nea.gameClasses.UI.ManaBar;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class GameScreen implements Screen {
     private static Main game;
@@ -210,6 +211,8 @@ public class GameScreen implements Screen {
         font.setColor(1,1,1,1);
         font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, V_HEIGHT - 10);
         font.draw(game.batch, "Score: " + score, V_WIDTH - 220, V_HEIGHT - 10);
+        font.draw(game.batch, "PosX: " + (int) level.getHero().getPosX(), 10, 10);
+        font.draw(game.batch, "PosY: " + (int) level.getHero().getPosY(), 10, 30);
         game.batch.end();
     }
 
@@ -247,8 +250,9 @@ public class GameScreen implements Screen {
 
 
     private void updateEntities(float delta) {
-        ArrayList<Entity> allEntities = (ArrayList<Entity>) level.allEntities.clone();
-        for (Entity entity : allEntities) {
+        Iterator<Entity> allEntitiesIterator = level.allEntities.iterator();
+        while (allEntitiesIterator.hasNext()) {
+            Entity entity = allEntitiesIterator.next();
             if (entity instanceof Enemy && !Main.enemiesUpdate) continue;
             entity.update(delta);
         }

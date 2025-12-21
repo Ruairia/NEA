@@ -5,11 +5,9 @@ public class LevelGenerator {
     private final PrefabLibrary prefabLibrary;
     private final PerlinNoise noise;
     
-    private static final float MIN_SECTION_WIDTH = 600f;
-    private static final int MAX_RECURSION_DEPTH = 3;
-    private static final float CHECKPOINT_INTERVAL = 2000f;
-    
-    private float lastCheckpointX = 0f;
+    private static final float MIN_SECTION_WIDTH = 800f;
+    private static final int MAX_RECURSION_DEPTH = 4;
+
     
     public LevelGenerator(Level level, long seed) {
         this.level = level;
@@ -18,8 +16,8 @@ public class LevelGenerator {
     }
     
     public void generateLevel(float totalWidth) {
-        System.out.println("Generating level recursively...");
         generateSection(0, totalWidth, MAX_RECURSION_DEPTH, 0);
+        placePrefab(prefabLibrary.get(10),totalWidth);
     }
     
     private void generateSection(float x, float width, int depth, float progressX) {
@@ -40,28 +38,19 @@ public class LevelGenerator {
     }
     
     private void placePrefabInSection(float x, float width, float progressX) {
-        // Check if we need a checkpoint
-        if (progressX - lastCheckpointX > CHECKPOINT_INTERVAL) {
-            PrefabMetadata safePrefab = prefabLibrary.selectByType("SAFE");
-            placePrefab(safePrefab, x);
-            lastCheckpointX = progressX;
-            return;
-        }
-        
         // Determine difficulty based on progress
         int difficulty = getDifficultyForProgress(progressX);
-        PrefabMetadata prefab = prefabLibrary.selectByDifficulty(difficulty);
+        PrefabMetadata prefab = prefabLibrary.selectByDifficultyAndWidth(difficulty,width);
         
         placePrefab(prefab, x);
     }
     
-    private void placePrefab(PrefabMetadata prefab, float x) {
+    private void placePrefab(PrefabMetadata prefab, float offsetX) {
         try {
             level.loadPrefab(
-                new String[]{"PREFAB", String.valueOf(x), "0", String.valueOf(prefab.getId())},
+                new String[]{"PREFAB", String.valueOf(offsetX), "0", String.valueOf(prefab.getId())},
                 0, 0
             );
-            System.out.println("Placed prefab " + prefab.getId() + " at x=" + x);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -75,10 +64,10 @@ public class LevelGenerator {
         float normalizedProgress = progressX / 5000f;
         double difficultyValue = normalizedProgress * 0.7 + difficultyNoise * 0.3;
         
-        if (difficultyValue < 0.1) return 1;
-        if (difficultyValue < 0.3) return 2;
-        if (difficultyValue < 0.5) return 3;
-        if (difficultyValue < 0.7) return 4;
+        if (difficultyValue < 0.05) return 1;
+        if (difficultyValue < 0.15) return 2;
+        if (difficultyValue < 0.3) return 3;
+        if (difficultyValue < 0.5) return 4;
         return 5;
     }
 }

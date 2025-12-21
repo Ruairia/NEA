@@ -122,7 +122,7 @@ public class Projectile extends Entity {
         }
 
         switch (type){
-            case FIRE_MAGE -> batch.setColor(1,0.05f,0.05f,1);
+            case FIRE_MAGE -> batch.setColor(1f,0.5f,01f,1);
             case BOSS -> batch.setColor(0.2f,1f,0.6f,1);
             case BOSS_EXPLOSIVE -> batch.setColor(1,0.8f,0.2f,1);
             case FIRE_STAFF -> batch.setColor(1,0.5f,0.1f,1);

@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
@@ -37,11 +36,16 @@ public class Level {
 
         String textureType = switch (levelNumber){
             case 3,4 -> "CAVE";
-            default -> "OAK";
+            case 1,2 -> "OAK";
+            default -> null;
         };
 
+        if (textureType!=null){
         Platform.loadTextures(textureType);
         Wall.loadTextures(textureType);
+        background = new Background(textureType);
+        }
+
 
         allEntities = new ArrayList<>();
         platforms = new ArrayList<>();
@@ -52,15 +56,26 @@ public class Level {
     }
 
     public void loadPrefabLevel() throws IOException {
-        setHeroSpawnPoint(new String[]{"SPAWNPOINT","0","1000"});
-        levelGenerator = new LevelGenerator(this, 111);
-        levelGenerator.generateLevel(5000f);
+        levelGenerator = new LevelGenerator(this, 6768);
+        float random = (float) Math.random();
 
+        String textureType = "OAK";
+        if (random < 0.5) {
+            textureType = "CAVE";
+        }
+        Platform.loadTextures(textureType);
+        Wall.loadTextures(textureType);
+        background = new Background(textureType);
+
+        levelGenerator.generateLevel(10000f);
+        float spawnX = checkpoints.get(0).getPosX();
+        hero.setSpawnPoint(spawnX, checkpoints.get(0).getPosY());
+        loadHero(new String[]{"SPAWNPOINT",spawnX+"",checkpoints.get(0).getPosY()+"",""});
     }
 
     public void loadLevel(int level) throws IOException {
 
-        background = new Background(level);
+
         hero = new Hero(this);
 
 
@@ -83,7 +98,7 @@ public class Level {
                     elements[i]=elements[i].strip();
                 }
                 switch (elements[0]) {
-                    case "SPAWNPOINT" -> setHeroSpawnPoint(elements);
+                    case "SPAWNPOINT" -> loadHero(elements);
                     case "PLATFORM" -> loadPlatform(elements);
                     case "MOVINGPLATFORM" -> loadMovingPlatform(elements);
                     case "WALL" -> loadWall(elements);
@@ -145,12 +160,12 @@ public class Level {
 
     private static BufferedReader getLevelReader(int level) throws FileNotFoundException {
         String levelPlatformsFile = switch (level) {
-            case 1 -> "assets/level1.csv";
-            case 2 -> "assets/level2.csv";
-            case 3 -> "assets/level3.csv";
-            case 4 -> "assets/level4.csv";
+            case 1 -> "assets/Level/level1.csv";
+            case 2 -> "assets/Level/level2.csv";
+            case 3 -> "assets/Level/level3.csv";
+            case 4 -> "assets/Level/level4.csv";
 
-            default -> "assets/prefab"+level+".csv";
+            default -> "assets/Level/prefab"+level+".csv";
         };
 
         return new BufferedReader(new FileReader(levelPlatformsFile));
@@ -209,7 +224,7 @@ public class Level {
         allEntities.add(explosion);
     }
 
-    private void setHeroSpawnPoint(String[] elements){
+    private void loadHero(String[] elements){
         hero.setSpawnPoint(Float.parseFloat(elements[1]), Float.parseFloat(elements[2]));
         mobileEntities.add(hero);
         allEntities.add(hero);

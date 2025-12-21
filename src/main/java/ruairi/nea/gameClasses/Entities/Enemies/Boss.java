@@ -194,12 +194,13 @@ public class Boss extends Enemy{
         for (BossState state : BossState.values()){
             animations.put(state, basicAnimation);
         }
+
         Animation<TextureRegion> walkAnimation = new Animation<>(0.1f, Arrays.copyOfRange(frames[0],0,7));
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
         animations.put(WALK_TOWARDS,walkAnimation);
         animations.put(WALK_AWAY,walkAnimation);
 
-        Animation<TextureRegion> shootAnimation = new Animation<>(0.05f, Arrays.copyOfRange(frames[2],0,12));
+        Animation<TextureRegion> shootAnimation = new Animation<>(0.025f, Arrays.copyOfRange(frames[2],0,12));
         animations.put(SHOOT,shootAnimation);
         animations.put(SHOOT_EXPLOSIVE,shootAnimation);
 

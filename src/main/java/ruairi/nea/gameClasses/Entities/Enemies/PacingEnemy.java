@@ -28,9 +28,13 @@ public abstract class PacingEnemy extends Enemy {
 
     @Override
     public void updateVelocity(double delta) {
-        // CRITICAL: Only update pacing velocity when NOT in knockback
-        // This allows knockback to take full control, then pacing resumes naturally
         if (!isInKnockback()) {
+
+            if (greaterBound-lesserBound<width) {
+                velocityX = 0;
+                return;
+            }
+
             if (paceDirection == PaceDirection.VERTICAL){
                 if (posY<=lesserBound) velocityY = speed;
                 else if (posY>=greaterBound) velocityY = -1 * speed;
@@ -40,7 +44,6 @@ public abstract class PacingEnemy extends Enemy {
                 else if (posX >= greaterBound) velocityX = -1 * speed;
             }
         }
-        // If in knockback, don't update velocity - let knockback system handle it
 
         super.updateVelocity(delta);
     }

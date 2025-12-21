@@ -56,7 +56,7 @@ public class Level {
     }
 
     public void loadPrefabLevel() throws IOException {
-        levelGenerator = new LevelGenerator(this, 6768);
+        levelGenerator = new LevelGenerator(this, System.nanoTime());
         float random = (float) Math.random();
 
         String textureType = "OAK";

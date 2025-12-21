@@ -29,6 +29,7 @@ public class LevelSelectScreen implements Screen {
     private Button levelTwoButton;
     private Button levelThreeButton;
     private Button levelFourButton;
+    private Button levelFiveButton;
 
     private float lastMovedButton = 0;
     private boolean wasAButtonPressed = true;
@@ -60,31 +61,40 @@ public class LevelSelectScreen implements Screen {
 
         font.getData().setScale(0.33f);
 
-        float cx = Main.UI_WIDTH / 2f;
-        float cy = Main.UI_HEIGHT / 2f;
-        float size = 128;
+        float centreX = Main.UI_WIDTH / 2f;
+        float centreY = Main.UI_HEIGHT / 2f;
+        float buttonSize = 128;
 
-        levelOneButton   = new Button(cx / 2f,           cy + size / 2f, size, size, Button.ButtonType.LevelSelect);
-        levelTwoButton   = new Button(cx * 1.5f - size,  cy + size / 2f, size, size, Button.ButtonType.LevelSelect);
-        levelThreeButton = new Button(cx / 2f,           cy - size * 1.5f, size, size, Button.ButtonType.LevelSelect);
-        levelFourButton  = new Button(cx * 1.5f - size,  cy - size * 1.5f, size, size, Button.ButtonType.LevelSelect);
+        levelOneButton   = new Button(centreX / 2f,           centreY + buttonSize / 2f, buttonSize, buttonSize, Button.ButtonType.LevelSelect);
+        levelTwoButton   = new Button(centreX * 1.5f - buttonSize,  centreY + buttonSize / 2f, buttonSize, buttonSize, Button.ButtonType.LevelSelect);
+        levelThreeButton = new Button(centreX / 2f, centreY - buttonSize * 0.75f, buttonSize, buttonSize, Button.ButtonType.LevelSelect);
+        levelFourButton  = new Button(centreX * 1.5f - buttonSize,  centreY - buttonSize * 0.75f, buttonSize, buttonSize, Button.ButtonType.LevelSelect);
+        levelFiveButton = new Button (centreX - buttonSize/2, 0, buttonSize,buttonSize, Button.ButtonType.LevelSelect);
 
         levelOneButton.text = "1";
         levelTwoButton.text = "2";
         levelThreeButton.text = "3";
         levelFourButton.text = "4";
+        levelFiveButton.text = "5";
 
+        levelOneButton.upButton  = levelFiveButton;
         levelOneButton.rightButton = levelTwoButton;
         levelOneButton.downButton  = levelThreeButton;
 
+        levelTwoButton.upButton   = levelFiveButton;
         levelTwoButton.leftButton  = levelOneButton;
         levelTwoButton.downButton  = levelFourButton;
 
         levelThreeButton.upButton  = levelOneButton;
         levelThreeButton.rightButton = levelFourButton;
+        levelThreeButton.downButton  = levelFiveButton;
 
         levelFourButton.upButton   = levelTwoButton;
         levelFourButton.leftButton = levelThreeButton;
+        levelFourButton.downButton  = levelFiveButton;
+
+        levelFiveButton.upButton  = levelFourButton;
+        levelFiveButton.downButton = levelOneButton;
 
         levelOneButton.isSelected = true;
         selectedButton = levelOneButton;
@@ -112,6 +122,7 @@ public class LevelSelectScreen implements Screen {
         levelTwoButton.draw(game.batch, font);
         levelThreeButton.draw(game.batch, font);
         levelFourButton.draw(game.batch, font);
+        levelFiveButton.draw(game.batch, font);
         game.batch.end();
 
         // Mouse input
@@ -120,6 +131,7 @@ public class LevelSelectScreen implements Screen {
             if (levelTwoButton.isHovered)   game.setScreen(new GameScreen(game, 2));
             if (levelThreeButton.isHovered) game.setScreen(new GameScreen(game, 3));
             if (levelFourButton.isHovered)  game.setScreen(new GameScreen(game, 4));
+            if (levelFiveButton.isHovered)  game.setScreen(new GameScreen(game, 5));
         }
 
         // Controller confirm
@@ -129,6 +141,7 @@ public class LevelSelectScreen implements Screen {
             if (levelTwoButton.isSelected)   game.setScreen(new GameScreen(game, 2));
             if (levelThreeButton.isSelected) game.setScreen(new GameScreen(game, 3));
             if (levelFourButton.isSelected)  game.setScreen(new GameScreen(game, 4));
+            if (levelFiveButton.isSelected)  game.setScreen(new GameScreen(game, 5));
         }
         wasAButtonPressed = isAButtonPressed;
 

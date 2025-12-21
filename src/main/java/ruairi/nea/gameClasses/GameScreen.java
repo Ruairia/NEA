@@ -250,9 +250,9 @@ public class GameScreen implements Screen {
 
 
     private void updateEntities(float delta) {
-        Iterator<Entity> allEntitiesIterator = level.allEntities.iterator();
-        while (allEntitiesIterator.hasNext()) {
-            Entity entity = allEntitiesIterator.next();
+        ArrayList<Entity> entitiesToUpdate = new ArrayList<>(level.allEntities);
+
+        for (Entity entity : entitiesToUpdate) {
             if (entity instanceof Enemy && !Main.enemiesUpdate) continue;
             entity.update(delta);
         }

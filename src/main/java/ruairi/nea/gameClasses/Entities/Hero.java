@@ -57,7 +57,7 @@ public class Hero extends Entity {
 
     public static final float DASH_SPEED = 250*ZOOM;
     public static final float MAX_DASH_COOLDOWN = 0.5f;
-    public static final float DASH_MANA_COST = 20;
+    public static final float DASH_MANA_COST = 40;
     public static final float HOLD_DASH_MANA_COST = 150;
     float dashCurrentCooldown = 0;
     public static final float MAX_DASH_LENGTH = 0.3f;
@@ -170,7 +170,6 @@ public class Hero extends Entity {
 
     private void dash(int playerDirection) {
         setCurrentState(HeroState.DASH);
-        dashCurrentCooldown = MAX_DASH_COOLDOWN;
         mana-=DASH_MANA_COST;
         dashLength = 0;
         velocityX=playerDirection*DASH_SPEED;
@@ -179,9 +178,15 @@ public class Hero extends Entity {
 
     private void holdDash(int playerDirection, float delta) {
         int manaCost = (int) (HOLD_DASH_MANA_COST * delta);
-        if (mana<manaCost) return;
+
+        if (dashLength > MAX_DASH_LENGTH) dashCurrentCooldown = MAX_DASH_COOLDOWN;
+        if (mana<manaCost) dashCurrentCooldown=MAX_DASH_COOLDOWN;
+
+        if (dashCurrentCooldown!=0) return;
+
         if (Math.abs(velocityX)<0.8*DASH_SPEED) velocityX= playerDirection * DASH_SPEED*0.8f;
         velocityY*=0.5f;
+        mana-=manaCost;
     }
 
     @Override
@@ -363,6 +368,10 @@ public class Hero extends Entity {
         mana-=HEAL_COST;
         health=MAX_HEALTH;
         healCooldown=MAX_HEAL_COOLDOWN;
+    }
+
+    public void setJumpTimeMax(){
+        currentJumpTime=MAX_JUMP_DURATION;
     }
 
     public void setJumpsRemaining(int jumpsRemaining) {

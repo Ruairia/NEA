@@ -73,6 +73,8 @@ public class CollisionManager {
             entity.setPosY(platformY - entityCollisionBox.getBottomOffsetY() - entityCollisionBox.getHeight());
             if (entity instanceof PacingEnemy && ((PacingEnemy) entity).paceDirection== PacingEnemy.PaceDirection.VERTICAL)
                 entity.setVelocityY(-entity.getVelocityY());
+            else if (entity instanceof Hero)
+                ((Hero) entity).setJumpTimeMax();
         }
 
         else if ((entityOldRight <= platformOldX) &&

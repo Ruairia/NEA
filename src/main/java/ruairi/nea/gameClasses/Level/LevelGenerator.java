@@ -61,8 +61,8 @@ public class LevelGenerator {
         double difficultyNoise = noise.noise(progressX * 0.0005, 42);
         
         // Base difficulty increases with progress
-        float normalizedProgress = progressX / 5000f;
-        double difficultyValue = normalizedProgress * 0.7 + difficultyNoise * 0.3;
+        float normalisedProgress = progressX / 5000f;
+        double difficultyValue = normalisedProgress * 0.7 + difficultyNoise * 0.3;
         
         if (difficultyValue < 0.05) return 1;
         if (difficultyValue < 0.15) return 2;

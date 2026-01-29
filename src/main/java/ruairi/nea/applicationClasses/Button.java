@@ -65,7 +65,7 @@ public class Button {
 
     public TextureRegion getTexture(){
         if (type == ButtonType.MainMenu)
-        return isHovered||isSelected ? mainMenuHoverTexture : mainMenuRegularTexture;
+           return isHovered||isSelected ? mainMenuHoverTexture : mainMenuRegularTexture;
         if (type == ButtonType.LevelSelect)
             return isHovered||isSelected ? levelSelectHoverTexture : levelSelectRegularTexture;
         return null;

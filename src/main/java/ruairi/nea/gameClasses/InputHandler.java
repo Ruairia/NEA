@@ -28,6 +28,7 @@ public class InputHandler {
     }
 
     public void vibrateController(int milliseconds, float strength){
+        //milliseconds refers to how long the vibration lasts before naturally stopping
         if (gamepad!=null) gamepad.startVibration(milliseconds,strength);
     }
 
@@ -41,6 +42,8 @@ public class InputHandler {
             horizontalAxisStrength =1f;
         }
 
+        //ArrayList includes description of what inputs represent instead of inputs themselves
+        //This is for easier compatibility with controller and keyboard
         if (isJumpJustPressed()) inputs.add("JUMP");
         if (isJumpPressed()) inputs.add("HOLD_JUMP");
         if (checkMoveLeft()) inputs.add("LEFT");
@@ -57,6 +60,9 @@ public class InputHandler {
         return inputs;
     }
 
+    private static class inputGetter{
+
+    }
     private boolean isSwapPressed() {
         if (Gdx.input.isKeyPressed(Input.Keys.X)) return true;
 
@@ -129,7 +135,7 @@ public class InputHandler {
         return false;
     }
 
-    private boolean isAttackJustPressed() {
+    private boolean isAttackJustPressed() { //Only returns true if attack was not pressed last frame
         if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)) return true;
 
         if (gamepad != null && gamepad.getButton(2)){
@@ -152,7 +158,7 @@ public class InputHandler {
         return false;
     }
 
-    private boolean isDashJustPressed(){
+    private boolean isDashJustPressed(){ //Only returns true if dash was not pressed last frame
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) return true;
         if (gamepad != null && gamepad.getAxis(5)>0.3){
             if (!dashWasPressed){

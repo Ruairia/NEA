@@ -13,7 +13,7 @@ import static ruairi.nea.gameClasses.GameScreen.ZOOM;
 
 public abstract class Entity {
     public static final float MAXFALLSPEED = -180*ZOOM; // Pixels per second
-    public static final float GRAVITY = 240*ZOOM; //Pixels per second squared
+    public static final float GRAVITY = 240*ZOOM; //Pixels per second^2
 
     public enum Direction {
         LEFT,
@@ -36,7 +36,7 @@ public abstract class Entity {
     protected Hitbox hurtbox;
 
     protected float posX, posY;
-    protected float oldX, oldY;
+    protected float oldX, oldY; //Used for collision handling
     protected float velocityX = 0;
     protected float velocityY = 0;
     protected float width;
@@ -112,10 +112,6 @@ public abstract class Entity {
             currentDirection = Direction.RIGHT;
         }
 
-    }
-
-    public  boolean intersect(Entity other){
-        return collisionBox.intersects(other.getCollisionBox());
     }
 
 
@@ -327,3 +323,9 @@ public abstract class Entity {
 
     public void dispose(){this.frame.getTexture().dispose();}
 }
+
+
+
+
+
+

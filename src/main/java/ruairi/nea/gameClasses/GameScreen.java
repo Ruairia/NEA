@@ -24,7 +24,6 @@ import ruairi.nea.gameClasses.UI.ManaBar;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Objects;
 
 public class GameScreen implements Screen {
     private static Main game;
@@ -34,6 +33,7 @@ public class GameScreen implements Screen {
     public static final float V_WIDTH = Main.UI_WIDTH;
     public static final float V_HEIGHT = Main.UI_HEIGHT;
 
+    //Viewport is used so that Windows works in both fullscreen and windowed modes
     private Viewport viewport;
     private Viewport uiViewport;
 
@@ -209,10 +209,12 @@ public class GameScreen implements Screen {
         game.batch.setProjectionMatrix(uiCamera.combined);
         game.batch.begin();
         font.setColor(1,1,1,1);
-        font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, V_HEIGHT - 10);
         font.draw(game.batch, "Score: " + score, V_WIDTH - 220, V_HEIGHT - 10);
-        font.draw(game.batch, "PosX: " + (int) level.getHero().getPosX(), 10, 10);
-        font.draw(game.batch, "PosY: " + (int) level.getHero().getPosY(), 10, 30);
+        if (Main.drawDebugInfo) {
+            font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, V_HEIGHT - 10);
+            font.draw(game.batch, "PosX: " + (int) level.getHero().getPosX(), 10, 10);
+            font.draw(game.batch, "PosY: " + (int) level.getHero().getPosY(), 10, 30);
+        }
         game.batch.end();
     }
 
@@ -251,7 +253,7 @@ public class GameScreen implements Screen {
 
     private void updateEntities(float delta) {
         ArrayList<Entity> entitiesToUpdate = new ArrayList<>(level.allEntities);
-
+//Copies allEntities ArrayList to prevent concurrent modification exceptions when entities delete themselves
         for (Entity entity : entitiesToUpdate) {
             if (entity instanceof Enemy && !Main.enemiesUpdate) continue;
             entity.update(delta);
@@ -283,7 +285,7 @@ public class GameScreen implements Screen {
 
         for (Entity entity : entitiesToRemove) {
             level.allEntities.remove(entity);
-
+//Removes entities from a type-specific ArrayList if they are in one
             if (entity instanceof Enemy) {
                 level.enemies.remove(entity);
                 level.mobileEntities.remove(entity);
@@ -302,6 +304,7 @@ public class GameScreen implements Screen {
             }
         }
 
+        //Use iterator to prevent concurrent modification exceptions
         Iterator<Projectile> playerProjIter = level.projectiles.iterator();
         while (playerProjIter.hasNext()) {
             Projectile proj = playerProjIter.next();

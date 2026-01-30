@@ -16,6 +16,7 @@ public class Main extends Game {
     public static boolean drawHurtboxes = false;
     public static boolean enemiesUpdate = true;
     public static boolean canFly = false;
+    public static boolean drawDebugInfo = false;
 
     @Override
     public void create() {

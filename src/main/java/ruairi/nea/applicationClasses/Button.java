@@ -16,7 +16,7 @@ public class Button {
 
     public String text;
     private GlyphLayout layout = new GlyphLayout();
-
+ 
     public boolean isHovered = false;
     public boolean isSelected = false;
 

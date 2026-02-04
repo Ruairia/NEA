@@ -55,7 +55,7 @@ public class Level {
         this.levelNumber = levelNumber;
     }
 
-    public void loadPrefabLevel() throws IOException {
+    public void loadProceduralGeneratedLevel() throws IOException {
         levelGenerator = new LevelGenerator(this, System.nanoTime());
         float random = (float) Math.random();
 
@@ -81,7 +81,7 @@ public class Level {
 
 
         if (level==5) {
-            loadPrefabLevel();
+            loadProceduralGeneratedLevel();
             return;
         }
 

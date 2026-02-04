@@ -219,12 +219,13 @@ public class Boss extends Enemy{
 
     @Override
     public void update(double delta) {
-        if (posY<0) {
-            teleport();
-        }
         super.update(delta);
         if (Math.abs(level.getHero().getPosX()-posX-width/2)>500) return;
         if (frozenTimer>0) return;
+
+        if (posY<0) {
+            teleport();
+        }
 
         if (stateTime>stateLengths.get(currentState)){
             previousState=currentState;

@@ -145,8 +145,16 @@ public class GameScreen implements Screen {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) Main.enemiesUpdate = !Main.enemiesUpdate;
         if (Gdx.input.isKeyJustPressed(Input.Keys.F2)) Main.canFly = !Main.canFly;
-
-
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F3)) Main.drawDebugInfo = !Main.drawDebugInfo;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F4)) Main.drawHitboxes = !Main.drawHitboxes;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) Main.drawCollisionBoxes = !Main.drawCollisionBoxes;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F6)) Main.drawHurtboxes = !Main.drawHurtboxes;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F11)) {
+            if (Gdx.graphics.isFullscreen())
+                Gdx.graphics.setWindowedMode((int) V_WIDTH, (int) V_HEIGHT);
+            else
+                Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        }
         perFrameLogic(delta);
 
 
@@ -260,7 +268,7 @@ public class GameScreen implements Screen {
         }
     }
 
-    private static void updateProjectiles(Level level, float delta, Hero hero) {
+    private void updateProjectiles(Level level, float delta, Hero hero) {
 
         for (Projectile projectile : level.projectiles) {
             projectile.update(delta);

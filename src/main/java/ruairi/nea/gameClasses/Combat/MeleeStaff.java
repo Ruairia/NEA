@@ -183,23 +183,22 @@ public class MeleeStaff extends Staff{
             return;
         }
 
-        // 1. Set the dimensions
+        //Set the dimensions
         hurtbox.setWidth(HURTBOX_WIDTH);
         hurtbox.setHeight(HURTBOX_HEIGHT);
 
-        // 2. Adjust the X offset based on direction
+        // Adjust the X offset based on direction
         if (hero.getCurrentDirection() == Entity.Direction.LEFT){
             // Flip the X offset to place the hurtbox on the left side of the hero
-            // Formula: HeroWidth - OriginalOffsetX - HurtboxWidth
             boxOffsetX = hero.getWidth() - boxOffsetX - HURTBOX_WIDTH;
         }
 
-        // 3. Apply the final offsets to the hurtbox object
+        // Apply the final offsets to the hurtbox object
         hurtbox.setLeftOffsetX(boxOffsetX);
         hurtbox.setBottomOffsetY(boxOffsetY);
 
 
-        // 4. Update the position of the hurtbox
+        //Update the position of the hurtbox
         hurtbox.setPosX(hero.getPosX() + hurtbox.getLeftOffsetX());
         hurtbox.setPosY(hero.getPosY() + hurtbox.getBottomOffsetY());
     }
@@ -210,7 +209,7 @@ public class MeleeStaff extends Staff{
             if (enemiesHit.contains(enemy) || enemy.getTimeUntilRemoval() !=null) continue;
 
             if (hurtbox.intersects(enemy.getHitbox())){
-                int attackDamage = (currentState== Hero.HeroState.ATTACKING)? 60 : 30;
+                int attackDamage = (currentState== Hero.HeroState.ATTACKING)? ATTACK_DAMAGE : DOWNWARD_ATTACK_DAMAGE;
                 hitEnemy(enemy, attackDamage);
                 enemiesHit.add(enemy);
             }

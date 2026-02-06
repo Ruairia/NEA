@@ -56,7 +56,7 @@ public class PerlinNoise {
     }
     
     private double smoothen(double t) {
-        return t * t * t * (t * (t * 6 - 15) + 10);
+        return t * t * t * (t * (t * 6 - 15) + 10); //Uses polynomial 6t^5-15t^4+10t^3
     }
     
     private double lerp(double weight, double valueA, double valueB) {

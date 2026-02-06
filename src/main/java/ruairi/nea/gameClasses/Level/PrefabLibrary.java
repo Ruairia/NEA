@@ -10,7 +10,7 @@ public class PrefabLibrary {
     private final Random random;
     
     public PrefabLibrary(long seed) {
-        this.prefabs = new HashMap();
+        this.prefabs = new HashMap<>();
         this.random = new Random(seed);
         loadMetadata();
     }

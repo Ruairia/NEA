@@ -255,6 +255,9 @@ public class MeleeStaff extends Staff{
         if (enemy.getHealth() <= 0 && enemy.getTimeUntilRemoval() == null) {
             enemy.kill(0.2f);
         }
+
+        //Recover some mana
+        hero.setMana(hero.getMana()+20);
     }
 
 

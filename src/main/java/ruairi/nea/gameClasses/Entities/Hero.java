@@ -60,7 +60,7 @@ public class Hero extends Entity {
     public static final float DASH_MANA_COST = 40;
     public static final float HOLD_DASH_MANA_COST = 150;
     float dashCurrentCooldown = 0;
-    public static final float MAX_DASH_LENGTH = 0.3f;
+    public static final float MAX_DASH_LENGTH = 1.3f;
     float dashLength = 0;
 
     private static final float KNOCKBACK_TIMER_MAX=0.15f;
@@ -177,7 +177,7 @@ public class Hero extends Entity {
     }
 
     private void holdDash(int playerDirection, float delta) {
-        int manaCost = (int) (HOLD_DASH_MANA_COST * delta);
+        double manaCost = (HOLD_DASH_MANA_COST * delta);
 
         if (dashLength > MAX_DASH_LENGTH) dashCurrentCooldown = MAX_DASH_COOLDOWN;
         if (mana<manaCost) dashCurrentCooldown=MAX_DASH_COOLDOWN;
@@ -187,6 +187,7 @@ public class Hero extends Entity {
         if (Math.abs(velocityX)<0.8*DASH_SPEED) velocityX= playerDirection * DASH_SPEED*0.8f;
         velocityY*=0.5f;
         mana-=manaCost;
+        System.out.println("Mana cost of holding dash was "+manaCost);
     }
 
     @Override

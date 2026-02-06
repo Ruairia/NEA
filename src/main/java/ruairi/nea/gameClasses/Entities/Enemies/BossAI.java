@@ -28,8 +28,6 @@ public final class BossAI{
     public static BossState getNextState(BossState previousState){
         BossState currentState;
 
-        allWeights.get(BossState.JUMP).put(BossState.JUMP,0.0f);
-
         HashMap<BossState, Float> weights = allWeights.get(previousState);
         ArrayList<BossState> states = new ArrayList<>(weights.keySet());
 

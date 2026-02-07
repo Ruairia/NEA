@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ruairi.nea.applicationClasses.Main;
+import ruairi.nea.gameClasses.Entities.Enemies.Boss;
+import ruairi.nea.gameClasses.Entities.Enemies.BossAI;
 import ruairi.nea.gameClasses.Entities.Enemies.Enemy;
 import ruairi.nea.gameClasses.Entities.Entity;
 import ruairi.nea.gameClasses.Entities.Hero;
@@ -258,6 +260,11 @@ public class MeleeStaff extends Staff{
 
         //Recover some mana
         hero.setMana(hero.getMana()+20);
+
+        if (enemy instanceof Boss) {
+            BossAI.punishMoveTransition(((Boss) enemy).getPreviousState(),((Boss) enemy).getCurrentState(), 0.02f);
+            BossAI.punishMoveEverywhere(((Boss) enemy).getCurrentState(), 0.02f);
+        }
     }
 
 

@@ -63,7 +63,6 @@ public class CollisionManager {
                 entity.setPosX(entity.getPosX()+platformX-platformOldX);
 
                 entity.setOnGround(true);
-                entity.setStoodOnPlatform(platform);
             }
         }
         else if ((entityOldTop <= platformOldY) &&

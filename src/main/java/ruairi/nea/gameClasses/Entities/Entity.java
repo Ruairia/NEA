@@ -20,7 +20,6 @@ public abstract class Entity {
         RIGHT
     }
 
-    private Platform stoodOnPlatform = null;
     protected Float timeUntilRemoval = null;
 
 
@@ -67,9 +66,7 @@ public abstract class Entity {
         updateDirection();
         updateHitbox();
 
-        if (!isOnGround){
-            setStoodOnPlatform(null);
-        }
+
     }
 
     protected void updateTimers(float delta) {
@@ -313,13 +310,7 @@ public abstract class Entity {
         this.height = height;
     }
 
-    public Platform getStoodOnPlatform() {
-        return stoodOnPlatform;
-    }
 
-    public void setStoodOnPlatform(Platform stoodOnPlatform) {
-        this.stoodOnPlatform = stoodOnPlatform;
-    }
 
     public void dispose(){this.frame.getTexture().dispose();}
 }

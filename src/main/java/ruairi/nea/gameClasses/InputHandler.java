@@ -60,9 +60,7 @@ public class InputHandler {
         return inputs;
     }
 
-    private static class inputGetter{
 
-    }
     private boolean isSwapPressed() {
         if (Gdx.input.isKeyPressed(Input.Keys.X)) return true;
 

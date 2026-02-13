@@ -29,7 +29,7 @@ public class LevelGenerator {
         
         // Use noise to decide split position
         double splitNoise = noise.noise(progressX * 0.001, depth * 0.5);
-        float splitRatio = 0.4f + (float)(splitNoise * 0.2); // 0.4 to 0.6
+        float splitRatio = 0.5f + (float)(splitNoise * 0.1); // 0.4 to 0.6
         float splitX = x + width * splitRatio;
         
         // Recursively generate left and right sections

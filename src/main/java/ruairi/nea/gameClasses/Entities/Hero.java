@@ -187,7 +187,6 @@ public class Hero extends Entity {
         if (Math.abs(velocityX)<0.8*DASH_SPEED) velocityX= playerDirection * DASH_SPEED*0.8f;
         velocityY*=0.5f;
         mana-=manaCost;
-        System.out.println("Mana cost of holding dash was "+manaCost);
     }
 
     @Override

@@ -25,13 +25,14 @@ public class HowToPlayScreen implements Screen {
     private Controller gamepad;
 
     private static final String TEXT =
-            "HOW TO PLAY\n\n" +
-                    "Move: W A S D / Left Stick\n\n" +
-                    "Attack: Shift / X\n\n" +
-                    "Attack Downwards: Shift + S / X + Left Stick Down\n\n" +
-                    "Heal: H / D-Pad Down\n\n" +
-                    "Dash: Space / RT\n\n" +
-                    "Press ESC or B to return";
+            "\n\nHOW TO PLAY\n\n" +
+                    "Move: A and D / Left Stick\n" +
+                    "Attack: Shift / X\n" +
+                    "Attack Downwards: Shift + S / X + Left Stick Down\n" +
+                    "Heal: H / D-Pad Down\n" +
+                    "Dash: Space / RT\n" +
+                    "Jump: W / A\n\n"+
+                    "Press ESC or B to return\n";
 
     public HowToPlayScreen(Main game) {
         this.game = game;

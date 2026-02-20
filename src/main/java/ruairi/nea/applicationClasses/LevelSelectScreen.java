@@ -116,6 +116,7 @@ public class LevelSelectScreen implements Screen {
         levelTwoButton.isHovered   = levelTwoButton.isUnderMouse(mouse.x, mouse.y);
         levelThreeButton.isHovered = levelThreeButton.isUnderMouse(mouse.x, mouse.y);
         levelFourButton.isHovered  = levelFourButton.isUnderMouse(mouse.x, mouse.y);
+        levelFiveButton.isHovered  = levelFiveButton.isUnderMouse(mouse.x, mouse.y);
 
         game.batch.begin();
         levelOneButton.draw(game.batch, font);

@@ -31,6 +31,7 @@ public class HowToPlayScreen implements Screen {
                     "Attack Downwards: Shift + S / X + Left Stick Down\n" +
                     "Heal: H / D-Pad Down\n" +
                     "Dash: Space / RT\n" +
+                    "Swap Weapons: X / Y\n"+
                     "Jump: W / A\n\n"+
                     "Press ESC or B to return\n";
 

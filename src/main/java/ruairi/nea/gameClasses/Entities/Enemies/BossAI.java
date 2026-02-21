@@ -107,8 +107,8 @@ public final class BossAI{
     }
 
     public static void saveAllWeights(){
-        try{
-            BufferedWriter writer = new BufferedWriter(new FileWriter("assets/bossWeights.csv"));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("assets/bossWeights.csv"))) {
+
 
             for (BossState previousState : BossState.values()){
                 for (BossState nextState : allWeights.get(previousState).keySet()){
@@ -118,7 +118,8 @@ public final class BossAI{
             }
             writer.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            System.out.println("Failed to save boss weights");
         }
     }
 
@@ -131,8 +132,8 @@ public final class BossAI{
             }
         }
 
-        try{
-            BufferedReader reader = new BufferedReader(new FileReader("assets/bossWeights.csv"));
+        try (BufferedReader reader = new BufferedReader(new FileReader("assets/bossWeights.csv"))) {
+
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -151,7 +152,13 @@ public final class BossAI{
             }
                 reader.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            for (BossState previousState : BossState.values()){
+                for (BossState nextState : allWeights.get(previousState).keySet()){
+                    allWeights.get(previousState).put(nextState,0.125f); //Discrete uniform distribution
+                }
+            }
+            System.out.println("Failed to load boss weights, all state transitions set uniformly");
         }
     }
 }

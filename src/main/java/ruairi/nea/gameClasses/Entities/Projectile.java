@@ -94,10 +94,9 @@ public class Projectile extends Entity {
 
 
 
-    private static void loadTextures(){
+    protected static void loadTextures(){
         if (spriteSheet != null) return;
         spriteSheet = new Texture(SPRITESHEET_PATH);
-
     }
 
     @Override

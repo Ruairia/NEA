@@ -21,6 +21,7 @@ import ruairi.nea.gameClasses.Level.Level;
 import ruairi.nea.gameClasses.UI.HealthBar;
 import ruairi.nea.gameClasses.UI.ManaBar;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -71,6 +72,10 @@ public class GameScreen implements Screen {
     public GameScreen(Main game, int levelNumber) {
         GameScreen.game = game;
         this.levelNumber = levelNumber;
+        if (!areAllAssetsPresent()) {
+            System.out.println("Some assets are missing, game will not work properly");
+            game.setScreen(new LevelSelectScreen(game));
+        }
     }
 
     @Override
@@ -387,4 +392,76 @@ public class GameScreen implements Screen {
         background.dispose();
         font.dispose();
     }
+
+    private boolean areAllAssetsPresent() {
+        // List all required asset files (relative to working directory)
+        String[] requiredFiles = {
+                // Sprite sheets and global textures
+                "assets/BossSpriteSheet.png",
+                "assets/CheckpointSpriteSheet.png",
+                "assets/CoinSpriteSheet.png",
+                "assets/ExplosionSpriteSheet.png",
+                "assets/FireballSpriteSheet.png",
+                "assets/FireMageSpriteSheet.png",
+                "assets/LevelSelectButtonSpriteSheet.png",
+                "assets/MainMenuButtonSpriteSheet.png",
+                "assets/ProjectileSpriteSheet.png",
+                "assets/StaffSpriteSheet.png",
+                "assets/SwordSpriteSheet.png",
+                "assets/TextureUnknown.png",
+                "assets/tileset.png",
+                "assets/WillOWispSpriteSheet.png",
+                "assets/WizardSpriteSheetNoStaff.png",
+
+                // Backgrounds
+                "assets/CaveBackgroundFar.png",
+                "assets/CaveBackgroundMid.png",
+                "assets/CaveBackgroundNearA.png",
+                "assets/CaveBackgroundNearB.png",
+                "assets/OakBackgroundFar.png",
+                "assets/OakBackgroundMid.png",
+                "assets/OakBackgroundNear.png",
+
+                // Other assets
+                "assets/bossWeights.csv",
+                "assets/font.ttf",
+                "assets/icon.png",
+
+                // Level files
+                "assets/Level/level1.csv",
+                "assets/Level/level2.csv",
+                "assets/Level/level3.csv",
+                "assets/Level/level4.csv",
+
+                // Prefab files (1-25 as shown)
+                "assets/Level/prefab10.csv",
+                "assets/Level/prefab11.csv",
+                "assets/Level/prefab12.csv",
+                "assets/Level/prefab13.csv",
+                "assets/Level/prefab14.csv",
+                "assets/Level/prefab15.csv",
+                "assets/Level/prefab16.csv",
+                "assets/Level/prefab17.csv",
+                "assets/Level/prefab18.csv",
+                "assets/Level/prefab19.csv",
+                "assets/Level/prefab20.csv",
+                "assets/Level/prefab21.csv",
+                "assets/Level/prefab22.csv",
+                "assets/Level/prefab23.csv",
+                "assets/Level/prefab24.csv",
+                "assets/Level/prefab25.csv",
+
+                // Prefab metadata
+                "assets/Level/prefabMetaData.csv"
+        };
+
+        for (String path : requiredFiles) {
+            if (!new File(path).exists()) {
+                System.err.println("Missing required asset: " + path);
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

@@ -85,9 +85,7 @@ public class Level {
             return;
         }
 
-        try {
-
-            BufferedReader levelReader = getLevelReader(level);
+        try (BufferedReader levelReader = getLevelReader(level)) {
 
             String line;
             String[] elements;
@@ -108,13 +106,20 @@ public class Level {
                     case "GOAL" -> loadGoal(elements);
                     case "COIN" -> loadCoin(elements);
                     case "PREFAB" -> loadPrefab(elements);
-                    default -> {System.out.println(elements[0] + " not a valid entity type"); return;}
+                    default -> System.out.println(elements[0] + " not a valid entity type");
                 }
             }
 
 
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Failed to load level "+level);
+            loadHero(new String[]{"SPAWNPOINT","0","100",""});
+            loadPlatform(new String[]{"PLATFORM","0","100","1"});
+        }
+        catch (NumberFormatException e){
+            e.printStackTrace();
+            System.out.println("Malformed CSV file in level "+level);
         }
     }
 
@@ -126,10 +131,7 @@ public class Level {
 
         int prefabID = Integer.parseInt(constructionElements[3]);
 
-        try {
-
-            BufferedReader levelReader = getLevelReader(prefabID);
-
+        try (BufferedReader levelReader = getLevelReader(prefabID)){
             String line;
             String[] elements;
 
@@ -155,6 +157,11 @@ public class Level {
 
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Failed to load prefab "+prefabID);
+        }
+        catch (NumberFormatException e){
+            e.printStackTrace();
+            System.out.println("Malformed CSV file in prefab "+prefabID);
         }
     }
 
@@ -171,17 +178,18 @@ public class Level {
         return new BufferedReader(new FileReader(levelPlatformsFile));
     }
 
-    private void loadGoal(String[] elements,float offsetX,float offsetY){
+    private void loadGoal(String[] elements,float offsetX,float offsetY) throws NumberFormatException{
         float posX = Float.parseFloat(elements[1])+offsetX;
         float posY = Float.parseFloat(elements[2])+offsetY;
         Goal goal = new Goal(posX,posY);
         allEntities.add(goal);
         checkpoints.add(goal);
     }
-    private void loadGoal(String[] elements){loadGoal(elements,0,0);}
 
-    private void loadCoin(String[] elements){loadCoin(elements,0,0);}
-    private void loadCoin(String[] elements, float offsetX, float offsetY){
+    private void loadGoal(String[] elements) throws NumberFormatException {loadGoal(elements,0,0);}
+
+    private void loadCoin(String[] elements) throws NumberFormatException {loadCoin(elements,0,0);}
+    private void loadCoin(String[] elements, float offsetX, float offsetY) throws NumberFormatException {
         float posX = Float.parseFloat(elements[1])+offsetX;
         float posY = Float.parseFloat(elements[2])+offsetY;
         Coin coin = new Coin(posX,posY,10);
@@ -189,16 +197,16 @@ public class Level {
         coins.add(coin);
     }
 
-    private void loadCheckpoint(String[] elements,float offsetX,float offsetY){
+    private void loadCheckpoint(String[] elements,float offsetX,float offsetY) throws NumberFormatException {
         float posX = Float.parseFloat(elements[1])+offsetX;
         float posY = Float.parseFloat(elements[2])+offsetY;
         Checkpoint checkpoint = new Checkpoint(posX,posY);
         allEntities.add(checkpoint);
         checkpoints.add(checkpoint);
     }
-    private void loadCheckpoint(String[] elements){loadCheckpoint(elements,0,0);}
+    private void loadCheckpoint(String[] elements) throws NumberFormatException {loadCheckpoint(elements,0,0);}
 
-    private void loadEnemy(String[] elements,float offsetX,float offsetY) {
+    private void loadEnemy(String[] elements,float offsetX,float offsetY) throws NumberFormatException {
         float posX = Float.parseFloat(elements[1])+offsetX;
         float posY = Float.parseFloat(elements[2])+offsetY;
         Enemy enemy;
@@ -216,7 +224,7 @@ public class Level {
         mobileEntities.add(enemy);
         allEntities.add(enemy);
     }
-    private void loadEnemy(String[] elements) {loadEnemy(elements,0,0);}
+    private void loadEnemy(String[] elements) throws NumberFormatException {loadEnemy(elements,0,0);}
 
     public void createExplosion(float posX, float posY, int size, int damage, Explosion.Origin origin){
         Explosion explosion = new Explosion(posX,posY,size,damage,origin);
@@ -224,13 +232,13 @@ public class Level {
         allEntities.add(explosion);
     }
 
-    private void loadHero(String[] elements){
+    private void loadHero(String[] elements) throws NumberFormatException {
         hero.setSpawnPoint(Float.parseFloat(elements[1]), Float.parseFloat(elements[2]));
         mobileEntities.add(hero);
         allEntities.add(hero);
     }
 
-    private void loadGround(String[] elements,float offsetX,float offsetY) {
+    private void loadGround(String[] elements,float offsetX,float offsetY) throws NumberFormatException {
         float posX = Float.parseFloat(elements[1])+offsetX;
         float posY = Float.parseFloat(elements[2])+offsetY;
         float endX = Float.parseFloat(elements[3])+offsetX;
@@ -240,15 +248,21 @@ public class Level {
         }
         loadPlatformTile(endX,posY, Platform.PlatformType.rightPlatform);
     }
-    private void loadGround(String[] elements) {loadGround(elements,0,0);}
+    private void loadGround(String[] elements) throws NumberFormatException {loadGround(elements,0,0);}
 
-    private void loadMovingPlatformTile(float posX, float posY, MovingPlatform.MoveDirection moveDirection, float lesserBound, float greaterBound, Platform.PlatformType type){
+    private void loadMovingPlatformTile(
+            float posX, float posY, MovingPlatform.MoveDirection moveDirection,
+            float lesserBound, float greaterBound, Platform.PlatformType type)
+            throws NumberFormatException {
         MovingPlatform movingPlatform = new MovingPlatform(posX,posY,moveDirection,lesserBound,greaterBound,type);
         platforms.add(movingPlatform);
         allEntities.add(movingPlatform);
     }
 
-    private void createMovingPlatform(float posX, float posY, int tilesWide, MovingPlatform.MoveDirection moveDirection, float lesserBound, float greaterBound){
+    private void createMovingPlatform(
+            float posX, float posY, int tilesWide, MovingPlatform.MoveDirection moveDirection,
+            float lesserBound, float greaterBound)
+            throws NumberFormatException{
         if (tilesWide == 1) {
             loadMovingPlatformTile(posX, posY, moveDirection, lesserBound, greaterBound, Platform.PlatformType.singlePlatform);
             return;
@@ -280,7 +294,7 @@ public class Level {
         }
     }
 
-    private void loadMovingPlatform(String[] elements,float offsetX,float offsetY) {
+    private void loadMovingPlatform(String[] elements,float offsetX,float offsetY) throws NumberFormatException {
         float posX = Float.parseFloat(elements[1])+offsetX;
         float posY = Float.parseFloat(elements[2])+offsetY;
         int tilesWide = Integer.parseInt(elements[3]);
@@ -303,7 +317,7 @@ public class Level {
 
         createMovingPlatform(posX,posY,tilesWide,moveDirection,lesserBound,greaterBound);
     }
-    private void loadMovingPlatform(String[] elements) {loadMovingPlatform(elements,0,0);}
+    private void loadMovingPlatform(String[] elements) throws NumberFormatException {loadMovingPlatform(elements,0,0);}
 
     private void loadWall(String[] elements,float offsetX,float offsetY) {
         float posX = Float.parseFloat(elements[1])+offsetX;
@@ -311,7 +325,7 @@ public class Level {
         int wallLength = Integer.parseInt(elements[3]);
         createWall(posX,posY,wallLength);
     }
-    private void loadWall(String[] elements) {loadWall(elements,0,0);}
+    private void loadWall(String[] elements) throws NumberFormatException {loadWall(elements,0,0);}
 
     private void createWall(float posX, float posY, int tilesWide) {
         if (tilesWide==1) {
@@ -325,27 +339,27 @@ public class Level {
         loadWallTile(posX,posY+Platform.tileWidth*ZOOM*(tilesWide-1), Wall.WallType.topWall);
     }
 
-    private void loadWallTile(float posX, float posY, Wall.WallType type){
+    private void loadWallTile(float posX, float posY, Wall.WallType type) {
         Wall wall = new Wall(posX,posY,type);
         platforms.add(wall);
         allEntities.add(wall);
     }
 
-    private void loadPlatform(String[] elements, float offsetX, float offsetY) {
+    private void loadPlatform(String[] elements, float offsetX, float offsetY) throws NumberFormatException {
         float posX = Float.parseFloat(elements[1])+offsetX;
         float posY = Float.parseFloat(elements[2])+offsetY;
         int platformLength = Integer.parseInt(elements[3]);
         createPlatform(posX,posY,platformLength);
     }
-    private void loadPlatform(String[] elements) {loadPlatform(elements,0,0);}
+    private void loadPlatform(String[] elements) throws NumberFormatException {loadPlatform(elements,0,0);}
 
-    private void loadPlatformTile(float posX, float posY, Platform.PlatformType type){
+    private void loadPlatformTile(float posX, float posY, Platform.PlatformType type) {
         Platform platform = new Platform(posX,posY,type);
         platforms.add(platform);
         allEntities.add(platform);
     }
 
-    private void createPlatform(float posX, float posY, int tilesWide){
+    private void createPlatform(float posX, float posY, int tilesWide) {
         if (tilesWide==1) {
             loadPlatformTile(posX,posY, Platform.PlatformType.singlePlatform);
             return;

@@ -16,11 +16,7 @@ public class PrefabLibrary {
     }
     
     private void loadMetadata() {
-        try {
-            BufferedReader reader = new BufferedReader(
-                new FileReader("assets/Level/prefabMetaData.csv")
-            );
-            
+        try (BufferedReader reader = new BufferedReader(new FileReader("assets/Level/prefabMetaData.csv"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");

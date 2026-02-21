@@ -41,7 +41,7 @@ public abstract class Entity {
     protected float width;
     protected float height;
 
-
+    protected static void loadTextures(){}
 
     public Entity(float posX, float posY, float width, float height){
         this.posX=posX;

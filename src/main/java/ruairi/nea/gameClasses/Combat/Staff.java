@@ -38,7 +38,7 @@ public abstract class Staff {
     public abstract void attack();
     public abstract void attackDownwards();
 
-    Hitbox hurtbox = new Hitbox(0,0,0,0,this);
+    Hitbox hurtbox = new Hitbox(0,0,0,0);
 
     public Staff(Hero hero, boolean requiresMana){
         loadAnimations();

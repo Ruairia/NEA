@@ -10,7 +10,6 @@ public class Hitbox {
     static Texture texture = new Texture("assets/TextureUnknown.png");
 
     private Entity entityOwner = null;
-    private Staff staffOwner = null;
 
     private float posX;
     private float posY;
@@ -36,14 +35,13 @@ public class Hitbox {
         this.height=height;
         this.entityOwner = entityOwner;
     }
-    public Hitbox(float posX, float posY, float width, float height, Staff staffOwner){
+    public Hitbox(float posX, float posY, float width, float height){
         this.posX=posX;
         this.posY=posY;
         oldX=posX;
         oldY=posY;
         this.width=width;
         this.height=height;
-        this.staffOwner=staffOwner;
     }
 
     public void draw(Batch batch){
@@ -72,9 +70,7 @@ public class Hitbox {
         return entityOwner;
     }
 
-    public Staff getStaffOwner() {
-        return staffOwner;
-    }
+
 
     public static boolean staticIntersects(Hitbox a, Hitbox b){
         return a.posX < b.posX + b.width && a.posX + a.width > b.posX && a.posY < b.posY + b.height && a.posY + a.height > b.posY;

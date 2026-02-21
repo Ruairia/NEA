@@ -27,7 +27,7 @@ public class Platform extends Entity {
         if (tileSet==null)
             tileSet = new Texture("assets/tileset.png");
 
-        if (levelType == "CAVE"){
+        if (levelType.equals("CAVE")){
             if (singlePlatformTile == null)
                 singlePlatformTile = new TextureRegion(tileSet, tileWidth * 12, 0, tileWidth, tileHeight);
             if (leftPlatformTile == null)

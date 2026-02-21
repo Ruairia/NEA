@@ -59,7 +59,9 @@ public final class BossAI{
     public static void punishMoveEverywhere(BossState state,float amountToGoDown){
         for (BossState previousState : BossState.values()){
             if (allWeights.get(previousState).get(state)!=0)
-                allWeights.get(previousState).put(state,Math.max(0.1f,allWeights.get(previousState).get(state)-amountToGoDown));
+                allWeights.get(previousState).put(
+                        state,
+                        Math.max(LOWEST_ALLOWED_PROBABILITY, allWeights.get(previousState).get(state)-amountToGoDown));
             capProbabilitiesAndNormalise(allWeights.get(previousState));
         }
     }
@@ -78,7 +80,7 @@ public final class BossAI{
 
     public static void punishMoveTransition(BossState previousState, BossState currentState, float amountToGoDown){
         HashMap<BossState, Float> weights = allWeights.get(previousState);
-        weights.put(currentState, Math.max(0.1f,weights.get(currentState) - amountToGoDown));
+        weights.put(currentState, Math.max(LOWEST_ALLOWED_PROBABILITY,weights.get(currentState) - amountToGoDown));
         capProbabilitiesAndNormalise(weights);
         saveAllWeights();
     }

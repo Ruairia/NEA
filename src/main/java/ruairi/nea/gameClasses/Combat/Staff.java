@@ -94,13 +94,7 @@ public abstract class Staff {
     }
 
 
-    public void reload(){
-        int reloadAmount;
-        if (ammoReserves>maxAmmo) reloadAmount = maxAmmo-currentAmmo;
-        else reloadAmount=ammoReserves;
-        currentAmmo+=reloadAmount;
-        ammoReserves -= reloadAmount;
-    }
+
 
     private void loadAnimations(){
         spriteSheet = new Texture(SPRITESHEET_PATH);
@@ -141,5 +135,9 @@ public abstract class Staff {
 
     public void dispose(){
         spriteSheet.dispose();
+    }
+
+    public void setAnimation(Hero.HeroState state){
+        currentAnimation = animations.get(state);
     }
 }

@@ -196,6 +196,8 @@ public class Hero extends Entity {
     public void update(double delta){
         super.update(delta);
         currentStaff.update((float) delta);
+        if (!(currentStaff instanceof  FireStaff)) weapons.get(0).update((float) delta);
+        if (!(currentStaff instanceof  IceStaff)) weapons.get(2).update((float) delta);
         if (isOnGround) jumpsRemaining = MAX_JUMPS;
         if (!isOnGround&&jumpsRemaining==2) jumpsRemaining=1;
     }
@@ -336,6 +338,8 @@ public class Hero extends Entity {
             weaponsIndex=(weaponsIndex+1)%weapons.size();
             currentStaff=weapons.get(weaponsIndex);
             swapCooldown=MAX_SWAP_COOLDOWN;
+            currentStaff.setAnimation(HeroState.IDLE);
+            if (currentStaff instanceof MeleeStaff) ((MeleeStaff) currentStaff).setState(HeroState.IDLE);
         }
 
         if (input.contains("HEAL") && mana >= HEAL_COST && health<MAX_HEALTH){

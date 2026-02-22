@@ -123,28 +123,12 @@ public class MeleeStaff extends Staff{
     public void updateTimers(float delta) {
         super.updateTimers(delta);
         stateTime+=delta;
-        if (currentState== Hero.HeroState.ATTACKING_DOWNWARDS){
-            textureOffsetX=DOWNWARDS_TEXTURE_OFFSET_X;
-            textureOffsetY=DOWNWARDS_TEXTURE_OFFSET_Y;
-        }
-        else {
-            textureOffsetX=TEXTURE_OFFSET_X;
-            textureOffsetY=TEXTURE_OFFSET_Y;
-        }
     }
 
     public void updateState(){
         if (stateTime < stateLengths.get(currentState)) return;
         currentState=hero.getCurrentState();
         stateTime=0;
-
-        if (currentState == Hero.HeroState.ATTACKING){
-
-        }
-        else if (currentState == Hero.HeroState.ATTACKING_DOWNWARDS){
-
-        }
-
     }
 
     @Override
@@ -166,6 +150,15 @@ public class MeleeStaff extends Staff{
     }
 
     private void updateHurtbox(){
+
+        if (currentState== Hero.HeroState.ATTACKING_DOWNWARDS){
+            textureOffsetX=DOWNWARDS_TEXTURE_OFFSET_X;
+            textureOffsetY=DOWNWARDS_TEXTURE_OFFSET_Y;
+        }
+        else {
+            textureOffsetX=TEXTURE_OFFSET_X;
+            textureOffsetY=TEXTURE_OFFSET_Y;
+        }
 
         float boxOffsetX;
         float boxOffsetY;
@@ -310,5 +303,10 @@ public class MeleeStaff extends Staff{
             spriteSheet.dispose();
         }
     }
+
+    public Hero.HeroState getState() {
+        return currentState;
+    }
+    public void setState(Hero.HeroState state){currentState=state;}
 
 }
